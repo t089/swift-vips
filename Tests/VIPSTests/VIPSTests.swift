@@ -19,6 +19,13 @@ final class VIPSTests: XCTestCase {
             .appendingPathComponent("bay.jpg")
     }
     
+    var mythicalGiantPath : String {
+        Bundle.module.resourceURL!
+            .appendingPathComponent("data")
+            .appendingPathComponent("mythical_giant.jpg")
+            .path
+    }
+    
     func testLoadImageFromMemory() throws {
         
         
@@ -120,4 +127,28 @@ final class VIPSTests: XCTestCase {
             }
         }
     }
+    
+    func testExportPerformance() throws {
+        let opts = XCTMeasureOptions()
+        opts.iterationCount = 10
+        
+        measure(options: opts) {
+            let source = try! VIPSSource(fromFile: mythicalGiantPath)
+            let image = try! VIPSImage(fromSource: source)
+            let _ = try! image.thumbnailImage(width: 500, crop: .none, size: .down)
+                .exportedJpeg(quality: 80, optimizeCoding: true, interlace: true, strip: true)
+        }
+    }
+    
+    func testExportPerformance2() throws {
+        let opts = XCTMeasureOptions()
+        opts.iterationCount = 10
+        
+        measure(options: opts) {
+            let image = try! VIPSImage(fromFilePath: mythicalGiantPath)
+            let _ = try! image.thumbnailImage(width: 500, crop: .none, size: .down)
+                .exportedJpeg(quality: 80, optimizeCoding: true, interlace: true, strip: true)
+        }
+    }
+
 }

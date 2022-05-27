@@ -546,7 +546,7 @@ open class VIPSImage {
     
     public convenience  init(fromSource source: VIPSSource, loader: String? = nil, options: String? = nil) throws {
         
-        let loader = try loader ?? source.findLoader()
+        let loader = loader ?? "vipsload_source"
         
         try self.init(source) { out in
             var option = VIPSOption()
@@ -773,6 +773,7 @@ extension VIPSImage {
         try VIPSImage.call(name, options: &options)
         
         let blob = outBuf.pointee
+        
         let areaPtr = shim_vips_area(blob)
         let buffer = UnsafeRawBufferPointer(start: areaPtr!.pointee.data, count: Int(areaPtr!.pointee.length))
         
