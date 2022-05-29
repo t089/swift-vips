@@ -48,7 +48,7 @@ public enum VIPS {
         
         logger.info("Vips: \(String(cString: vips_version_string()))")
         
-        g_log_set_handler("VIPS", G_LOG_LEVEL_MASK, logfunc, nil)
+        //g_log_set_handler("VIPS", G_LOG_LEVEL_MASK, logfunc, nil)
     }
     
     public static func shutdown() {
