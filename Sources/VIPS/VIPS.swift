@@ -536,8 +536,8 @@ open class VIPSImage {
         op.get(option: &options)
     }
     
-    public init(fromFilePath path: String) throws {
-        guard let image = vips_image_new_from_file_RW(path) else {
+    public init(fromFilePath path: String, access: VipsAccess = VIPS_ACCESS_RANDOM) throws {
+        guard let image = shim_vips_image_new_from_file(path, access) else {
             throw VIPSError(vips_error_buffer())
         }
         
@@ -546,7 +546,7 @@ open class VIPSImage {
     
     public convenience  init(fromSource source: VIPSSource, loader: String? = nil, options: String? = nil) throws {
         
-        let loader = loader ?? "vipsload_source"
+        let loader = try loader ?? source.findLoader()
         
         try self.init(source) { out in
             var option = VIPSOption()
@@ -1047,3 +1047,34 @@ extension Collection where Element == UInt8 {
 }
 
 
+extension VIPS {
+    public static func findLoader(filename: String) -> String? {
+        guard let cloader = vips_foreign_find_load(filename) else {
+            return nil
+        }
+        
+        return String(cString: cloader)
+    }
+    
+    public static func findLoader<Buffer: Sequence>(buffer: Buffer) throws -> String  where Buffer.Element == UInt8 {
+        let maybeResult = try buffer.withContiguousStorageIfAvailable { ptr -> String in
+            if let cstring = vips_foreign_find_load_buffer(ptr.baseAddress, ptr.count) {
+                return String(cString: cstring)
+            } else {
+                throw VIPSError()
+            }
+        }
+        
+        if let res = maybeResult {
+            return res
+        } else {
+            let array = Array(buffer)
+            guard let cstring = array.withUnsafeBytes({ ptr in
+                vips_foreign_find_load_buffer(ptr.baseAddress!, ptr.count)
+            }) else {
+                throw VIPSError()
+            }
+            return String(cString: cstring)
+        }
+    }
+}
