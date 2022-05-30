@@ -3,6 +3,7 @@ import CvipsShim
 import Foundation
 import Logging
 
+
 public struct VIPSError: Error, CustomStringConvertible {
     public let message: String
     
@@ -536,8 +537,8 @@ open class VIPSImage {
         op.get(option: &options)
     }
     
-    public init(fromFilePath path: String, access: VipsAccess = VIPS_ACCESS_RANDOM) throws {
-        guard let image = shim_vips_image_new_from_file(path, access) else {
+    public init(fromFilePath path: String, access: VIPSAccess = .random) throws {
+        guard let image = shim_vips_image_new_from_file(path, access.cVipsAccess) else {
             throw VIPSError(vips_error_buffer())
         }
         
@@ -1078,3 +1079,21 @@ extension VIPS {
         }
     }
 }
+
+
+public enum VIPSAccess {
+    case random
+    case sequential
+    case sequentialUnbuffered
+    case last
+    
+    var cVipsAccess: VipsAccess {
+        switch self {
+        case .random: return VIPS_ACCESS_RANDOM
+        case .sequential: return VIPS_ACCESS_SEQUENTIAL
+        case .sequentialUnbuffered: return VIPS_ACCESS_SEQUENTIAL_UNBUFFERED
+        case .last: return VIPS_ACCESS_LAST
+        }
+    }
+}
+
