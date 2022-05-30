@@ -3,6 +3,7 @@ import CvipsShim
 import Foundation
 import Logging
 
+
 public struct VIPSError: Error, CustomStringConvertible {
     public let message: String
     
@@ -48,7 +49,7 @@ public enum VIPS {
         
         logger.info("Vips: \(String(cString: vips_version_string()))")
         
-        g_log_set_handler("VIPS", G_LOG_LEVEL_MASK, logfunc, nil)
+        //g_log_set_handler("VIPS", G_LOG_LEVEL_MASK, logfunc, nil)
     }
     
     public static func shutdown() {
@@ -536,8 +537,8 @@ open class VIPSImage {
         op.get(option: &options)
     }
     
-    public init(fromFilePath path: String) throws {
-        guard let image = vips_image_new_from_file_RW(path) else {
+    public init(fromFilePath path: String, access: VIPSAccess = .random) throws {
+        guard let image = shim_vips_image_new_from_file(path, access.cVipsAccess) else {
             throw VIPSError(vips_error_buffer())
         }
         
@@ -773,6 +774,7 @@ extension VIPSImage {
         try VIPSImage.call(name, options: &options)
         
         let blob = outBuf.pointee
+        
         let areaPtr = shim_vips_area(blob)
         let buffer = UnsafeRawBufferPointer(start: areaPtr!.pointee.data, count: Int(areaPtr!.pointee.length))
         
@@ -1045,4 +1047,53 @@ extension Collection where Element == UInt8 {
     }
 }
 
+
+extension VIPS {
+    public static func findLoader(filename: String) -> String? {
+        guard let cloader = vips_foreign_find_load(filename) else {
+            return nil
+        }
+        
+        return String(cString: cloader)
+    }
+    
+    public static func findLoader<Buffer: Sequence>(buffer: Buffer) throws -> String  where Buffer.Element == UInt8 {
+        let maybeResult = try buffer.withContiguousStorageIfAvailable { ptr -> String in
+            if let cstring = vips_foreign_find_load_buffer(ptr.baseAddress, ptr.count) {
+                return String(cString: cstring)
+            } else {
+                throw VIPSError()
+            }
+        }
+        
+        if let res = maybeResult {
+            return res
+        } else {
+            let array = Array(buffer)
+            guard let cstring = array.withUnsafeBytes({ ptr in
+                vips_foreign_find_load_buffer(ptr.baseAddress!, ptr.count)
+            }) else {
+                throw VIPSError()
+            }
+            return String(cString: cstring)
+        }
+    }
+}
+
+
+public enum VIPSAccess {
+    case random
+    case sequential
+    case sequentialUnbuffered
+    case last
+    
+    var cVipsAccess: VipsAccess {
+        switch self {
+        case .random: return VIPS_ACCESS_RANDOM
+        case .sequential: return VIPS_ACCESS_SEQUENTIAL
+        case .sequentialUnbuffered: return VIPS_ACCESS_SEQUENTIAL_UNBUFFERED
+        case .last: return VIPS_ACCESS_LAST
+        }
+    }
+}
 

@@ -59,4 +59,7 @@ static const char *EXIF_IFD0_ORIENTATION = "exif-ifd0-Orientation";
 
 int shim_vips_copy_interpretation(VipsImage *in, VipsImage **out, VipsInterpretation interpretation);
 
+VipsImage *
+shim_vips_image_new_from_file( const char *name, VipsAccess access );
+
 #endif /* C_vips_shim_h */

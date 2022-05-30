@@ -107,3 +107,9 @@ shim_vips_exif_orientation(VipsImage *image) {
 int shim_vips_copy_interpretation(VipsImage *in, VipsImage **out, VipsInterpretation interpretation) {
     return vips_copy(in, out, "interpretation", interpretation, NULL);
 }
+
+
+VipsImage *
+shim_vips_image_new_from_file( const char *name, VipsAccess access ) {
+    return vips_image_new_from_file(name, "access", access, NULL);
+}
