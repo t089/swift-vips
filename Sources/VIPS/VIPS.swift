@@ -20,7 +20,7 @@ public struct VIPSError: Error, CustomStringConvertible {
 }
 
 func logfunc(_ domain: UnsafePointer<gchar>!, _ loglevel: GLogLevelFlags, _ msg: UnsafePointer<gchar>!, _ userdata: gpointer!) {
-    let logger = Logger(label: String(cString: domain))
+    let logger : VIPSLoggingDelegate = Unmanaged<AnyObject>.fromOpaque(userdata).takeUnretainedValue() as! VIPSLoggingDelegate
     switch loglevel {
     case G_LOG_LEVEL_ERROR:
         logger.error("\(String(cString: msg))")
@@ -33,8 +33,18 @@ func logfunc(_ domain: UnsafePointer<gchar>!, _ loglevel: GLogLevelFlags, _ msg:
     }
 }
 
+public protocol VIPSLoggingDelegate: AnyObject {
+    func debug(_ message: String)
+    func info(_ message: String)
+    func warning(_ message: String)
+    func error(_ message: String)
+}
+
 public enum VIPS {
-    public static func start(concurrency: Int = 0, logger: Logger = Logger(label: "VIPS")) throws {
+    
+    
+    
+    public static func start(concurrency: Int = 0, logger: Logger = Logger(label: "VIPS"), loggingDelegate: VIPSLoggingDelegate? = nil) throws {
         if vips_init(CommandLine.arguments[0]) != 0 {
             throw VIPSError(vips_error_buffer())
         }
@@ -49,7 +59,12 @@ public enum VIPS {
         
         logger.info("Vips: \(String(cString: vips_version_string()))")
         
-        //g_log_set_handler("VIPS", G_LOG_LEVEL_MASK, logfunc, nil)
+        if let loggingDelegate = loggingDelegate {
+            let box = Unmanaged.passRetained(loggingDelegate as AnyObject)
+            
+            g_log_set_handler("VIPS", G_LOG_LEVEL_MASK, logfunc, box.toOpaque())
+        }
+        
     }
     
     public static func shutdown() {

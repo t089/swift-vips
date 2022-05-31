@@ -146,7 +146,7 @@ final class VIPSTests: XCTestCase {
         opts.iterationCount = 10
         
         measure(options: opts) {
-            let image = try! VIPSImage(fromFilePath: mythicalGiantPath, access: VIPS_ACCESS_SEQUENTIAL)
+            let image = try! VIPSImage(fromFilePath: mythicalGiantPath, access: .sequential)
             let _ = try! image.thumbnailImage(width: 500, crop: .none, size: .down)
                 .exportedJpeg(quality: 80, optimizeCoding: true, interlace: true, strip: true)
         }
