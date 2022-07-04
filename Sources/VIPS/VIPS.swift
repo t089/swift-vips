@@ -798,7 +798,7 @@ extension VIPSImage {
         return Array(buffer)
     }
     
-    public func exported(suffix: String, quality: Int? = nil) throws -> [UInt8] {
+    public func exported(suffix: String, quality: Int? = nil, options additionalOptions: String? = nil) throws -> [UInt8] {
         guard let name = vips_foreign_find_save_buffer(suffix) else {
             throw VIPSError()
         }
@@ -813,7 +813,7 @@ extension VIPSImage {
         if let q = quality { options.set("Q", value: q) }
         options.set("buffer", value: outBuf)
         
-        try VIPSImage.call(name, options: &options)
+        try VIPSImage.call(name, optionsString: additionalOptions, options: &options)
         
         let blob = outBuf.pointee
         let areaPtr = shim_vips_area(blob)
@@ -841,6 +841,76 @@ extension VIPSImage {
         options.set("buffer", value: outBuf)
         
         try VIPSImage.call("heifsave_buffer", options: &options)
+        
+        let blob = outBuf.pointee
+        let areaPtr = shim_vips_area(blob)
+        let buffer = UnsafeRawBufferPointer(start: areaPtr!.pointee.data, count: Int(areaPtr!.pointee.length))
+        
+        defer { vips_area_unref(shim_vips_area(blob)) }
+        
+        return Array(buffer)
+    }
+    
+    public func webp(
+        quality: Int? = nil,
+        lossless: Bool? = nil,
+        smartSubsample: Bool? = nil,
+        nearLossless: Bool? = nil,
+        alphaQ: Int? = nil,
+        effort: Int? = nil,
+        minimizeSize: Bool? = nil,
+        mixed: Bool? = nil,
+        kmin: Bool? = nil,
+        kmax: Bool? = nil,
+        stripMetadata strip: Bool? = nil,
+        profile: String? = nil
+    ) throws -> [UInt8] {
+        let outBuf = UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>>.allocate(capacity: 1)
+        defer {
+            outBuf.deallocate()
+        }
+        
+        var options = VIPSOption()
+        options.set("in", value: self.image)
+        options.set("buffer", value: outBuf)
+        if let quality = quality {
+            options.set("Q", value: quality)
+        }
+        if let lossless = lossless {
+            options.set("lossless", value: lossless)
+        }
+        if let smartSubsample = smartSubsample {
+            options.set("smart_subsample", value: smartSubsample)
+        }
+        if let nearLossless = nearLossless {
+            options.set("near_lossless", value: nearLossless)
+        }
+        if let alphaQ = alphaQ {
+            options.set("alpha_q", value: alphaQ)
+        }
+        if let effort = effort {
+            options.set("effort", value: effort)
+        }
+        if let minimizeSize = minimizeSize {
+            options.set("min_size", value: minimizeSize)
+        }
+        if let mixed = mixed {
+            options.set("mixed", value: mixed)
+        }
+        if let kmin = kmin {
+            options.set("kmin", value: kmin)
+        }
+        if let kmax = kmax {
+            options.set("kmax", value: kmax)
+        }
+        if let strip = strip {
+            options.set("strip", value: strip)
+        }
+        if let profile = profile {
+            options.set("profile", value: profile)
+        }
+        
+        try VIPSImage.call("webpsave_buffer", options: &options)
         
         let blob = outBuf.pointee
         let areaPtr = shim_vips_area(blob)

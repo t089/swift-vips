@@ -91,6 +91,21 @@ final class VIPSTests: XCTestCase {
         }
     }
     
+    func testWebp() throws {
+        let image = try VIPSImage(fromFilePath: mythicalGiantPath)
+        let full = try image
+            .webp()
+        
+        let stripped = try image
+            .webp(stripMetadata: true)
+        
+        XCTAssertTrue(full.count > stripped.count)
+        
+        let jpeg = try image.exportedJpeg(strip: true)
+        
+        XCTAssertTrue(jpeg.count > stripped.count)
+    }
+    
     func testLoadImageFromFile() throws {
         let image = try VIPSImage(fromFilePath: testPath)
         XCTAssertNotNil(image)
