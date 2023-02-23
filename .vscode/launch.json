@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug vips-tool",
+            "program": "${workspaceFolder:swift-vips}/.build/debug/vips-tool",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-vips}",
+            "preLaunchTask": "swift: Build Debug vips-tool"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Release vips-tool",
+            "program": "${workspaceFolder:swift-vips}/.build/release/vips-tool",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-vips}",
+            "preLaunchTask": "swift: Build Release vips-tool"
+        }
+    ]
+}

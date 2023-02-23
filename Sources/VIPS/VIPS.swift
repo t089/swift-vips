@@ -124,6 +124,10 @@ public struct VIPSOption {
         g_value_set_object(&pair.value, value)
         self.pairs.append(pair)
     }
+
+    public mutating func set(_ name: String, value: [VipsBlendMode]) {
+        self.set(name, value: value.map({ Int($0.rawValue )}))
+    }
     
     // output
     public mutating func set(_ name: String, value: UnsafeMutablePointer<UnsafeMutablePointer<VipsImage>?>!) {
@@ -259,6 +263,13 @@ public struct VIPSOption {
         g_value_set_enum(&pair.value, gint(value.rawValue))
         self.pairs.append(pair)
     }
+
+    public mutating func set<V: _VipsEnumValue>(_ name: String, value: V)  {
+        let pair = Pair(name: name, input: true)
+        g_value_init(&pair.value, V.format)
+        g_value_set_enum(&pair.value, value.rawValue)
+        self.pairs.append(pair)
+    }
     
     public mutating func set<V>(_ name: String, value: V) where V: RawRepresentable, V.RawValue : BinaryInteger {
         let pair = Pair(name: name, input: true)
@@ -266,6 +277,12 @@ public struct VIPSOption {
         g_value_set_int(&pair.value, gint(value.rawValue))
         self.pairs.append(pair)
     }
+}
+
+// internal marker protocol for vips enum values
+public protocol _VipsEnumValue {
+    static var format: GType { get }
+    var rawValue: Int32 { get }
 }
 
 final class VIPSOperation {
@@ -940,6 +957,17 @@ extension VIPSImage {
         defer { vips_area_unref(shim_vips_area(blob)) }
         
         return Array(buffer)
+    }
+}
+
+
+extension VIPSImage {
+    public func new(_ colors: [Double]) throws -> VIPSImage {
+        try VIPSImage(self) { out in 
+            var c = colors
+            out = vips_image_new_from_image(self.image, &c, Int32(c.count))
+            if (out == nil) { throw VIPSError() }
+        }
     }
 }
 

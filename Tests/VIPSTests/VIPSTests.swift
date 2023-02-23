@@ -74,6 +74,13 @@ final class VIPSTests: XCTestCase {
         let jpeg = try image.exportedJpeg(quality: 80)
         try Data(jpeg).write(to: URL(fileURLWithPath: "/tmp/swift-vips/out_exported.jpg"))
     }
+
+    func testText() throws {
+        let text = try (try VIPSImage.text("hello world") * 0.3)
+            .cast(VIPS_FORMAT_UCHAR)
+        let jpeg = try text.exportedPNG()
+        try Data(jpeg).write(to: URL(fileURLWithPath: "/tmp/swift-vips/out_text_exported.jpg"))
+    }
     
     func testDeletionOfFile() throws {
         let tmpFile = "/tmp/\(UUID().uuidString).jpg"
