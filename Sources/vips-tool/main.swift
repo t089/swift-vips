@@ -10,10 +10,15 @@ guard CommandLine.arguments.count > 2 else {
 
 let im = try VIPSImage(fromFilePath: CommandLine.arguments[1])
 
-var text = try VIPSImage.text(CommandLine.arguments[2], font: "sans bold", width: 200, align: .centre, dpi: 200)
-text = try text * 0.2
+var text = try VIPSImage.text(CommandLine.arguments[2], font: "sans bold 12", align: .centre, dpi: 72)
+
+print(text.size)
+
+
+text = try (text * 0.4).cast(VIPS_FORMAT_UCHAR)
+try Data(try text.exportedPNG()).write(to: URL(fileURLWithPath: "/tmp/swift-vips/out_text_test.png"))
 text = try text
-            .cast(VIPS_FORMAT_UCHAR)
+            .rotate(-45)
             .gravity(direction: VIPS_COMPASS_DIRECTION_CENTRE, width: 300, height: 300)
             .replicate(across: 1 + im.size.width / text.size.width, down: 1 + im.size.height / text.size.height)
             .crop(left: 0, top: 0, width: im.size.width, height: im.size.height)
