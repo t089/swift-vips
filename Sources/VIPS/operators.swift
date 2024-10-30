@@ -24,6 +24,19 @@ extension VIPSImage {
     public func linear(_ a: Int = 1, _ b: Int = 0) throws -> VIPSImage {
         return try linear(Double(a), Double(b))
     }
+
+    public func linear(_ a: [Double], _ b: [Double]) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("a", value: a)
+            opt.set("b", value: b)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("linear", options: &opt)
+        }
+    }
     
     public func subtract(_ rhs: VIPSImage) throws -> VIPSImage {
         return try VIPSImage([self, rhs]) { out in
@@ -99,6 +112,19 @@ extension VIPSImage {
         
         return out
     }
+
+    public func deviate() throws -> Double {
+        var opt = VIPSOption()
+        
+        var out: Double = 0.0
+        
+        opt.set("in", value: self.image)
+        opt.set("out", value: &out)
+        
+        try VIPSImage.call("deviate", options: &opt)
+        
+        return out
+    }
 }
 
 
@@ -109,6 +135,10 @@ extension VIPSImage {
     
     public static func *(lhs: VIPSImage, rhs: Double) throws -> VIPSImage {
         return try lhs.linear(rhs)
+    }
+
+    public static func *(lhs: VIPSImage, rhs: [Double]) throws -> VIPSImage {
+        return try lhs.linear(rhs, [Double].init(repeating: 0, count: rhs.count))
     }
     
     public static func *(lhs: Int, image: VIPSImage) throws -> VIPSImage {
@@ -125,6 +155,10 @@ extension VIPSImage {
     
     public static func +(lhs: VIPSImage, rhs: Double) throws -> VIPSImage {
         return try lhs.linear(1.0, rhs)
+    }
+
+    public static func +(lhs: VIPSImage, rhs: [Double]) throws -> VIPSImage {
+        return try lhs.linear([Double].init(repeating: 1.0, count: rhs.count), rhs)
     }
     
     

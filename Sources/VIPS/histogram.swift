@@ -24,4 +24,19 @@ extension VIPSImage {
         
         return threshold
     }
+
+    public func histLocal(width: Int, height: Int, maxSlope: Int = 0) throws -> VIPSImage {
+        try VIPSImage(self) { out in 
+        
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("out", value: &out)
+            opt.set("width", value: width)
+            opt.set("height", value: height)
+            opt.set("max_slope", value: maxSlope)
+            
+            try VIPSImage.call("hist_local", optionsString: nil, options: &opt)
+        }
+    }
 }
