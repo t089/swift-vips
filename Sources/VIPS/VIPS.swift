@@ -367,6 +367,7 @@ final class Pair {
     }
 }
 
+@dynamicMemberLookup
 open class VIPSImage {
     
     private var other: Any? = nil
@@ -568,6 +569,8 @@ open class VIPSImage {
         
         op.get(option: &options)
     }
+
+    
     
     public init(fromFilePath path: String, access: VIPSAccess = .random) throws {
         guard let image = shim_vips_image_new_from_file(path, access.cVipsAccess) else {
@@ -607,6 +610,87 @@ open class VIPSImage {
     
     func withUnsafeMutablePointer<T>(_ block: (inout UnsafeMutablePointer<VipsImage>) throws -> (T)) rethrows -> T {
         return try block(&self.image)
+    }
+}
+
+extension VIPSImage {
+
+    public subscript(dynamicMember member: String) -> Operation {
+        return Operation(name: member, image: self)
+    }
+
+    @dynamicCallable
+    public struct Operation {
+        var name: String
+        let image: VIPSImage
+
+        func dynamicallyCall(withKeywordArguments args: KeyValuePairs<String, Any>) throws -> VIPSImage {
+            let images = args.compactMap { $0.value as? VIPSImage }
+            return try VIPSImage([self.image] + images) { out in
+                var option = VIPSOption()
+                for (key, value) in args {
+                    option.set("in", value: self.image.image)
+                    option.set("out", value: &out)
+                    switch value {
+                        case let value as VIPSImage:
+                            option.set(key, value: value.image)
+                        case let value as VipsInteresting:
+                            option.set(key, value: value)
+                        case let value as Int:
+                            option.set(key, value: value)
+                        case let value as Double:
+                            option.set(key, value: value)
+                        case let value as String:
+                            option.set(key, value: value)
+                        case let value as Bool:
+                            option.set(key, value: value)
+                        case let value as [Double]:
+                            option.set(key, value: value)
+                        case let value as [Int]:
+                            option.set(key, value: value)
+                        case let value as [VIPSImage]:
+                            option.set(key, value: value)
+
+                        default:
+                            throw VIPSError("Unsupported value type: \(type(of: value)) for key: \(key)")
+                    }
+                    
+                }
+                try VIPSImage.call(self.name, options: &option)
+            }
+        }
+
+        func dynamicallyCall(withKeywordArguments args: KeyValuePairs<String, Any>) throws {
+            var option = VIPSOption()
+            for (key, value) in args {
+                option.set("in", value: self.image.image)
+                switch value {
+                    case let value as VIPSImage:
+                        option.set(key, value: value.image)
+                    case let value as VipsInteresting:
+                        option.set(key, value: value)
+                    case let value as Int:
+                        option.set(key, value: value)
+                    case let value as Double:
+                        option.set(key, value: value)
+                    case let value as String:
+                        option.set(key, value: value)
+                    case let value as Bool:
+                        option.set(key, value: value)
+                    case let value as [Double]:
+                        option.set(key, value: value)
+                    case let value as [Int]:
+                        option.set(key, value: value)
+                    case let value as [VIPSImage]:
+                        option.set(key, value: value)
+
+                    default:
+                        throw VIPSError("Unsupported value type: \(type(of: value)) for key: \(key)")
+                }
+                
+            }
+            try VIPSImage.call(self.name, options: &option)
+        }
     }
 }
 
@@ -937,6 +1021,58 @@ extension VIPSImage {
         
         return Array(buffer)
     }
+
+    public func heifsave(
+        quality: Int? = nil,
+        bitdepth: Int? = nil,
+        lossless: Bool? = nil,
+        compression: HeifCompression? = nil,
+        effort: Int? = nil,
+        subsampleMode: ForeignSubsample? = nil,
+        encoder: HeifEncoder? = nil
+    ) throws -> [UInt8] {
+        let outBuf = UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>>.allocate(capacity: 1)
+        defer {
+            outBuf.deallocate()
+        }
+        
+        var options = VIPSOption()
+        options.set("in", value: self.image)
+        options.set("buffer", value: outBuf)
+        if let quality = quality {
+            options.set("Q", value: quality)
+        }
+        if let bitdepth = bitdepth {
+            options.set("bitdepth", value: bitdepth)
+        }
+        if let lossless = lossless {
+            options.set("lossless", value: lossless)
+        }
+        if let compression = compression {
+            options.set("compression", value: compression.cVipsCompression)
+        }
+        if let effort = effort {
+            options.set("effort", value: effort)
+        }
+        
+        if let subsampleMode = subsampleMode {
+            options.set("subsample_mode", value: subsampleMode.mode)
+        }
+        if let encoder = encoder {
+            options.set("encoder", value: encoder.encoder)
+        }
+        
+        try VIPSImage.call("heifsave_buffer", options: &options)
+        
+        let blob = outBuf.pointee
+        let areaPtr = shim_vips_area(blob)
+        let buffer = UnsafeRawBufferPointer(start: areaPtr!.pointee.data, count: Int(areaPtr!.pointee.length))
+
+        defer { vips_area_unref(shim_vips_area(blob)) }
+
+        return Array(buffer)
+    }
+        
     
     public func exportedPNG() throws -> [UInt8] {
         let outBuf = UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>>.allocate(capacity: 1)
@@ -968,6 +1104,70 @@ extension VIPSImage {
             out = vips_image_new_from_image(self.image, &c, Int32(c.count))
             if (out == nil) { throw VIPSError() }
         }
+    }
+}
+
+public struct HeifCompression: Hashable {
+    public static var av1 : Self { Self(compression: VIPS_FOREIGN_HEIF_COMPRESSION_AV1) }
+    public static var hevc : Self { Self(compression: VIPS_FOREIGN_HEIF_COMPRESSION_HEVC) }
+    public static var avc : Self { Self(compression: VIPS_FOREIGN_HEIF_COMPRESSION_AVC) }
+    public static var jpeg : Self { Self(compression: VIPS_FOREIGN_HEIF_COMPRESSION_JPEG) }
+
+    public init(compression: VipsForeignHeifCompression) {
+        self.cVipsCompression = compression
+    }
+
+    public var cVipsCompression: VipsForeignHeifCompression
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(cVipsCompression.rawValue)
+    }
+
+    public static func == (lhs: HeifCompression, rhs: HeifCompression) -> Bool {
+        return lhs.cVipsCompression == rhs.cVipsCompression
+    }
+}
+
+
+public struct HeifEncoder: Hashable {
+    public static var auto : Self { Self(encoder: VIPS_FOREIGN_HEIF_ENCODER_AUTO) }
+    public static var aom : Self { Self(encoder: VIPS_FOREIGN_HEIF_ENCODER_AOM) }
+    public static var rav1e : Self { Self(encoder: VIPS_FOREIGN_HEIF_ENCODER_RAV1E) }
+    public static var svt : Self { Self(encoder: VIPS_FOREIGN_HEIF_ENCODER_SVT) }
+    public static var x265 : Self { Self(encoder: VIPS_FOREIGN_HEIF_ENCODER_X265) }
+
+    public var encoder: VipsForeignHeifEncoder
+    
+    public init(encoder: VipsForeignHeifEncoder) {
+        self.encoder = encoder
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(encoder.rawValue)
+    }
+
+    public static func == (lhs: HeifEncoder, rhs: HeifEncoder) -> Bool {
+        return lhs.encoder == rhs.encoder
+    }
+}
+
+public struct ForeignSubsample: Hashable {
+    public static var auto : Self { Self(mode: VIPS_FOREIGN_SUBSAMPLE_AUTO) }
+    public static var on : Self { Self(mode: VIPS_FOREIGN_SUBSAMPLE_ON) }
+    public static var off : Self { Self(mode: VIPS_FOREIGN_SUBSAMPLE_OFF) }
+
+    public var mode: VipsForeignSubsample
+
+    public init(mode: VipsForeignSubsample) {
+        self.mode = mode
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(mode.rawValue)
+    }
+
+    public static func == (lhs: ForeignSubsample, rhs: ForeignSubsample) -> Bool {
+        return lhs.mode == rhs.mode
     }
 }
 
@@ -1209,4 +1409,6 @@ public enum VIPSAccess {
         }
     }
 }
+
+
 

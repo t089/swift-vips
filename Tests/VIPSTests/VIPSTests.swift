@@ -112,6 +112,18 @@ final class VIPSTests: XCTestCase {
         
         XCTAssertTrue(jpeg.count > stripped.count)
     }
+
+    func testAvif() throws {
+        let image = try VIPSImage(fromFilePath: mythicalGiantPath)
+            .thumbnailImage(width: 512)
+        let avif = try image.heifsave(compression: .av1)
+        XCTAssertTrue(avif.count > 0)
+
+        let imported = try VIPSImage(data: avif)
+        XCTAssertEqual(imported.size.width, image.size.width)
+        XCTAssertEqual(imported.size.height, image.size.height) 
+        
+    }
     
     func testLoadImageFromFile() throws {
         let image = try VIPSImage(fromFilePath: testPath)
@@ -149,6 +161,12 @@ final class VIPSTests: XCTestCase {
                 try! resized.write(toFilePath: "/tmp/swift-vips/resized-w500-h500.jpg")
             }
         }
+    }
+
+    func testDynamic() throws {
+        let image = try VIPSImage(fromFilePath: testPath)
+        let thumbnail : VIPSImage = try image.thumbnail_image(width: 500, height: 500, crop: VIPS_INTERESTING_CENTRE)
+        let _ : Void = try thumbnail.jxlsave(filename: "/tmp/swift-vips/thumbnail.jxl")
     }
     
     func testExportPerformance() throws {
