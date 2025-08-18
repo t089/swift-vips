@@ -113,3 +113,7 @@ VipsImage *
 shim_vips_image_new_from_file( const char *name, VipsAccess access ) {
     return vips_image_new_from_file(name, "access", access, NULL);
 }
+
+int shim_vips_getpoint(void *image, double **values, int *n, int x, int y) {
+    return vips_getpoint(image, values, n, x, y, NULL);
+}

@@ -20,7 +20,9 @@ VipsImage* shim_vips_image(const void * p);
 VipsObject* shim_vips_object(const void *p);
 
 VipsArea* shim_vips_area(const void *p);
-   
+
+int shim_vips_getpoint(void *image, double **values, int *n, int x, int y);
+
 GType shim_g_type_boolean();
 
 GType shim_G_TYPE_STRING();

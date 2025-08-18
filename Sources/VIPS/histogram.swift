@@ -39,4 +39,18 @@ extension VIPSImage {
             try VIPSImage.call("hist_local", optionsString: nil, options: &opt)
         }
     }
+
+    public func histFind(band: Int? = nil) throws -> VIPSImage {
+        try VIPSImage(self) { out in
+            var opt = VIPSOption()
+
+            opt.set("in", value: self.image)
+            opt.set("out", value: &out)
+            if let band {
+                opt.set("band", value: band)
+            }
+
+            try VIPSImage.call("hist_find", optionsString: nil, options: &opt)
+        }
+    }
 }

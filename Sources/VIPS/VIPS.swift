@@ -1410,5 +1410,37 @@ public enum VIPSAccess {
     }
 }
 
+extension VIPSImage {
+    public var format: VipsBandFormat {
+        return vips_image_get_format(self.image)
+    }
 
+    public func getpoint(x: Int, y: Int) throws -> [Double] {
+      var values: UnsafeMutablePointer<Double>? = nil
+      var n: Int32 = 0
 
+      let result = shim_vips_getpoint(self.image, &values, &n, Int32(x), Int32(y))
+
+      guard result == 0 else {
+          throw VIPSError(vips_error_buffer())
+      }
+
+      guard let values = values else {
+          throw VIPSError("vips_getpoint returned null vector")
+      }
+
+      defer {
+          g_free(values) // CRITICAL: Free VIPS-allocated memory
+      }
+
+      // Convert C array to Swift array
+      let buffer = UnsafeBufferPointer(start: values, count: Int(n))
+      return Array(buffer)
+  }
+}
+
+extension VipsBandFormat {
+    public var max: Double {
+        return vips_image_get_format_max(self)
+    }
+}
