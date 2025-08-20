@@ -325,7 +325,7 @@ extension VIPSImage {
     ///   - c: An array of constants to compare against
     /// - Returns: A new uchar image with 255 for true pixels, 0 for false pixels
     /// - Throws: `VIPSError` if the operation fails
-    public func relational_const(_ relational: VipsOperationRelational, _ c: [Double]) throws -> VIPSImage {
+    public func relational(_ relational: VipsOperationRelational, _ c: [Double]) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
             
@@ -347,8 +347,8 @@ extension VIPSImage {
     ///   - c: A constant value to compare against
     /// - Returns: A new uchar image with 255 for true pixels, 0 for false pixels
     /// - Throws: `VIPSError` if the operation fails
-    public func relational_const(_ relational: VipsOperationRelational, _ c: Double) throws -> VIPSImage {
-        return try self.relational_const(relational, [c])
+    public func relational(_ relational: VipsOperationRelational, _ c: Double) throws -> VIPSImage {
+        return try self.relational(relational, [c])
     }
     
     /// Test equality of two images.
@@ -431,8 +431,8 @@ extension VIPSImage {
     /// - Parameter c: The constant value to compare against
     /// - Returns: A uchar image with 255 for equal pixels, 0 for unequal pixels
     /// - Throws: `VIPSError` if the operation fails
-    public func equal_const(_ c: Double) throws -> VIPSImage {
-        return try self.relational_const(.equal, c)
+    public func equal(_ c: Double) throws -> VIPSImage {
+        return try self.relational(.equal, c)
     }
     
     /// Test if image pixels are not equal to a constant.
@@ -443,8 +443,8 @@ extension VIPSImage {
     /// - Parameter c: The constant value to compare against
     /// - Returns: A uchar image with 255 for unequal pixels, 0 for equal pixels
     /// - Throws: `VIPSError` if the operation fails
-    public func notequal_const(_ c: Double) throws -> VIPSImage {
-        return try self.relational_const(.noteq, c)
+    public func notequal(_ c: Double) throws -> VIPSImage {
+        return try self.relational(.noteq, c)
     }
     
     /// Test if image pixels are less than a constant.
@@ -455,8 +455,8 @@ extension VIPSImage {
     /// - Parameter c: The constant value to compare against
     /// - Returns: A uchar image with 255 where pixel < constant, 0 otherwise
     /// - Throws: `VIPSError` if the operation fails
-    public func less_const(_ c: Double) throws -> VIPSImage {
-        return try self.relational_const(.less, c)
+    public func less(_ c: Double) throws -> VIPSImage {
+        return try self.relational(.less, c)
     }
     
     /// Test if image pixels are less than or equal to a constant.
@@ -467,8 +467,8 @@ extension VIPSImage {
     /// - Parameter c: The constant value to compare against
     /// - Returns: A uchar image with 255 where pixel <= constant, 0 otherwise
     /// - Throws: `VIPSError` if the operation fails
-    public func lesseq_const(_ c: Double) throws -> VIPSImage {
-        return try self.relational_const(.lesseq, c)
+    public func lesseq(_ c: Double) throws -> VIPSImage {
+        return try self.relational(.lesseq, c)
     }
     
     /// Test if image pixels are greater than a constant.
@@ -479,8 +479,8 @@ extension VIPSImage {
     /// - Parameter c: The constant value to compare against
     /// - Returns: A uchar image with 255 where pixel > constant, 0 otherwise
     /// - Throws: `VIPSError` if the operation fails
-    public func more_const(_ c: Double) throws -> VIPSImage {
-        return try self.relational_const(.more, c)
+    public func more(_ c: Double) throws -> VIPSImage {
+        return try self.relational(.more, c)
     }
     
     /// Test if image pixels are greater than or equal to a constant.
@@ -491,8 +491,8 @@ extension VIPSImage {
     /// - Parameter c: The constant value to compare against
     /// - Returns: A uchar image with 255 where pixel >= constant, 0 otherwise
     /// - Throws: `VIPSError` if the operation fails
-    public func moreeq_const(_ c: Double) throws -> VIPSImage {
-        return try self.relational_const(.moreeq, c)
+    public func moreeq(_ c: Double) throws -> VIPSImage {
+        return try self.relational(.moreeq, c)
     }
     
     // MARK: - Trigonometric Operations
@@ -949,7 +949,7 @@ extension VIPSImage {
     /// - Parameter divisor: The constant divisor
     /// - Returns: A new image with the remainder of pixel/divisor for each pixel
     /// - Throws: `VIPSError` if the operation fails
-    public func remainder_const(_ divisor: Double) throws -> VIPSImage {
+    public func remainder(_ divisor: Double) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
             
@@ -968,8 +968,8 @@ extension VIPSImage {
     /// - Parameter divisor: The constant divisor
     /// - Returns: A new image with the remainder of pixel/divisor for each pixel
     /// - Throws: `VIPSError` if the operation fails
-    public func remainder_const(_ divisor: Int) throws -> VIPSImage {
-        return try self.remainder_const(Double(divisor))
+    public func remainder(_ divisor: Int) throws -> VIPSImage {
+        return try self.remainder(Double(divisor))
     }
     
     // MARK: - Boolean/Bitwise Operations
@@ -1002,7 +1002,7 @@ extension VIPSImage {
     /// - Parameter c: The constant value to AND with
     /// - Returns: A new image with bitwise AND of each pixel and the constant
     /// - Throws: `VIPSError` if the operation fails
-    public func andimage_const(_ c: Double) throws -> VIPSImage {
+    public func andimage(_ c: Double) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
             
@@ -1043,7 +1043,7 @@ extension VIPSImage {
     /// - Parameter c: The constant value to OR with
     /// - Returns: A new image with bitwise OR of each pixel and the constant
     /// - Throws: `VIPSError` if the operation fails
-    public func orimage_const(_ c: Double) throws -> VIPSImage {
+    public func orimage(_ c: Double) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
             
@@ -1084,7 +1084,7 @@ extension VIPSImage {
     /// - Parameter c: The constant value to XOR with
     /// - Returns: A new image with bitwise XOR of each pixel and the constant
     /// - Throws: `VIPSError` if the operation fails
-    public func eorimage_const(_ c: Double) throws -> VIPSImage {
+    public func eorimage(_ c: Double) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
             
@@ -1124,7 +1124,7 @@ extension VIPSImage {
     /// - Parameter n: The number of bits to shift
     /// - Returns: A new image with left-shifted pixel values
     /// - Throws: `VIPSError` if the operation fails
-    public func lshift_const(_ n: Int) throws -> VIPSImage {
+    public func lshift(_ n: Int) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
             
@@ -1164,7 +1164,7 @@ extension VIPSImage {
     /// - Parameter n: The number of bits to shift
     /// - Returns: A new image with right-shifted pixel values
     /// - Throws: `VIPSError` if the operation fails
-    public func rshift_const(_ n: Int) throws -> VIPSImage {
+    public func rshift(_ n: Int) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
             
@@ -1278,52 +1278,52 @@ extension VIPSImage {
     // MARK: - Comparison with constants
     
     public static func ==(lhs: VIPSImage, rhs: Double) throws -> VIPSImage {
-        return try lhs.equal_const(rhs)
+        return try lhs.equal(rhs)
     }
     
     public static func !=(lhs: VIPSImage, rhs: Double) throws -> VIPSImage {
-        return try lhs.notequal_const(rhs)
+        return try lhs.notequal(rhs)
     }
     
     public static func <(lhs: VIPSImage, rhs: Double) throws -> VIPSImage {
-        return try lhs.less_const(rhs)
+        return try lhs.less(rhs)
     }
     
     public static func <=(lhs: VIPSImage, rhs: Double) throws -> VIPSImage {
-        return try lhs.lesseq_const(rhs)
+        return try lhs.lesseq(rhs)
     }
     
     public static func >(lhs: VIPSImage, rhs: Double) throws -> VIPSImage {
-        return try lhs.more_const(rhs)
+        return try lhs.more(rhs)
     }
     
     public static func >=(lhs: VIPSImage, rhs: Double) throws -> VIPSImage {
-        return try lhs.moreeq_const(rhs)
+        return try lhs.moreeq(rhs)
     }
     
     // Reverse order for constants
     public static func ==(lhs: Double, rhs: VIPSImage) throws -> VIPSImage {
-        return try rhs.equal_const(lhs)
+        return try rhs.equal(lhs)
     }
     
     public static func !=(lhs: Double, rhs: VIPSImage) throws -> VIPSImage {
-        return try rhs.notequal_const(lhs)
+        return try rhs.notequal(lhs)
     }
     
     public static func <(lhs: Double, rhs: VIPSImage) throws -> VIPSImage {
-        return try rhs.more_const(lhs)  // Note: reversed
+        return try rhs.more(lhs)  // Note: reversed
     }
     
     public static func <=(lhs: Double, rhs: VIPSImage) throws -> VIPSImage {
-        return try rhs.moreeq_const(lhs)  // Note: reversed
+        return try rhs.moreeq(lhs)  // Note: reversed
     }
     
     public static func >(lhs: Double, rhs: VIPSImage) throws -> VIPSImage {
-        return try rhs.less_const(lhs)  // Note: reversed
+        return try rhs.less(lhs)  // Note: reversed
     }
     
     public static func >=(lhs: Double, rhs: VIPSImage) throws -> VIPSImage {
-        return try rhs.lesseq_const(lhs)  // Note: reversed
+        return try rhs.lesseq(lhs)  // Note: reversed
     }
     
     // MARK: - Bitwise Operators
@@ -1341,10 +1341,10 @@ extension VIPSImage {
     }
     
     public static func <<(lhs: VIPSImage, rhs: Int) throws -> VIPSImage {
-        return try lhs.lshift_const(rhs)
+        return try lhs.lshift(rhs)
     }
     
     public static func >>(lhs: VIPSImage, rhs: Int) throws -> VIPSImage {
-        return try lhs.rshift_const(rhs)
+        return try lhs.rshift(rhs)
     }
 }

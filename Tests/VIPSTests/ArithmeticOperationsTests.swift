@@ -225,7 +225,7 @@ struct ArithmeticOperationsTests {
             .linear(0.0, 15.0)
             .cast(.uchar)
         
-        let result = try image.andimage_const(3.0)
+        let result = try image.andimage(3.0)
         
         // 15 & 3 = 3 (binary: 0011)
         let avg = try result.avg()
@@ -239,7 +239,7 @@ struct ArithmeticOperationsTests {
             .linear(0.0, 8.0)
             .cast(.uchar)
         
-        let result = try image.orimage_const(3.0)
+        let result = try image.orimage(3.0)
         
         // 8 | 3 = 11 (binary: 1011)
         let avg = try result.avg()
@@ -255,7 +255,7 @@ struct ArithmeticOperationsTests {
             .linear(0.0, 3.0)
             .cast(.uchar)
         
-        let result = try image.lshift_const(2)
+        let result = try image.lshift(2)
         
         // 3 << 2 = 12
         let avg = try result.avg()
@@ -283,7 +283,7 @@ struct ArithmeticOperationsTests {
             .linear(0.0, 12.0)
             .cast(.uchar)
         
-        let result = try image.rshift_const(2)
+        let result = try image.rshift(2)
         
         // 12 >> 2 = 3
         let avg = try result.avg()
@@ -644,7 +644,7 @@ struct ArithmeticOperationsTests {
         let dividend = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 17.0)
         
-        let result = try dividend.remainder_const(7.0)
+        let result = try dividend.remainder(7.0)
         
         // 17 % 7 = 3
         let avg = try result.avg()
@@ -657,7 +657,7 @@ struct ArithmeticOperationsTests {
         let dividend = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 20.0)
         
-        let result = try dividend.remainder_const(6)
+        let result = try dividend.remainder(6)
         
         // 20 % 6 = 2
         let avg = try result.avg()
@@ -692,7 +692,7 @@ struct ArithmeticOperationsTests {
             .linear(0.0, 15.0)
             .cast(.uchar)
         
-        let result = try image.eorimage_const(10.0)
+        let result = try image.eorimage(10.0)
         
         // 15 ^ 10 = 5 (binary: 0101)
         let avg = try result.avg()

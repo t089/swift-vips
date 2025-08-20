@@ -191,9 +191,9 @@ struct VIPSTests {
         let image = try VIPSImage.black(100, 100)
             .linear(1.0, 128.0)
         
-        let equalConst = try image.equal_const(128.0)
-        let lessConst = try image.less_const(200.0)
-        let moreConst = try image.more_const(100.0)
+        let equalConst = try image.equal(128.0)
+        let lessConst = try image.less(200.0)
+        let moreConst = try image.more(100.0)
         
         
         let equalAvg = try equalConst.avg()

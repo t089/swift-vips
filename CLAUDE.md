@@ -47,11 +47,12 @@ The Swift wrapper mirrors libvips' modular structure in `Sources/VIPS/`:
 
 - Uses swift naming conventions for method names and types. But follows closely the libvips names for easier searchability.
 - Prefers named arguments for method parameters.
+- **Function Overloading**: Use Swift's function overloading instead of `_const` suffixes. For example, use `remainder(_ divisor: VIPSImage)` and `remainder(_ divisor: Double)` instead of `remainder` and `remainder_const`. The type system differentiates the functions automatically.
 - Uses Swift Testing framework instead of XCTest for modern testing infrastructure
 - Tests run serialized with `@Suite(.serialized)` to prevent resource conflicts
 - Avoids Foundation APIs outside of test for Linux compatibility
 - Custom `VIPSError` type with libvips error buffer integration
-- Operator overloading for intuitive image arithmetic (`+`, `-`, `*`, `/`)
+- Operator overloading for intuitive image arithmetic (`+`, `-`, `*`, `/`), comparison (`==`, `<`, `>`), and bitwise operations (`&`, `|`, `^`, `<<`, `>>`)
 - `@dynamicMemberLookup` for accessing libvips operations not yet wrapped
 - Vips enum values are imported directly into swift by adding a public typealias and providing convenience properties for the different values. See eg Sources/VIPS/Colour/Enums/VipsIntent.swift.
 - Since Swift cannot call c functions with variadic arguments and the C api of vips mostly contains of those, we are calling the "operations" directly using the `VIPSOperation` class.
