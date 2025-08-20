@@ -98,6 +98,149 @@ final class VIPSTests: XCTestCase {
         }
     }
     
+    func testDivideOperation() throws {
+        let image = try VIPSImage(fromFilePath: testPath)
+        let image2 = try VIPSImage.black(100, 100)
+            .linear(1.0, 10.0)
+        
+        let divided = try image.divide(image2)
+        XCTAssertNotNil(divided)
+        XCTAssertEqual(divided.size.width, image.size.width)
+        
+        // Test division operator
+        let dividedWithOperator = try image / image2
+        XCTAssertNotNil(dividedWithOperator)
+        XCTAssertEqual(dividedWithOperator.size.width, image.size.width)
+    }
+    
+    func testAbsOperation() throws {
+        let image = try VIPSImage(fromFilePath: testPath)
+            .linear(-1.0, 0.0)
+        
+        let absImage = try image.abs()
+        XCTAssertNotNil(absImage)
+        
+        let minValue = try absImage.min()
+        XCTAssertTrue(minValue >= 0)
+    }
+    
+    func testSignOperation() throws {
+        let image = try VIPSImage(fromFilePath: testPath)
+            .linear(1.0, -128.0)
+        
+        let signImage = try image.sign()
+        XCTAssertNotNil(signImage)
+        
+        let maxValue = try signImage.max()
+        let minValue = try signImage.min()
+        XCTAssertTrue(maxValue <= 1.0)
+        XCTAssertTrue(minValue >= -1.0)
+    }
+    
+    func testRoundOperations() throws {
+        let image = try VIPSImage.black(100, 100)
+            .linear(1.0, 10.7)
+        
+        let rounded = try image.round()
+        let floored = try image.floor()
+        let ceiled = try image.ceil()
+        
+        XCTAssertNotNil(rounded)
+        XCTAssertNotNil(floored)
+        XCTAssertNotNil(ceiled)
+        
+        let floorAvg = try floored.avg()
+        let ceilAvg = try ceiled.avg()
+        
+        XCTAssertTrue(floorAvg < ceilAvg)
+    }
+    
+    func testRelationalOperations() throws {
+        let image1 = try VIPSImage.black(100, 100)
+            .linear(1.0, 50.0)
+        let image2 = try VIPSImage.black(100, 100)
+            .linear(1.0, 100.0)
+        
+        let equal = try image1.equal(image1)
+        let notEqual = try image1.notequal(image2)
+        let less = try image1.less(image2)
+        let lessEq = try image1.lesseq(image2)
+        let more = try image2.more(image1)
+        let moreEq = try image2.moreeq(image1)
+        
+        XCTAssertNotNil(equal)
+        XCTAssertNotNil(notEqual)
+        XCTAssertNotNil(less)
+        XCTAssertNotNil(lessEq)
+        XCTAssertNotNil(more)
+        XCTAssertNotNil(moreEq)
+        
+        let equalAvg = try equal.avg()
+        XCTAssertEqual(equalAvg, 255.0)
+        
+        let notEqualAvg = try notEqual.avg()
+        XCTAssertEqual(notEqualAvg, 255.0)
+    }
+    
+    func testRelationalConstOperations() throws {
+        let image = try VIPSImage.black(100, 100)
+            .linear(1.0, 128.0)
+        
+        let equalConst = try image.equal_const(128.0)
+        let lessConst = try image.less_const(200.0)
+        let moreConst = try image.more_const(100.0)
+        
+        XCTAssertNotNil(equalConst)
+        XCTAssertNotNil(lessConst)
+        XCTAssertNotNil(moreConst)
+        
+        let equalAvg = try equalConst.avg()
+        let lessAvg = try lessConst.avg()
+        let moreAvg = try moreConst.avg()
+        
+        XCTAssertEqual(equalAvg, 255.0)
+        XCTAssertEqual(lessAvg, 255.0)
+        XCTAssertEqual(moreAvg, 255.0)
+    }
+    
+    func testComparisonOperators() throws {
+        let image1 = try VIPSImage.black(100, 100)
+            .linear(1.0, 50.0)
+        let image2 = try VIPSImage.black(100, 100)
+            .linear(1.0, 100.0)
+        
+        // Test image-to-image comparison operators
+        let equal = try image1 == image1
+        let notEqual = try image1 != image2
+        let less = try image1 < image2
+        let lessEq = try image1 <= image2
+        let more = try image2 > image1
+        let moreEq = try image2 >= image1
+        
+        XCTAssertEqual(try equal.avg(), 255.0)
+        XCTAssertEqual(try notEqual.avg(), 255.0)
+        XCTAssertEqual(try less.avg(), 255.0)
+        XCTAssertEqual(try lessEq.avg(), 255.0)
+        XCTAssertEqual(try more.avg(), 255.0)
+        XCTAssertEqual(try moreEq.avg(), 255.0)
+        
+        // Test image-to-constant comparison operators
+        let equalConst = try image1 == 50.0
+        let lessConst = try image1 < 100.0
+        let moreConst = try image1 > 0.0
+        
+        XCTAssertEqual(try equalConst.avg(), 255.0)
+        XCTAssertEqual(try lessConst.avg(), 255.0)
+        XCTAssertEqual(try moreConst.avg(), 255.0)
+        
+        // Test constant-to-image comparison operators
+        let constLess = try 0.0 < image1
+        let constMore = try 100.0 > image1
+        
+        XCTAssertEqual(try constLess.avg(), 255.0)
+        XCTAssertEqual(try constMore.avg(), 255.0)
+    }
+    
     func testWebp() throws {
         let image = try VIPSImage(fromFilePath: mythicalGiantPath)
         let full = try image

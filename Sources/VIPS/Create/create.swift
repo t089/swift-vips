@@ -142,4 +142,37 @@ extension VIPSImage {
             return try call("identity", optionsString: nil, options: &opt)
         }
     }
+    
+    /// Make a black image.
+    ///
+    /// Creates an image where all pixels are zero. The image is a one-band float image
+    /// by default. Use `cast` to convert to a different format, or `linear` to add
+    /// an offset and scale.
+    ///
+    /// - Parameters:
+    ///   - width: Image width in pixels
+    ///   - height: Image height in pixels  
+    ///   - bands: Number of bands in the image (default: 1)
+    /// - Returns: A new black (all zeros) image
+    /// - Throws: `VIPSError` if the operation fails
+    ///
+    /// ## Example
+    /// ```swift
+    /// // Create a 100x100 black image
+    /// let black = try VIPSImage.black(100, 100)
+    ///
+    /// // Create a 256x256 RGB black image
+    /// let blackRGB = try VIPSImage.black(256, 256, bands: 3)
+    /// ```
+    public static func black(_ width: Int, _ height: Int, bands: Int = 1) throws -> VIPSImage {
+        try VIPSImage(nil) { out in
+            var opt = VIPSOption()
+            opt.set("width", value: width)
+            opt.set("height", value: height)
+            opt.set("bands", value: bands)
+            opt.set("out", value: &out)
+            
+            return try call("black", optionsString: nil, options: &opt)
+        }
+    }
 }
