@@ -74,6 +74,18 @@ extension VIPSImage {
         }
     }
     
+    public func divide(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, rhs]) { out in
+            var opt = VIPSOption()
+            
+            opt.set("left", value: self.image)
+            opt.set("right", value: rhs.image)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("divide", options: &opt)
+        }
+    }
+    
     public func max() throws -> Double {
         var opt = VIPSOption()
         
@@ -124,6 +136,130 @@ extension VIPSImage {
         try VIPSImage.call("deviate", options: &opt)
         
         return out
+    }
+    
+    public func abs() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("abs", options: &opt)
+        }
+    }
+    
+    public func sign() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("sign", options: &opt)
+        }
+    }
+    
+    public func round(_ round: VipsOperationRound = .rint) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("round", value: round)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("round", options: &opt)
+        }
+    }
+    
+    public func floor() throws -> VIPSImage {
+        return try self.round(.floor)
+    }
+    
+    public func ceil() throws -> VIPSImage {
+        return try self.round(.ceil)
+    }
+    
+    public func rint() throws -> VIPSImage {
+        return try self.round(.rint)
+    }
+    
+    public func relational(_ right: VIPSImage, _ relational: VipsOperationRelational) throws -> VIPSImage {
+        return try VIPSImage([self, right]) { out in
+            var opt = VIPSOption()
+            
+            opt.set("left", value: self.image)
+            opt.set("right", value: right.image)
+            opt.set("relational", value: relational)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("relational", options: &opt)
+        }
+    }
+    
+    public func relational_const(_ relational: VipsOperationRelational, _ c: [Double]) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("relational", value: relational)
+            opt.set("c", value: c)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("relational_const", options: &opt)
+        }
+    }
+    
+    public func relational_const(_ relational: VipsOperationRelational, _ c: Double) throws -> VIPSImage {
+        return try self.relational_const(relational, [c])
+    }
+    
+    public func equal(_ right: VIPSImage) throws -> VIPSImage {
+        return try self.relational(right, .equal)
+    }
+    
+    public func notequal(_ right: VIPSImage) throws -> VIPSImage {
+        return try self.relational(right, .noteq)
+    }
+    
+    public func less(_ right: VIPSImage) throws -> VIPSImage {
+        return try self.relational(right, .less)
+    }
+    
+    public func lesseq(_ right: VIPSImage) throws -> VIPSImage {
+        return try self.relational(right, .lesseq)
+    }
+    
+    public func more(_ right: VIPSImage) throws -> VIPSImage {
+        return try self.relational(right, .more)
+    }
+    
+    public func moreeq(_ right: VIPSImage) throws -> VIPSImage {
+        return try self.relational(right, .moreeq)
+    }
+    
+    public func equal_const(_ c: Double) throws -> VIPSImage {
+        return try self.relational_const(.equal, c)
+    }
+    
+    public func notequal_const(_ c: Double) throws -> VIPSImage {
+        return try self.relational_const(.noteq, c)
+    }
+    
+    public func less_const(_ c: Double) throws -> VIPSImage {
+        return try self.relational_const(.less, c)
+    }
+    
+    public func lesseq_const(_ c: Double) throws -> VIPSImage {
+        return try self.relational_const(.lesseq, c)
+    }
+    
+    public func more_const(_ c: Double) throws -> VIPSImage {
+        return try self.relational_const(.more, c)
+    }
+    
+    public func moreeq_const(_ c: Double) throws -> VIPSImage {
+        return try self.relational_const(.moreeq, c)
     }
 }
 

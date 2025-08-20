@@ -142,4 +142,17 @@ extension VIPSImage {
             return try call("identity", optionsString: nil, options: &opt)
         }
     }
+    
+    /// Creates a black image with all pixels set to 0
+    public static func black(_ width: Int, _ height: Int, bands: Int = 1) throws -> VIPSImage {
+        try VIPSImage(nil) { out in
+            var opt = VIPSOption()
+            opt.set("width", value: width)
+            opt.set("height", value: height)
+            opt.set("bands", value: bands)
+            opt.set("out", value: &out)
+            
+            return try call("black", optionsString: nil, options: &opt)
+        }
+    }
 }
