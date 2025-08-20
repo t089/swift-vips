@@ -875,7 +875,8 @@ extension VIPSImage {
     }
     
     public var hasProfile: Bool {
-        return vips_image_get_typeof(self.image, SHIM_VIPS_META_ICC_NAME) != 0;
+        let iccName = "icc-profile-data"
+        return vips_image_get_typeof(self.image, iccName) != 0;
     }
     
     public func exportJpeg(quality: Int? = nil, to target: VIPSCustomTarget) throws {

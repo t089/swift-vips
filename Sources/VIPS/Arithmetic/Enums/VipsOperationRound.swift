@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsOperationRound = Cvips.VipsOperationRound
+
 extension VipsOperationRound {
     public static var rint: Self { VIPS_OPERATION_ROUND_RINT }
     public static var ceil: Self { VIPS_OPERATION_ROUND_CEIL }

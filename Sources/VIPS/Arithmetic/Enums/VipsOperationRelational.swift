@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsOperationRelational = Cvips.VipsOperationRelational
+
 extension VipsOperationRelational {
     public static var equal: Self { VIPS_OPERATION_RELATIONAL_EQUAL }
     public static var noteq: Self { VIPS_OPERATION_RELATIONAL_NOTEQ }

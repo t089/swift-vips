@@ -1,10 +1,11 @@
 @testable import VIPS
 import Cvips
-import XCTest
+import Testing
 import Foundation
 
-final class VIPSTests: XCTestCase {
-    override class func setUp() {
+@Suite
+struct VIPSTests {
+    init() {
         try! VIPS.start()
         
         try? FileManager.default.createDirectory(at: URL(fileURLWithPath: "/tmp/swift-vips"), withIntermediateDirectories: true)
@@ -27,7 +28,8 @@ final class VIPSTests: XCTestCase {
             .path
     }
     
-    func testLoadImageFromMemory() throws {
+    @Test
+    func loadImageFromMemory() throws {
         
         
         let data = try Data(contentsOf: testUrl)
@@ -36,53 +38,60 @@ final class VIPSTests: XCTestCase {
             .thumbnailImage(width: 100)
             .exportedJpeg(quality: 80)
         try Data(jpeg).write(to: URL(fileURLWithPath: "/tmp/swift-vips/test_out.jpg"))
-        XCTAssertTrue(FileManager.default.fileExists(atPath: "/tmp/swift-vips/test_out.jpg"))
+        #expect(FileManager.default.fileExists(atPath: "/tmp/swift-vips/test_out.jpg"))
     }
     
 
     
-    func testResize() throws {
+    @Test
+    func resize() throws {
         let image = try VIPSImage(fromFilePath: testPath)
         
         let resized = try image.resize(scale: 0.5)
         try resized.write(toFilePath: "/tmp/swift-vips/test_out_0.5.jpg")
-        XCTAssertTrue(FileManager.default.fileExists(atPath: "/tmp/swift-vips/test_out_0.5.jpg"))
+        #expect(FileManager.default.fileExists(atPath: "/tmp/swift-vips/test_out_0.5.jpg"))
     }
     
-    func testThumbnail() throws {
+    @Test
+    func thumbnail() throws {
         let image = try VIPSImage(fromFilePath: testPath)
         
         let resized = try image.thumbnailImage(width: 100, height: 100, crop: .attention)
         try resized.write(toFilePath: "/tmp/swift-vips/out_w200.jpg")
-        XCTAssertTrue(FileManager.default.fileExists(atPath: "/tmp/swift-vips/out_w200.jpg"))
+        #expect(FileManager.default.fileExists(atPath: "/tmp/swift-vips/out_w200.jpg"))
     }
     
-    func testAverage() throws {
+    @Test
+    func average() throws {
         let image = try VIPSImage(fromFilePath: testPath)
-        XCTAssertNoThrow(try image.average())
+        _ = try image.average()
     }
     
-    func testSize() throws {
+    @Test
+    func size() throws {
         let image = try VIPSImage(fromFilePath: testPath)
         let size = image.size
-        XCTAssertEqual(size.width, 1500)
-        XCTAssertEqual(size.height, 625)
+        #expect(size.width == 1500)
+        #expect(size.height == 625)
     }
     
-    func testExportJpeg() throws {
+    @Test
+    func exportJpeg() throws {
         let image = try VIPSImage(fromFilePath: testPath)
         let jpeg = try image.exportedJpeg(quality: 80)
         try Data(jpeg).write(to: URL(fileURLWithPath: "/tmp/swift-vips/out_exported.jpg"))
     }
 
-    func testText() throws {
+    @Test
+    func text() throws {
         let text = try (try VIPSImage.text("hello world") * 0.3)
             .cast(VIPS_FORMAT_UCHAR)
         let jpeg = try text.exportedPNG()
         try Data(jpeg).write(to: URL(fileURLWithPath: "/tmp/swift-vips/out_text_exported.jpg"))
     }
     
-    func testDeletionOfFile() throws {
+    @Test
+    func deletionOfFile() throws {
         let tmpFile = "/tmp/\(UUID().uuidString).jpg"
         try FileManager.default.copyItem(atPath: testPath, toPath: tmpFile)
         defer {
@@ -93,51 +102,55 @@ final class VIPSTests: XCTestCase {
         
         try FileManager.default.removeItem(atPath: tmpFile)
         
-        XCTAssertThrowsError(try image.average()) { error in
-            XCTAssertTrue(error is VIPSError)
+        #expect(throws: VIPSError.self) {
+            try image.average()
         }
     }
     
-    func testDivideOperation() throws {
+    @Test
+    func divideOperation() throws {
         let image = try VIPSImage(fromFilePath: testPath)
         let image2 = try VIPSImage.black(100, 100)
             .linear(1.0, 10.0)
         
         let divided = try image.divide(image2)
-        XCTAssertNotNil(divided)
-        XCTAssertEqual(divided.size.width, image.size.width)
+        #expect(divided != nil)
+        #expect(divided.size.width == image.size.width)
         
         // Test division operator
         let dividedWithOperator = try image / image2
-        XCTAssertNotNil(dividedWithOperator)
-        XCTAssertEqual(dividedWithOperator.size.width, image.size.width)
+        #expect(dividedWithOperator != nil)
+        #expect(dividedWithOperator.size.width == image.size.width)
     }
     
-    func testAbsOperation() throws {
+    @Test
+    func absOperation() throws {
         let image = try VIPSImage(fromFilePath: testPath)
             .linear(-1.0, 0.0)
         
         let absImage = try image.abs()
-        XCTAssertNotNil(absImage)
+        #expect(absImage != nil)
         
         let minValue = try absImage.min()
-        XCTAssertTrue(minValue >= 0)
+        #expect(minValue >= 0)
     }
     
-    func testSignOperation() throws {
+    @Test
+    func signOperation() throws {
         let image = try VIPSImage(fromFilePath: testPath)
             .linear(1.0, -128.0)
         
         let signImage = try image.sign()
-        XCTAssertNotNil(signImage)
+        #expect(signImage != nil)
         
         let maxValue = try signImage.max()
         let minValue = try signImage.min()
-        XCTAssertTrue(maxValue <= 1.0)
-        XCTAssertTrue(minValue >= -1.0)
+        #expect(maxValue <= 1.0)
+        #expect(minValue >= -1.0)
     }
     
-    func testRoundOperations() throws {
+    @Test
+    func roundOperations() throws {
         let image = try VIPSImage.black(100, 100)
             .linear(1.0, 10.7)
         
@@ -145,17 +158,18 @@ final class VIPSTests: XCTestCase {
         let floored = try image.floor()
         let ceiled = try image.ceil()
         
-        XCTAssertNotNil(rounded)
-        XCTAssertNotNil(floored)
-        XCTAssertNotNil(ceiled)
+        #expect(rounded != nil)
+        #expect(floored != nil)
+        #expect(ceiled != nil)
         
         let floorAvg = try floored.avg()
         let ceilAvg = try ceiled.avg()
         
-        XCTAssertTrue(floorAvg < ceilAvg)
+        #expect(floorAvg < ceilAvg)
     }
     
-    func testRelationalOperations() throws {
+    @Test
+    func relationalOperations() throws {
         let image1 = try VIPSImage.black(100, 100)
             .linear(1.0, 50.0)
         let image2 = try VIPSImage.black(100, 100)
@@ -168,21 +182,22 @@ final class VIPSTests: XCTestCase {
         let more = try image2.more(image1)
         let moreEq = try image2.moreeq(image1)
         
-        XCTAssertNotNil(equal)
-        XCTAssertNotNil(notEqual)
-        XCTAssertNotNil(less)
-        XCTAssertNotNil(lessEq)
-        XCTAssertNotNil(more)
-        XCTAssertNotNil(moreEq)
+        #expect(equal != nil)
+        #expect(notEqual != nil)
+        #expect(less != nil)
+        #expect(lessEq != nil)
+        #expect(more != nil)
+        #expect(moreEq != nil)
         
         let equalAvg = try equal.avg()
-        XCTAssertEqual(equalAvg, 255.0)
+        #expect(equalAvg == 255.0)
         
         let notEqualAvg = try notEqual.avg()
-        XCTAssertEqual(notEqualAvg, 255.0)
+        #expect(notEqualAvg == 255.0)
     }
     
-    func testRelationalConstOperations() throws {
+    @Test
+    func relationalConstOperations() throws {
         let image = try VIPSImage.black(100, 100)
             .linear(1.0, 128.0)
         
@@ -190,20 +205,21 @@ final class VIPSTests: XCTestCase {
         let lessConst = try image.less_const(200.0)
         let moreConst = try image.more_const(100.0)
         
-        XCTAssertNotNil(equalConst)
-        XCTAssertNotNil(lessConst)
-        XCTAssertNotNil(moreConst)
+        #expect(equalConst != nil)
+        #expect(lessConst != nil)
+        #expect(moreConst != nil)
         
         let equalAvg = try equalConst.avg()
         let lessAvg = try lessConst.avg()
         let moreAvg = try moreConst.avg()
         
-        XCTAssertEqual(equalAvg, 255.0)
-        XCTAssertEqual(lessAvg, 255.0)
-        XCTAssertEqual(moreAvg, 255.0)
+        #expect(equalAvg == 255.0)
+        #expect(lessAvg == 255.0)
+        #expect(moreAvg == 255.0)
     }
     
-    func testComparisonOperators() throws {
+    @Test
+    func comparisonOperators() throws {
         let image1 = try VIPSImage.black(100, 100)
             .linear(1.0, 50.0)
         let image2 = try VIPSImage.black(100, 100)
@@ -217,31 +233,32 @@ final class VIPSTests: XCTestCase {
         let more = try image2 > image1
         let moreEq = try image2 >= image1
         
-        XCTAssertEqual(try equal.avg(), 255.0)
-        XCTAssertEqual(try notEqual.avg(), 255.0)
-        XCTAssertEqual(try less.avg(), 255.0)
-        XCTAssertEqual(try lessEq.avg(), 255.0)
-        XCTAssertEqual(try more.avg(), 255.0)
-        XCTAssertEqual(try moreEq.avg(), 255.0)
+        #expect(try equal.avg() == 255.0)
+        #expect(try notEqual.avg() == 255.0)
+        #expect(try less.avg() == 255.0)
+        #expect(try lessEq.avg() == 255.0)
+        #expect(try more.avg() == 255.0)
+        #expect(try moreEq.avg() == 255.0)
         
         // Test image-to-constant comparison operators
         let equalConst = try image1 == 50.0
         let lessConst = try image1 < 100.0
         let moreConst = try image1 > 0.0
         
-        XCTAssertEqual(try equalConst.avg(), 255.0)
-        XCTAssertEqual(try lessConst.avg(), 255.0)
-        XCTAssertEqual(try moreConst.avg(), 255.0)
+        #expect(try equalConst.avg() == 255.0)
+        #expect(try lessConst.avg() == 255.0)
+        #expect(try moreConst.avg() == 255.0)
         
         // Test constant-to-image comparison operators
         let constLess = try 0.0 < image1
         let constMore = try 100.0 > image1
         
-        XCTAssertEqual(try constLess.avg(), 255.0)
-        XCTAssertEqual(try constMore.avg(), 255.0)
+        #expect(try constLess.avg() == 255.0)
+        #expect(try constMore.avg() == 255.0)
     }
     
-    func testWebp() throws {
+    @Test
+    func webp() throws {
         let image = try VIPSImage(fromFilePath: mythicalGiantPath)
         let full = try image
             .webp()
@@ -249,32 +266,35 @@ final class VIPSTests: XCTestCase {
         let stripped = try image
             .webp(stripMetadata: true)
         
-        XCTAssertTrue(full.count > stripped.count)
+        #expect(full.count > stripped.count)
         
         let jpeg = try image.exportedJpeg(strip: true)
         
-        XCTAssertTrue(jpeg.count > stripped.count)
+        #expect(jpeg.count > stripped.count)
     }
 
-    func testAvif() throws {
+    @Test
+    func avif() throws {
         let image = try VIPSImage(fromFilePath: mythicalGiantPath)
             .thumbnailImage(width: 512)
         let avif = try image.heifsave(compression: .av1)
-        XCTAssertTrue(avif.count > 0)
+        #expect(avif.count > 0)
 
         let imported = try VIPSImage(data: avif)
-        XCTAssertEqual(imported.size.width, image.size.width)
-        XCTAssertEqual(imported.size.height, image.size.height) 
+        #expect(imported.size.width == image.size.width)
+        #expect(imported.size.height == image.size.height) 
         
     }
     
-    func testLoadImageFromFile() throws {
+    @Test
+    func loadImageFromFile() throws {
         let image = try VIPSImage(fromFilePath: testPath)
-        XCTAssertNotNil(image)
+        #expect(image != nil)
         try image.write(toFilePath: "/tmp/swift-vips/test_out.jpg")
     }
     
-    func testLoadImageFromSource() throws {
+    @Test
+    func loadImageFromSource() throws {
         
         let data = try Data(contentsOf: testUrl)
         
@@ -296,41 +316,43 @@ final class VIPSTests: XCTestCase {
         
     }
     
-    func testThumbnailPerformance() throws {
-        measure {
-            for _ in 0..<10 {
-                let image = try! VIPSImage(fromFilePath: testPath)
-                let resized = try! image.thumbnailImage(width: 500, height: 500, crop: .centre)
-                try! resized.write(toFilePath: "/tmp/swift-vips/resized-w500-h500.jpg")
-            }
+    @Test
+    func thumbnailPerformance() throws {
+        // Swift Testing doesn't have direct performance measurement
+        // Running the operation multiple times for basic timing
+        for _ in 0..<10 {
+            let image = try VIPSImage(fromFilePath: testPath)
+            let resized = try image.thumbnailImage(width: 500, height: 500, crop: .centre)
+            try resized.write(toFilePath: "/tmp/swift-vips/resized-w500-h500.jpg")
         }
     }
 
-    func testDynamic() throws {
+    @Test
+    func dynamic() throws {
         let image = try VIPSImage(fromFilePath: testPath)
         let thumbnail : VIPSImage = try image.thumbnail_image(width: 500, height: 500, crop: VIPS_INTERESTING_CENTRE)
         let _ : Void = try thumbnail.jxlsave(filename: "/tmp/swift-vips/thumbnail.jxl")
     }
     
-    func testExportPerformance() throws {
-        let opts = XCTMeasureOptions()
-        opts.iterationCount = 10
-        
-        measure(options: opts) {
-            let source = try! VIPSSource(fromFile: mythicalGiantPath)
-            let image = try! VIPSImage(fromSource: source, options: "access=sequential")
-            let _ = try! image.thumbnailImage(width: 500, crop: .none, size: .down)
+    @Test
+    func exportPerformance() throws {
+        // Swift Testing doesn't have direct performance measurement
+        // Running the operation multiple times for basic timing
+        for _ in 0..<10 {
+            let source = try VIPSSource(fromFile: mythicalGiantPath)
+            let image = try VIPSImage(fromSource: source, options: "access=sequential")
+            let _ = try image.thumbnailImage(width: 500, crop: .none, size: .down)
                 .exportedJpeg(quality: 80, optimizeCoding: true, interlace: true, strip: true)
         }
     }
     
-    func testExportPerformance2() throws {
-        let opts = XCTMeasureOptions()
-        opts.iterationCount = 10
-        
-        measure(options: opts) {
-            let image = try! VIPSImage(fromFilePath: mythicalGiantPath, access: .sequential)
-            let _ = try! image.thumbnailImage(width: 500, crop: .none, size: .down)
+    @Test
+    func exportPerformance2() throws {
+        // Swift Testing doesn't have direct performance measurement
+        // Running the operation multiple times for basic timing
+        for _ in 0..<10 {
+            let image = try VIPSImage(fromFilePath: mythicalGiantPath, access: .sequential)
+            let _ = try image.thumbnailImage(width: 500, crop: .none, size: .down)
                 .exportedJpeg(quality: 80, optimizeCoding: true, interlace: true, strip: true)
         }
     }
