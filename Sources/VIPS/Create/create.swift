@@ -143,28 +143,25 @@ extension VIPSImage {
         }
     }
     
-    /// Creates a black image with all pixels set to 0.
+    /// Make a black image.
     ///
-    /// This function creates a new image with all pixel values initialized to 0.
-    /// The image is created in memory and can be used as a base for further operations.
-    /// The format is uchar (8-bit unsigned) by default.
+    /// Creates an image where all pixels are zero. The image is a one-band float image
+    /// by default. Use `cast` to convert to a different format, or `linear` to add
+    /// an offset and scale.
     ///
     /// - Parameters:
-    ///   - width: The width of the image in pixels
-    ///   - height: The height of the image in pixels
-    ///   - bands: The number of bands (channels) in the image (default: 1 for grayscale)
-    /// - Returns: A new black image with the specified dimensions
-    /// - Throws: `VIPSError` if the image cannot be created
-    ///
-    /// - Note: This is useful for creating masks, backgrounds, or as a starting point for
-    ///         drawing operations. For multi-band images, all bands are set to 0.
+    ///   - width: Image width in pixels
+    ///   - height: Image height in pixels  
+    ///   - bands: Number of bands in the image (default: 1)
+    /// - Returns: A new black (all zeros) image
+    /// - Throws: `VIPSError` if the operation fails
     ///
     /// ## Example
     /// ```swift
-    /// // Create a 100x100 black grayscale image
+    /// // Create a 100x100 black image
     /// let black = try VIPSImage.black(100, 100)
     ///
-    /// // Create a 256x256 black RGB image
+    /// // Create a 256x256 RGB black image
     /// let blackRGB = try VIPSImage.black(256, 256, bands: 3)
     /// ```
     public static func black(_ width: Int, _ height: Int, bands: Int = 1) throws -> VIPSImage {

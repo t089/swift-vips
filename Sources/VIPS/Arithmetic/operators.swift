@@ -76,18 +76,26 @@ extension VIPSImage {
     
     /// Divide two images.
     ///
-    /// This operation performs a floating-point division of two images on a pixel-by-pixel basis.
-    /// The output image is the result of dividing each pixel in the left image by the corresponding
-    /// pixel in the right image: `out = left / right`
+    /// This operation calculates `left / right` and writes the result to a new image.
+    /// If any pixels in the divisor are zero, the corresponding pixel in the output is also zero.
     ///
-    /// The images must have the same width and height, or one image must have a single band
-    /// which will be expanded to match the other. The output type is usually float or double.
+    /// If the images differ in size, the smaller image is enlarged to match the larger by adding
+    /// zero pixels along the bottom and right.
+    ///
+    /// If the number of bands differs, one of the images must have one band. In this case,
+    /// an n-band image is formed from the one-band image by joining n copies together,
+    /// and then the two n-band images are operated upon.
+    ///
+    /// The output type is promoted to at least float to hold the whole range of possible values:
+    /// - uchar, char, ushort, short, uint, int → float
+    /// - float → float
+    /// - double → double
+    /// - complex → complex
+    /// - double complex → double complex
     ///
     /// - Parameter rhs: The divisor image
     /// - Returns: A new image with each pixel being the quotient of the corresponding pixels
-    /// - Throws: `VIPSError` if the images cannot be divided (e.g., size mismatch)
-    ///
-    /// - Note: Division by zero will produce inf or -inf in the output image
+    /// - Throws: `VIPSError` if the operation fails
     public func divide(_ rhs: VIPSImage) throws -> VIPSImage {
         return try VIPSImage([self, rhs]) { out in
             var opt = VIPSOption()
@@ -154,16 +162,16 @@ extension VIPSImage {
     
     /// Calculate the absolute value of an image.
     ///
-    /// This operation calculates the absolute value of each pixel in the image.
-    /// For real images, this is the modulus. For complex images, this returns the magnitude.
+    /// This operation finds the absolute value of each pixel in the input image.
+    /// For unsigned integer formats, this operation returns the input unchanged.
+    /// For signed integer and float formats, negative values are negated.
+    /// For complex images, this returns the modulus (magnitude).
     ///
-    /// The output type is the same as the input type for integer images.
-    /// For complex images, the output is the corresponding real type (e.g., complex -> float).
+    /// The output format is the same as the input format for non-complex images.
+    /// Complex images are converted to the corresponding real format.
     ///
     /// - Returns: A new image with the absolute value of each pixel
     /// - Throws: `VIPSError` if the operation fails
-    ///
-    /// - Note: Unsigned integer types are returned unchanged since they are already positive
     public func abs() throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -175,19 +183,19 @@ extension VIPSImage {
         }
     }
     
-    /// Calculate the sign of an image.
+    /// Calculate the unit vector in the direction of the pixel value.
     ///
-    /// This operation returns the sign of each pixel in the image:
+    /// This operation finds the unit vector in the direction of each pixel value.
+    /// For non-complex images, this returns:
     /// - `-1` for negative values
-    /// - `0` for zero values  
+    /// - `0` for zero values
     /// - `1` for positive values
     ///
-    /// The output type is always signed char (int8).
+    /// For complex images, this returns a complex number with modulus 1 and the same
+    /// argument as the input, or (0, 0) for zero input.
     ///
-    /// - Returns: A new image with values of -1, 0, or 1 indicating the sign of each pixel
+    /// - Returns: A new image with the sign of each pixel
     /// - Throws: `VIPSError` if the operation fails
-    ///
-    /// - Note: For complex images, this returns the sign of the real part only
     public func sign() throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -202,17 +210,15 @@ extension VIPSImage {
     /// Perform a rounding operation on an image.
     ///
     /// This operation rounds each pixel value according to the specified rounding mode.
-    /// The operation does not change the image format, only the pixel values.
+    /// The operation does not change the image format.
     ///
     /// - Parameter round: The rounding mode to use (default: `.rint`)
-    ///   - `.rint`: Round to nearest integer, ties to even
-    ///   - `.floor`: Round down to the nearest integer
-    ///   - `.ceil`: Round up to the nearest integer
+    ///   - `.rint`: Round to nearest integer using round-to-even
+    ///   - `.floor`: Round down (towards negative infinity)
+    ///   - `.ceil`: Round up (towards positive infinity)
     ///   - `.round`: Round to nearest integer, ties away from zero
     /// - Returns: A new image with rounded pixel values
     /// - Throws: `VIPSError` if the operation fails
-    ///
-    /// - Note: Integer input images are passed through unchanged
     public func round(_ round: VipsOperationRound = .rint) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -225,42 +231,37 @@ extension VIPSImage {
         }
     }
     
-    /// Round an image down to the nearest integer.
+    /// Round an image down.
     ///
-    /// This operation rounds each pixel value down to the nearest integer (towards negative infinity).
-    /// For example: 2.7 becomes 2.0, -2.7 becomes -3.0.
+    /// This operation rounds each pixel value down towards negative infinity.
+    /// For example: 2.7 → 2.0, -2.7 → -3.0
     ///
     /// - Returns: A new image with all pixel values rounded down
     /// - Throws: `VIPSError` if the operation fails
-    ///
-    /// - Note: This is a convenience method equivalent to `round(.floor)`
     public func floor() throws -> VIPSImage {
         return try self.round(.floor)
     }
     
-    /// Round an image up to the nearest integer.
+    /// Round an image up.
     ///
-    /// This operation rounds each pixel value up to the nearest integer (towards positive infinity).
-    /// For example: 2.3 becomes 3.0, -2.3 becomes -2.0.
+    /// This operation rounds each pixel value up towards positive infinity.
+    /// For example: 2.3 → 3.0, -2.3 → -2.0
     ///
     /// - Returns: A new image with all pixel values rounded up
     /// - Throws: `VIPSError` if the operation fails
-    ///
-    /// - Note: This is a convenience method equivalent to `round(.ceil)`
     public func ceil() throws -> VIPSImage {
         return try self.round(.ceil)
     }
     
-    /// Round an image to the nearest integer using round-to-even.
+    /// Round an image to the nearest integer.
     ///
-    /// This operation rounds each pixel value to the nearest integer. When a value is exactly
-    /// halfway between two integers, it rounds to the nearest even integer (banker's rounding).
-    /// For example: 2.5 becomes 2.0, 3.5 becomes 4.0.
+    /// This operation rounds each pixel value to the nearest integer using round-to-even
+    /// (banker's rounding). When a value is exactly halfway between two integers,
+    /// it rounds to the nearest even integer.
+    /// For example: 2.5 → 2.0, 3.5 → 4.0
     ///
     /// - Returns: A new image with all pixel values rounded to nearest integer
     /// - Throws: `VIPSError` if the operation fails
-    ///
-    /// - Note: This is a convenience method equivalent to `round(.rint)`
     public func rint() throws -> VIPSImage {
         return try self.round(.rint)
     }
@@ -268,17 +269,21 @@ extension VIPSImage {
     /// Perform a relational comparison between two images.
     ///
     /// This operation compares corresponding pixels from two images using the specified
-    /// relational operator. The result is a uchar image where:
-    /// - `255` represents true
-    /// - `0` represents false
+    /// relational operator. The result is a uchar image where 255 represents true
+    /// and 0 represents false.
     ///
-    /// The images must match in size or one must be a single band that will be expanded.
+    /// If the images differ in size, the smaller image is enlarged to match the
+    /// larger by adding zero pixels along the bottom and right.
+    ///
+    /// If the number of bands differs, one of the images must have one band.
+    /// In this case, an n-band image is formed from the one-band image by joining
+    /// n copies together.
     ///
     /// - Parameters:
     ///   - right: The right-hand side image for comparison
     ///   - relational: The comparison operation to perform
     /// - Returns: A new uchar image with 255 for true pixels, 0 for false pixels
-    /// - Throws: `VIPSError` if the images cannot be compared
+    /// - Throws: `VIPSError` if the operation fails
     public func relational(_ right: VIPSImage, _ relational: VipsOperationRelational) throws -> VIPSImage {
         return try VIPSImage([self, right]) { out in
             var opt = VIPSOption()
@@ -292,17 +297,17 @@ extension VIPSImage {
         }
     }
     
-    /// Perform a relational comparison between an image and a constant array.
+    /// Perform a relational comparison between an image and a constant.
     ///
     /// This operation compares each pixel in the image with a constant value or array of values.
     /// The result is a uchar image where 255 represents true and 0 represents false.
     ///
-    /// If the array has one element, it's compared with all bands. If it has multiple elements,
-    /// they are compared with corresponding bands.
+    /// If a single constant is provided, it is compared with all bands.
+    /// If an array is provided, constants are applied to corresponding bands.
     ///
     /// - Parameters:
     ///   - relational: The comparison operation to perform
-    ///   - c: An array of constants to compare against (one per band or single value for all)
+    ///   - c: An array of constants to compare against
     /// - Returns: A new uchar image with 255 for true pixels, 0 for false pixels
     /// - Throws: `VIPSError` if the operation fails
     public func relational_const(_ relational: VipsOperationRelational, _ c: [Double]) throws -> VIPSImage {
