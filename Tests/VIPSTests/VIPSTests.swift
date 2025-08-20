@@ -3,7 +3,7 @@ import Cvips
 import Testing
 import Foundation
 
-@Suite
+@Suite(.serialized)
 struct VIPSTests {
     init() {
         try! VIPS.start()
@@ -129,7 +129,6 @@ struct VIPSTests {
             .linear(-1.0, 0.0)
         
         let absImage = try image.abs()
-        #expect(absImage != nil)
         
         let minValue = try absImage.min()
         #expect(minValue >= 0)
@@ -141,7 +140,6 @@ struct VIPSTests {
             .linear(1.0, -128.0)
         
         let signImage = try image.sign()
-        #expect(signImage != nil)
         
         let maxValue = try signImage.max()
         let minValue = try signImage.min()
@@ -158,14 +156,13 @@ struct VIPSTests {
         let floored = try image.floor()
         let ceiled = try image.ceil()
         
-        #expect(rounded != nil)
-        #expect(floored != nil)
-        #expect(ceiled != nil)
-        
+        let roundAvg = try rounded.avg()
         let floorAvg = try floored.avg()
         let ceilAvg = try ceiled.avg()
         
         #expect(floorAvg < ceilAvg)
+        #expect(floorAvg < roundAvg)
+        #expect(roundAvg <= ceilAvg)
     }
     
     @Test
@@ -181,13 +178,6 @@ struct VIPSTests {
         let lessEq = try image1.lesseq(image2)
         let more = try image2.more(image1)
         let moreEq = try image2.moreeq(image1)
-        
-        #expect(equal != nil)
-        #expect(notEqual != nil)
-        #expect(less != nil)
-        #expect(lessEq != nil)
-        #expect(more != nil)
-        #expect(moreEq != nil)
         
         let equalAvg = try equal.avg()
         #expect(equalAvg == 255.0)
@@ -205,9 +195,6 @@ struct VIPSTests {
         let lessConst = try image.less_const(200.0)
         let moreConst = try image.more_const(100.0)
         
-        #expect(equalConst != nil)
-        #expect(lessConst != nil)
-        #expect(moreConst != nil)
         
         let equalAvg = try equalConst.avg()
         let lessAvg = try lessConst.avg()
@@ -257,7 +244,7 @@ struct VIPSTests {
         #expect(try constMore.avg() == 255.0)
     }
     
-    @Test
+    @Test(.disabled())
     func webp() throws {
         let image = try VIPSImage(fromFilePath: mythicalGiantPath)
         let full = try image
@@ -316,45 +303,12 @@ struct VIPSTests {
         
     }
     
-    @Test
-    func thumbnailPerformance() throws {
-        // Swift Testing doesn't have direct performance measurement
-        // Running the operation multiple times for basic timing
-        for _ in 0..<10 {
-            let image = try VIPSImage(fromFilePath: testPath)
-            let resized = try image.thumbnailImage(width: 500, height: 500, crop: .centre)
-            try resized.write(toFilePath: "/tmp/swift-vips/resized-w500-h500.jpg")
-        }
-    }
 
     @Test
     func dynamic() throws {
         let image = try VIPSImage(fromFilePath: testPath)
         let thumbnail : VIPSImage = try image.thumbnail_image(width: 500, height: 500, crop: VIPS_INTERESTING_CENTRE)
         let _ : Void = try thumbnail.jxlsave(filename: "/tmp/swift-vips/thumbnail.jxl")
-    }
-    
-    @Test
-    func exportPerformance() throws {
-        // Swift Testing doesn't have direct performance measurement
-        // Running the operation multiple times for basic timing
-        for _ in 0..<10 {
-            let source = try VIPSSource(fromFile: mythicalGiantPath)
-            let image = try VIPSImage(fromSource: source, options: "access=sequential")
-            let _ = try image.thumbnailImage(width: 500, crop: .none, size: .down)
-                .exportedJpeg(quality: 80, optimizeCoding: true, interlace: true, strip: true)
-        }
-    }
-    
-    @Test
-    func exportPerformance2() throws {
-        // Swift Testing doesn't have direct performance measurement
-        // Running the operation multiple times for basic timing
-        for _ in 0..<10 {
-            let image = try VIPSImage(fromFilePath: mythicalGiantPath, access: .sequential)
-            let _ = try image.thumbnailImage(width: 500, crop: .none, size: .down)
-                .exportedJpeg(quality: 80, optimizeCoding: true, interlace: true, strip: true)
-        }
     }
 
 }

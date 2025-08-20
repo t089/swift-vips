@@ -1,7 +1,7 @@
 {
     "configurations": [
         {
-            "type": "lldb",
+            "type": "swift",
             "request": "launch",
             "name": "Debug vips-tool",
             "program": "${workspaceFolder:swift-vips}/.build/debug/vips-tool",
@@ -10,7 +10,7 @@
             "preLaunchTask": "swift: Build Debug vips-tool"
         },
         {
-            "type": "lldb",
+            "type": "swift",
             "request": "launch",
             "name": "Release vips-tool",
             "program": "${workspaceFolder:swift-vips}/.build/release/vips-tool",
