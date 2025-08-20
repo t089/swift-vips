@@ -5,7 +5,7 @@
 //  Created by Tobias Haeberle on 29.10.21.
 //
 
-
+import Cvips
 
 extension VIPSImage {
     /// Pass an image through a linear transform, ie. (out = in * a + b). Output is float 
@@ -1527,7 +1527,7 @@ extension VIPSImage {
     /// - Throws: `VIPSError` if the operation fails or images are incompatible
     public static func sum(_ images: [VIPSImage]) throws -> VIPSImage {
         guard !images.isEmpty else {
-            throw VIPSError.generic("Cannot sum empty array of images")
+            throw VIPSError("Cannot sum empty array of images")
         }
         
         guard images.count > 1 else {
@@ -1535,17 +1535,11 @@ extension VIPSImage {
             return images[0]
         }
         
-        // Create a new unmanaged VipsImage pointer for the output
-        var outPointer: OpaquePointer?
-        
-        // Convert Swift array to array of VipsImage pointers
-        let imagePointers = images.map { $0.image }
-        
         return try VIPSImage(images) { out in
             var opt = VIPSOption()
             
             // vips_sum expects an array of images
-            opt.set("in", value: imagePointers)
+            opt.set("in", value: images)
             opt.set("out", value: &out)
             
             try VIPSImage.call("sum", options: &opt)
@@ -1608,8 +1602,8 @@ extension VIPSImage {
     /// - Returns: A tuple containing (columns profile, rows profile)
     /// - Throws: `VIPSError` if the operation fails
     public func profile() throws -> (columns: VIPSImage, rows: VIPSImage) {
-        var columnsOut: OpaquePointer?
-        var rowsOut: OpaquePointer?
+        var columnsOut: UnsafeMutablePointer<VipsImage>?
+        var rowsOut: UnsafeMutablePointer<VipsImage>?
         
         var opt = VIPSOption()
         
@@ -1620,11 +1614,11 @@ extension VIPSImage {
         try VIPSImage.call("profile", options: &opt)
         
         guard let colsPtr = columnsOut, let rowsPtr = rowsOut else {
-            throw VIPSError.generic("Failed to get profile outputs")
+            throw VIPSError("Failed to get profile outputs")
         }
         
-        let columns = VIPSImage(takingOwnership: colsPtr)
-        let rows = VIPSImage(takingOwnership: rowsPtr)
+        let columns = VIPSImage(colsPtr)
+        let rows = VIPSImage(rowsPtr)
         
         return (columns, rows)
     }
@@ -1637,8 +1631,8 @@ extension VIPSImage {
     /// - Returns: A tuple containing (row sums, column sums)
     /// - Throws: `VIPSError` if the operation fails
     public func project() throws -> (rows: VIPSImage, columns: VIPSImage) {
-        var rowsOut: OpaquePointer?
-        var columnsOut: OpaquePointer?
+        var rowsOut: UnsafeMutablePointer<VipsImage>?
+        var columnsOut: UnsafeMutablePointer<VipsImage>?
         
         var opt = VIPSOption()
         
@@ -1649,11 +1643,11 @@ extension VIPSImage {
         try VIPSImage.call("project", options: &opt)
         
         guard let rowsPtr = rowsOut, let colsPtr = columnsOut else {
-            throw VIPSError.generic("Failed to get projection outputs")
+            throw VIPSError("Failed to get projection outputs")
         }
         
-        let rows = VIPSImage(takingOwnership: rowsPtr)
-        let columns = VIPSImage(takingOwnership: colsPtr)
+        let rows = VIPSImage(rowsPtr)
+        let columns = VIPSImage(colsPtr)
         
         return (rows, columns)
     }
