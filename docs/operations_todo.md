@@ -13,9 +13,7 @@ This document lists the libvips operations that still need to be implemented in 
 ### Already Implemented ✅
 - `add`, `subtract`, `multiply`, `linear`
 - `avg`, `deviate`, `max`, `min`
-
-### To Implement 🎯
-- `divide` - Divide two images
+- `divide` - Divide two images (with `/` operator)
 - `abs` - Absolute value pixel-wise
 - `sign` - Sign of pixels (-1, 0, 1)
 - `round` - Round pixels to nearest integer
@@ -49,11 +47,11 @@ This document lists the libvips operations that still need to be implemented in 
 - `real` - Extract real part
 - `imag` - Extract imaginary part
 
-### Relational Operations 🎯
+### Relational Operations ✅
 - `equal`, `notequal` - Equality comparison
 - `less`, `lesseq` - Less than comparisons
 - `more`, `moreeq` - Greater than comparisons
-- Const versions: `equal_const`, `notequal_const`, `less_const`, etc.
+- Const versions: `equal_const`, `notequal_const`, `less_const`, `lesseq_const`, `more_const`, `moreeq_const`
 
 ### Boolean/Bitwise Operations 🎯
 - `andimage`, `orimage`, `eorimage` - Bitwise AND, OR, XOR
@@ -175,9 +173,9 @@ This document lists the libvips operations that still need to be implemented in 
 ### Already Implemented ✅
 - `text` - Create text image
 - `identity` - Identity LUT
+- `black` - Create black image
 
 ### To Implement 🎯
-- `black` - Create black image
 - `gaussnoise` - Gaussian noise image
 - `xy`, `xyz` - Create coordinate images
 - `grey` - Create grey ramp

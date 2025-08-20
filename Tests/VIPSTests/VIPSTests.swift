@@ -106,6 +106,11 @@ final class VIPSTests: XCTestCase {
         let divided = try image.divide(image2)
         XCTAssertNotNil(divided)
         XCTAssertEqual(divided.size.width, image.size.width)
+        
+        // Test division operator
+        let dividedWithOperator = try image / image2
+        XCTAssertNotNil(dividedWithOperator)
+        XCTAssertEqual(dividedWithOperator.size.width, image.size.width)
     }
     
     func testAbsOperation() throws {

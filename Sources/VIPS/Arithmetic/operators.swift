@@ -322,4 +322,12 @@ extension VIPSImage {
     public static func -(lhs: VIPSImage, rhs: VIPSImage) throws -> VIPSImage {
         return try lhs.subtract(rhs)
     }
+    
+    public static func *(lhs: VIPSImage, rhs: VIPSImage) throws -> VIPSImage {
+        return try lhs.multiply(rhs)
+    }
+    
+    public static func /(lhs: VIPSImage, rhs: VIPSImage) throws -> VIPSImage {
+        return try lhs.divide(rhs)
+    }
 }
