@@ -115,3 +115,31 @@ extension VIPSImage {
         }
     }
 }
+
+extension VIPSImage {
+    /// Creates an identity lookup table, ie. one which will leave an image unchanged when applied with vips_maplut(). Each entry in the table has a value equal to its position.
+    ///
+    /// Use the arithmetic operations on these tables to make LUTs representing arbitrary functions.
+    ///
+    /// Normally LUTs are 8-bit. Set ushort to create a 16-bit table.
+    ///
+    /// Normally 16-bit tables have 65536 entries. You can set this smaller with size.
+    public static func identity(bands: Int? = nil, ushort: Bool = false, size: Int? = nil) throws -> VIPSImage {
+        try VIPSImage(nil) { out in
+            var opt = VIPSOption()
+            if let bands {
+                opt.set("bands", value: bands)
+            }
+            if ushort {
+                opt.set("ushort", value: ushort)
+            }
+            if let size {
+                opt.set("size", value: size)
+            }
+
+            opt.set("out", value: &out)
+
+            return try call("identity", optionsString: nil, options: &opt)
+        }
+    }
+}

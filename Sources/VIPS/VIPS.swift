@@ -403,6 +403,28 @@ open class VIPSImage {
             shim_vips_copy_interpretation(self.image, &out, interpretation)
         }
     }
+
+    public init(data: some Collection<UInt8>, width: Int, height: Int, bands: Int, format: VipsBandFormat) throws {
+        
+        let maybe = try data.withContiguousStorageIfAvailable { buffer in
+            guard let image = vips_image_new_from_memory_copy(buffer.baseAddress, buffer.count, .init(width), .init(height), .init(bands), format) else {
+                throw VIPSError(vips_error_buffer())
+            }
+            return image
+        }
+        if let maybe = maybe {
+            self.image = maybe
+        } else {
+            let image = Array(data).withUnsafeBufferPointer { buffer in
+                vips_image_new_from_memory_copy(buffer.baseAddress, buffer.count, .init(width), .init(height), .init(bands), format)
+            }
+            guard let image else {
+                throw VIPSError()
+            }
+            self.image = image
+        }
+
+    }
     
     convenience public init<C: Collection>(data: C, loader: String? = nil, options: String? = nil) throws where C.Element == UInt8 {
         guard let (loader, blob) = try data.withContiguousStorageIfAvailable({ storage -> (String, UnsafeMutablePointer<VipsBlob>) in
