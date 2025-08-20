@@ -1,5 +1,6 @@
 import Cvips
-import CvipsShim
+
+public typealias VipsPCS = Cvips.VipsPCS
 
 extension VipsPCS {
     public static var lab: Self { VIPS_PCS_LAB }

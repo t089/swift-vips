@@ -1,6 +1,5 @@
 import Cvips
 import CvipsShim
-import Foundation
 import Logging
 
 
@@ -69,31 +68,6 @@ public enum VIPS {
     
     public static func shutdown() {
         vips_shutdown()
-    }
-}
-
-public enum VIPSSize {
-    case up, down, both
-    
-    var vipsSize: VipsSize {
-        switch self {
-        case .up: return VIPS_SIZE_UP
-        case .down: return VIPS_SIZE_DOWN
-        case .both: return VIPS_SIZE_BOTH
-        }
-    }
-}
-
-public enum VIPSInteresting {
-    case none, centre, entropy, attention
-    
-    var vipsInteresting: VipsInteresting {
-        switch self {
-        case .none: return VIPS_INTERESTING_NONE
-        case .centre: return VIPS_INTERESTING_CENTRE
-        case .entropy: return VIPS_INTERESTING_ENTROPY
-        case .attention: return VIPS_INTERESTING_ATTENTION
-        }
     }
 }
 
@@ -263,13 +237,6 @@ public struct VIPSOption {
         g_value_set_enum(&pair.value, gint(value.rawValue))
         self.pairs.append(pair)
     }
-
-    public mutating func set<V: _VipsEnumValue>(_ name: String, value: V)  {
-        let pair = Pair(name: name, input: true)
-        g_value_init(&pair.value, V.format)
-        g_value_set_enum(&pair.value, value.rawValue)
-        self.pairs.append(pair)
-    }
     
     public mutating func set<V>(_ name: String, value: V) where V: RawRepresentable, V.RawValue : BinaryInteger {
         let pair = Pair(name: name, input: true)
@@ -279,11 +246,6 @@ public struct VIPSOption {
     }
 }
 
-// internal marker protocol for vips enum values
-public protocol _VipsEnumValue {
-    static var format: GType { get }
-    var rawValue: Int32 { get }
-}
 
 final class VIPSOperation {
     var op: UnsafeMutablePointer<VipsOperation>!
@@ -465,7 +427,7 @@ open class VIPSImage {
         return image
     }
     
-    public func fit(width: Int, height: Int?, size: VIPSSize = .down) throws -> VIPSImage {
+    public func fit(width: Int, height: Int?, size: VipsSize = .down) throws -> VIPSImage {
         let currentSize = self.size
         let ar =  Float(currentSize.width) / Float(currentSize.height)
         
@@ -487,6 +449,8 @@ open class VIPSImage {
                 return Swift.min(scale, 1.0)
             case .up:
                 return Swift.max(scale, 1.0)
+            default:
+                return scale
             }
         }
         
@@ -498,7 +462,7 @@ open class VIPSImage {
         
     }
     
-    public func thumbnailImage(width: Int, height: Int? = nil, crop: VIPSInteresting = .centre, size: VIPSSize = .both) throws -> VIPSImage {
+    public func thumbnailImage(width: Int, height: Int? = nil, crop: VipsInteresting = .centre, size: VipsSize = .both) throws -> VIPSImage {
         return try VIPSImage(self) { (out) in
             var option = VIPSOption()
             
@@ -508,14 +472,14 @@ open class VIPSImage {
             if let height = height {
                 option.set("height", value: height)
             }
-            option.set("size", value: size.vipsSize)
-            option.set("crop", value: crop.vipsInteresting)
+            option.set("size", value: size)
+            option.set("crop", value: crop)
 	    
             try VIPSImage.call("thumbnail_image", options: &option)
         }
     }
     
-    public static func thumbnail(buffer: UnsafeRawBufferPointer, width: Int, height: Int? = nil, crop: VIPSInteresting = .centre, size: VIPSSize = .both) throws -> VIPSImage {
+    public static func thumbnail(buffer: UnsafeRawBufferPointer, width: Int, height: Int? = nil, crop: VipsInteresting = .centre, size: VipsSize = .both) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             
             let blob = vips_blob_new(nil, buffer.baseAddress!, buffer.count);
@@ -531,9 +495,9 @@ open class VIPSImage {
             if let height = height {
                 options.set("height", value: height)
             }
-            options.set("size", value: size.vipsSize)
-            options.set("crop", value: crop.vipsInteresting)
-            
+            options.set("size", value: size)
+            options.set("crop", value: crop)
+
             try VIPSImage.call("thumbnail_buffer", options: &options)
         }
     }

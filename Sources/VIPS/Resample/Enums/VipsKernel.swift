@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsKernel = Cvips.VipsKernel
+
 extension VipsKernel {
     public static var nearest: Self { VIPS_KERNEL_NEAREST }
     public static var linear: Self { VIPS_KERNEL_LINEAR }

@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsInteresting = Cvips.VipsInteresting
+
 extension VipsInteresting {
     public static var none: Self { VIPS_INTERESTING_NONE }
     public static var centre: Self { VIPS_INTERESTING_CENTRE }

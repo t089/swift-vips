@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsSize = Cvips.VipsSize
+
 extension VipsSize {
     public static var both: Self { VIPS_SIZE_BOTH }
     public static var up: Self { VIPS_SIZE_UP }
