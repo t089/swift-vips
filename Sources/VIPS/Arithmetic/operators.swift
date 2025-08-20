@@ -8,7 +8,16 @@
 
 
 extension VIPSImage {
-    public func linear(_ a: Double = 1.0, _ b: Double = 0) throws -> VIPSImage {
+    /// Pass an image through a linear transform, ie. (out = in * a + b). Output is float 
+    /// for integer input, double for double input, complex for complex input and double 
+    /// complex for double complex input. Set uchar to output uchar pixels.
+    /// 
+    /// If the arrays of constants have just one element, that constant is used for all image 
+    /// bands. If the arrays have more than one element and they have the same number of elements 
+    /// as there are bands in the image, then one array element is used for each band. If the 
+    /// arrays have more than one element and the image only has a single band, the result is 
+    /// a many-band image where each band corresponds to one array element.
+    public func linear(_ a: Double = 1.0, _ b: Double = 0, uchar: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
             
@@ -16,16 +25,19 @@ extension VIPSImage {
             opt.set("a", value: [ a ])
             opt.set("b", value: [ b ])
             opt.set("out", value: &out)
-            
+            if let uchar = uchar {
+                opt.set("uchar", value: uchar)
+            }
+
             try VIPSImage.call("linear", options: &opt)
         }
     }
     
-    public func linear(_ a: Int = 1, _ b: Int = 0) throws -> VIPSImage {
-        return try linear(Double(a), Double(b))
+    public func linear(_ a: Int = 1, _ b: Int = 0, uchar: Bool? = nil) throws -> VIPSImage {
+        return try linear(Double(a), Double(b), uchar: uchar)
     }
 
-    public func linear(_ a: [Double], _ b: [Double]) throws -> VIPSImage {
+    public func linear(_ a: [Double], _ b: [Double], uchar: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
             
@@ -33,7 +45,10 @@ extension VIPSImage {
             opt.set("a", value: a)
             opt.set("b", value: b)
             opt.set("out", value: &out)
-            
+            if let uchar = uchar {
+                opt.set("uchar", value: uchar)
+            }
+
             try VIPSImage.call("linear", options: &opt)
         }
     }

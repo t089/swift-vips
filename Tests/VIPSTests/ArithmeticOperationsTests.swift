@@ -147,12 +147,12 @@ struct ArithmeticOperationsTests {
         // Create image with value 12 (binary: 1100)
         let left = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 12.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         // Create image with value 10 (binary: 1010)
         let right = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 10.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         let result = try left.andimage(right)
         
@@ -166,12 +166,12 @@ struct ArithmeticOperationsTests {
         // Create image with value 15 (binary: 1111)
         let left = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 15.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         // Create image with value 7 (binary: 0111)
         let right = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 7.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         let result = try left & right
         
@@ -185,12 +185,12 @@ struct ArithmeticOperationsTests {
         // Create image with value 12 (binary: 1100)
         let left = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 12.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         // Create image with value 10 (binary: 1010)
         let right = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 10.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         let result = try left.orimage(right)
         
@@ -204,12 +204,12 @@ struct ArithmeticOperationsTests {
         // Create image with value 8 (binary: 1000)
         let left = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 8.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         // Create image with value 4 (binary: 0100)
         let right = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 4.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         let result = try left | right
         
@@ -223,7 +223,7 @@ struct ArithmeticOperationsTests {
         // Create image with value 15 (binary: 1111)
         let image = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 15.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         let result = try image.andimage_const(3.0)
         
@@ -237,7 +237,7 @@ struct ArithmeticOperationsTests {
         // Create image with value 8 (binary: 1000)
         let image = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 8.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         let result = try image.orimage_const(3.0)
         
@@ -253,7 +253,7 @@ struct ArithmeticOperationsTests {
         // Create image with value 3
         let image = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 3.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         let result = try image.lshift_const(2)
         
@@ -267,7 +267,7 @@ struct ArithmeticOperationsTests {
         // Create image with value 5
         let image = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 5.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         let result = try image << 1
         
@@ -281,7 +281,7 @@ struct ArithmeticOperationsTests {
         // Create image with value 12
         let image = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 12.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         let result = try image.rshift_const(2)
         
@@ -295,7 +295,7 @@ struct ArithmeticOperationsTests {
         // Create image with value 20
         let image = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 20.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         let result = try image >> 2
         
@@ -309,12 +309,12 @@ struct ArithmeticOperationsTests {
         // Create image with value 3
         let left = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 3.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         // Create shift amount image with value 3
         let right = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 3.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         let result = try left.lshift(right)
         
@@ -328,17 +328,132 @@ struct ArithmeticOperationsTests {
         // Create image with value 32
         let left = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 32.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         // Create shift amount image with value 3
         let right = try VIPSImage.black(3, 3, bands: 1)
             .linear(0.0, 3.0)
-            .cast(VIPS_FORMAT_UCHAR)
+            .cast(.uchar)
         
         let result = try left.rshift(right)
         
         // 32 >> 3 = 4
         let avg = try result.avg()
         #expect(abs(avg - 4.0) < 0.01)
+    }
+    
+    // MARK: - Linear Operation Tests
+    
+    @Test
+    func testLinearBasic() throws {
+        // Create a test image with value 2
+        let image = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 2.0)
+        
+        // Apply linear transform: out = in * 3 + 5
+        let result = try image.linear(3.0, 5.0)
+        
+        // 2 * 3 + 5 = 11
+        let avg = try result.avg()
+        #expect(abs(avg - 11.0) < 0.01)
+    }
+    
+    @Test
+    func testLinearInteger() throws {
+        // Create a test image with value 4
+        let image = try VIPSImage.black(2, 2, bands: 1)
+            .linear(0, 4)
+        
+        // Apply linear transform with integers: out = in * 2 + 3
+        let result = try image.linear(2, 3)
+        
+        // 4 * 2 + 3 = 11
+        let avg = try result.avg()
+        #expect(abs(avg - 11.0) < 0.01)
+    }
+    
+    @Test
+    func testLinearArrays() throws {
+        // Create a 3-band image with values [1, 2, 3]
+        let r = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 1.0)
+        let g = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 2.0)
+        let b = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 3.0)
+        let image = try r.bandjoin([g, b])
+        
+        // Apply different linear transforms per band
+        let a = [2.0, 3.0, 4.0]  // multipliers
+        let b_vals = [1.0, 2.0, 3.0]  // addends
+        let result = try image.linear(a, b_vals)
+        
+        // Expected: [1*2+1, 2*3+2, 3*4+3] = [3, 8, 15]
+        
+        // Check each band average
+        let band0 = try result.extractBand(0)
+        let band1 = try result.extractBand(1)
+        let band2 = try result.extractBand(2)
+        
+        #expect(abs(try band0.avg() - 3.0) < 0.01)
+        #expect(abs(try band1.avg() - 8.0) < 0.01)
+        #expect(abs(try band2.avg() - 15.0) < 0.01)
+    }
+    
+    @Test
+    func testLinearDefaults() throws {
+        // Create a test image with value 5
+        let image = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 5.0)
+        
+        // Apply linear with default parameters (a=1.0, b=0)
+        let result = try image.linear(1.0, 0.0)
+        
+        // 5 * 1 + 0 = 5 (should be unchanged)
+        let avg = try result.avg()
+        #expect(abs(avg - 5.0) < 0.01)
+    }
+    
+    @Test
+    func testLinearMultiplyOnly() throws {
+        // Create a test image with value 7
+        let image = try VIPSImage.black(2, 2, bands: 1)
+            .linear(0.0, 7.0)
+        
+        // Apply linear with only multiplication (b=0 by default)
+        let result = try image.linear(0.5)
+        
+        // 7 * 0.5 + 0 = 3.5
+        let avg = try result.avg()
+        #expect(abs(avg - 3.5) < 0.01)
+    }
+    
+    @Test
+    func testLinearAddOnly() throws {
+        // Create a test image with value 10
+        let image = try VIPSImage.black(2, 2, bands: 1)
+            .linear(0.0, 10.0)
+        
+        // Apply linear with only addition (a=1.0 by default)
+        let result = try image.linear(1.0, -3.0)
+        
+        // 10 * 1 + (-3) = 7
+        let avg = try result.avg()
+        #expect(abs(avg - 7.0) < 0.01)
+    }
+    
+    @Test
+    func testLinearUchar() throws {
+        // Create a test image that would overflow uchar without the uchar parameter
+        let image = try VIPSImage.black(2, 2, bands: 1)
+            .linear(0.0, 100.0)
+        
+        // Apply linear transform that would create value > 255
+        let result = try image.linear(3.0, 0.0, uchar: true)
+        
+        // 100 * 3 = 300, but should be clamped to 255 with uchar: true
+        let max = try result.max()
+        #expect(max <= 255.0)
+        
+        // Verify the type is actually uchar
+        let format = result.format
+        #expect(format == .uchar)
     }
 }
