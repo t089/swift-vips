@@ -330,4 +330,83 @@ extension VIPSImage {
     public static func /(lhs: VIPSImage, rhs: VIPSImage) throws -> VIPSImage {
         return try lhs.divide(rhs)
     }
+    
+    // MARK: - Comparison Operators (Element-wise)
+    // Note: These return VIPSImage with 255 for true, 0 for false per pixel
+    // Cannot conform to Comparable protocol as that requires Bool return type
+    
+    public static func ==(lhs: VIPSImage, rhs: VIPSImage) throws -> VIPSImage {
+        return try lhs.equal(rhs)
+    }
+    
+    public static func !=(lhs: VIPSImage, rhs: VIPSImage) throws -> VIPSImage {
+        return try lhs.notequal(rhs)
+    }
+    
+    public static func <(lhs: VIPSImage, rhs: VIPSImage) throws -> VIPSImage {
+        return try lhs.less(rhs)
+    }
+    
+    public static func <=(lhs: VIPSImage, rhs: VIPSImage) throws -> VIPSImage {
+        return try lhs.lesseq(rhs)
+    }
+    
+    public static func >(lhs: VIPSImage, rhs: VIPSImage) throws -> VIPSImage {
+        return try lhs.more(rhs)
+    }
+    
+    public static func >=(lhs: VIPSImage, rhs: VIPSImage) throws -> VIPSImage {
+        return try lhs.moreeq(rhs)
+    }
+    
+    // MARK: - Comparison with constants
+    
+    public static func ==(lhs: VIPSImage, rhs: Double) throws -> VIPSImage {
+        return try lhs.equal_const(rhs)
+    }
+    
+    public static func !=(lhs: VIPSImage, rhs: Double) throws -> VIPSImage {
+        return try lhs.notequal_const(rhs)
+    }
+    
+    public static func <(lhs: VIPSImage, rhs: Double) throws -> VIPSImage {
+        return try lhs.less_const(rhs)
+    }
+    
+    public static func <=(lhs: VIPSImage, rhs: Double) throws -> VIPSImage {
+        return try lhs.lesseq_const(rhs)
+    }
+    
+    public static func >(lhs: VIPSImage, rhs: Double) throws -> VIPSImage {
+        return try lhs.more_const(rhs)
+    }
+    
+    public static func >=(lhs: VIPSImage, rhs: Double) throws -> VIPSImage {
+        return try lhs.moreeq_const(rhs)
+    }
+    
+    // Reverse order for constants
+    public static func ==(lhs: Double, rhs: VIPSImage) throws -> VIPSImage {
+        return try rhs.equal_const(lhs)
+    }
+    
+    public static func !=(lhs: Double, rhs: VIPSImage) throws -> VIPSImage {
+        return try rhs.notequal_const(lhs)
+    }
+    
+    public static func <(lhs: Double, rhs: VIPSImage) throws -> VIPSImage {
+        return try rhs.more_const(lhs)  // Note: reversed
+    }
+    
+    public static func <=(lhs: Double, rhs: VIPSImage) throws -> VIPSImage {
+        return try rhs.moreeq_const(lhs)  // Note: reversed
+    }
+    
+    public static func >(lhs: Double, rhs: VIPSImage) throws -> VIPSImage {
+        return try rhs.less_const(lhs)  // Note: reversed
+    }
+    
+    public static func >=(lhs: Double, rhs: VIPSImage) throws -> VIPSImage {
+        return try rhs.lesseq_const(lhs)  // Note: reversed
+    }
 }

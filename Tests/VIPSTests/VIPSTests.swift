@@ -203,6 +203,44 @@ final class VIPSTests: XCTestCase {
         XCTAssertEqual(moreAvg, 255.0)
     }
     
+    func testComparisonOperators() throws {
+        let image1 = try VIPSImage.black(100, 100)
+            .linear(1.0, 50.0)
+        let image2 = try VIPSImage.black(100, 100)
+            .linear(1.0, 100.0)
+        
+        // Test image-to-image comparison operators
+        let equal = try image1 == image1
+        let notEqual = try image1 != image2
+        let less = try image1 < image2
+        let lessEq = try image1 <= image2
+        let more = try image2 > image1
+        let moreEq = try image2 >= image1
+        
+        XCTAssertEqual(try equal.avg(), 255.0)
+        XCTAssertEqual(try notEqual.avg(), 255.0)
+        XCTAssertEqual(try less.avg(), 255.0)
+        XCTAssertEqual(try lessEq.avg(), 255.0)
+        XCTAssertEqual(try more.avg(), 255.0)
+        XCTAssertEqual(try moreEq.avg(), 255.0)
+        
+        // Test image-to-constant comparison operators
+        let equalConst = try image1 == 50.0
+        let lessConst = try image1 < 100.0
+        let moreConst = try image1 > 0.0
+        
+        XCTAssertEqual(try equalConst.avg(), 255.0)
+        XCTAssertEqual(try lessConst.avg(), 255.0)
+        XCTAssertEqual(try moreConst.avg(), 255.0)
+        
+        // Test constant-to-image comparison operators
+        let constLess = try 0.0 < image1
+        let constMore = try 100.0 > image1
+        
+        XCTAssertEqual(try constLess.avg(), 255.0)
+        XCTAssertEqual(try constMore.avg(), 255.0)
+    }
+    
     func testWebp() throws {
         let image = try VIPSImage(fromFilePath: mythicalGiantPath)
         let full = try image
