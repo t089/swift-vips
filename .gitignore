@@ -3,3 +3,5 @@
 /Packages
 /*.xcodeproj
 .swiftpm
+swiftly
+swiftly-*.tar.gz
