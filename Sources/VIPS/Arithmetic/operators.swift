@@ -1656,6 +1656,26 @@ extension VIPSImage {
 // MARK: - Band Operations
 
 extension VIPSImage {
+    /// Perform a boolean operation across bands.
+    ///
+    /// Reduces multiple bands to a single band by performing the specified
+    /// boolean operation on corresponding pixels across all bands.
+    ///
+    /// - Parameter operation: The boolean operation to perform
+    /// - Returns: A new single-band image
+    /// - Throws: `VIPSError` if the operation fails
+    public func bandbool(_ operation: VipsOperationBoolean) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("boolean", value: operation)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("bandbool", options: &opt)
+        }
+    }
+    
     /// Perform bitwise AND operation across bands.
     ///
     /// Reduces multiple bands to a single band by performing bitwise AND
@@ -1664,14 +1684,7 @@ extension VIPSImage {
     /// - Returns: A new single-band image
     /// - Throws: `VIPSError` if the operation fails
     public func bandand() throws -> VIPSImage {
-        return try VIPSImage(self) { out in
-            var opt = VIPSOption()
-            
-            opt.set("in", value: self.image)
-            opt.set("out", value: &out)
-            
-            try VIPSImage.call("bandand", options: &opt)
-        }
+        return try bandbool(.and)
     }
     
     /// Perform bitwise OR operation across bands.
@@ -1682,14 +1695,7 @@ extension VIPSImage {
     /// - Returns: A new single-band image
     /// - Throws: `VIPSError` if the operation fails
     public func bandor() throws -> VIPSImage {
-        return try VIPSImage(self) { out in
-            var opt = VIPSOption()
-            
-            opt.set("in", value: self.image)
-            opt.set("out", value: &out)
-            
-            try VIPSImage.call("bandor", options: &opt)
-        }
+        return try bandbool(.or)
     }
     
     /// Perform bitwise XOR (exclusive OR) operation across bands.
@@ -1700,13 +1706,6 @@ extension VIPSImage {
     /// - Returns: A new single-band image
     /// - Throws: `VIPSError` if the operation fails
     public func bandeor() throws -> VIPSImage {
-        return try VIPSImage(self) { out in
-            var opt = VIPSOption()
-            
-            opt.set("in", value: self.image)
-            opt.set("out", value: &out)
-            
-            try VIPSImage.call("bandeor", options: &opt)
-        }
+        return try bandbool(.eor)
     }
 }
