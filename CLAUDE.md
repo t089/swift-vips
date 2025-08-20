@@ -30,6 +30,9 @@ swift run vips-tool
 swift build -c release
 ```
 
+Depending on the environment, swift might be installed in `$HOME/.local/share/swiftly/bin/swift`.
+
+
 ## Architecture
 
 The Swift wrapper mirrors libvips' modular structure in `Sources/VIPS/`:
