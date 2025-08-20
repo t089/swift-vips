@@ -554,6 +554,184 @@ extension VIPSImage {
         }
     }
     
+    /// Calculate arcsine of an image.
+    ///
+    /// Perform pixel-wise arcsine operation. Input values should be in the range [-1, 1].
+    /// The result is the angle in degrees whose sine is the input value.
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with the arcsine of each pixel in degrees
+    /// - Throws: `VIPSError` if the operation fails
+    public func asin() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.asin)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
+    /// Calculate arccosine of an image.
+    ///
+    /// Perform pixel-wise arccosine operation. Input values should be in the range [-1, 1].
+    /// The result is the angle in degrees whose cosine is the input value.
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with the arccosine of each pixel in degrees
+    /// - Throws: `VIPSError` if the operation fails
+    public func acos() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.acos)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
+    /// Calculate arctangent of an image.
+    ///
+    /// Perform pixel-wise arctangent operation.
+    /// The result is the angle in degrees whose tangent is the input value.
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with the arctangent of each pixel in degrees
+    /// - Throws: `VIPSError` if the operation fails
+    public func atan() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.atan)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
+    // MARK: - Hyperbolic Functions
+    
+    /// Calculate hyperbolic sine of an image.
+    ///
+    /// Perform pixel-wise hyperbolic sine operation.
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with the hyperbolic sine of each pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func sinh() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.sinh)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
+    /// Calculate hyperbolic cosine of an image.
+    ///
+    /// Perform pixel-wise hyperbolic cosine operation.
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with the hyperbolic cosine of each pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func cosh() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.cosh)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
+    /// Calculate hyperbolic tangent of an image.
+    ///
+    /// Perform pixel-wise hyperbolic tangent operation.
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with the hyperbolic tangent of each pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func tanh() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.tanh)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
+    /// Calculate inverse hyperbolic sine of an image.
+    ///
+    /// Perform pixel-wise inverse hyperbolic sine operation.
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with the inverse hyperbolic sine of each pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func asinh() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.asinh)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
+    /// Calculate inverse hyperbolic cosine of an image.
+    ///
+    /// Perform pixel-wise inverse hyperbolic cosine operation.
+    /// Input values should be >= 1 for real results.
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with the inverse hyperbolic cosine of each pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func acosh() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.acosh)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
+    /// Calculate inverse hyperbolic tangent of an image.
+    ///
+    /// Perform pixel-wise inverse hyperbolic tangent operation.
+    /// Input values should be in the range (-1, 1) for real results.
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with the inverse hyperbolic tangent of each pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func atanh() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.atanh)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
     // MARK: - Exponential and Logarithmic Operations
     
     /// Calculate e^x for each pixel.
@@ -607,6 +785,25 @@ extension VIPSImage {
             
             opt.set("in", value: self.image)
             opt.set("math", value: VipsOperationMath.log10)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
+    /// Calculate 10^x for each pixel.
+    ///
+    /// Perform pixel-wise base-10 exponential operation, calculating 10 raised to the power of each pixel value.
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with 10^x for each pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func exp10() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.exp10)
             opt.set("out", value: &out)
             
             try VIPSImage.call("math", options: &opt)
@@ -678,6 +875,101 @@ extension VIPSImage {
             
             try VIPSImage.call("math2", options: &opt)
         }
+    }
+    
+    /// Raise another image to the power of this image (swapped power).
+    ///
+    /// This operation calculates right^left pixel-wise, which is the opposite of pow().
+    /// Useful when you want to use the current image as the exponent.
+    /// Non-complex images are cast to float before the operation.
+    ///
+    /// - Parameter base: The base image  
+    /// - Returns: A new image with each pixel being base^exponent (where exponent is from self)
+    /// - Throws: `VIPSError` if the operation fails
+    public func wop(_ base: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, base]) { out in
+            var opt = VIPSOption()
+            
+            opt.set("left", value: self.image)
+            opt.set("right", value: base.image)
+            opt.set("math2", value: VipsOperationMath2.wop)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math2", options: &opt)
+        }
+    }
+    
+    /// Raise a constant to the power of this image.
+    ///
+    /// This operation calculates base^pixel for each pixel.
+    /// Non-complex images are cast to float before the operation.
+    ///
+    /// - Parameter base: The constant base
+    /// - Returns: A new image with each pixel value being base^pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func wop(_ base: Double) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("c", value: [base])
+            opt.set("math2", value: VipsOperationMath2.wop)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math2_const", options: &opt)
+        }
+    }
+    
+    /// Calculate remainder after division.
+    ///
+    /// This operation calculates the remainder after dividing left by right.
+    /// The result has the same sign as the dividend (left operand).
+    /// If the images differ in size, the smaller image is enlarged to match the larger.
+    ///
+    /// - Parameter divisor: The divisor image
+    /// - Returns: A new image with the remainder of left/right for each pixel pair
+    /// - Throws: `VIPSError` if the operation fails
+    public func remainder(_ divisor: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, divisor]) { out in
+            var opt = VIPSOption()
+            
+            opt.set("left", value: self.image)
+            opt.set("right", value: divisor.image)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("remainder", options: &opt)
+        }
+    }
+    
+    /// Calculate remainder after division by a constant.
+    ///
+    /// This operation calculates the remainder after dividing each pixel by a constant.
+    /// The result has the same sign as the dividend (pixel value).
+    ///
+    /// - Parameter divisor: The constant divisor
+    /// - Returns: A new image with the remainder of pixel/divisor for each pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func remainder_const(_ divisor: Double) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("c", value: [divisor])
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("remainder_const", options: &opt)
+        }
+    }
+    
+    /// Calculate remainder after division by a constant.
+    ///
+    /// Convenience method that accepts an integer divisor.
+    ///
+    /// - Parameter divisor: The constant divisor
+    /// - Returns: A new image with the remainder of pixel/divisor for each pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func remainder_const(_ divisor: Int) throws -> VIPSImage {
+        return try self.remainder_const(Double(divisor))
     }
     
     // MARK: - Boolean/Bitwise Operations
@@ -758,6 +1050,47 @@ extension VIPSImage {
             opt.set("in", value: self.image)
             opt.set("c", value: [c])
             opt.set("boolean", value: VipsOperationBoolean.or)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("boolean_const", options: &opt)
+        }
+    }
+    
+    /// Perform bitwise XOR with another image.
+    ///
+    /// This operation performs bitwise exclusive OR on corresponding pixels from two images.
+    /// If the images differ in size, the smaller image is enlarged to match the larger.
+    ///
+    /// - Parameter right: The right-hand side image
+    /// - Returns: A new image with bitwise XOR of each pixel pair
+    /// - Throws: `VIPSError` if the operation fails
+    public func eorimage(_ right: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, right]) { out in
+            var opt = VIPSOption()
+            
+            opt.set("left", value: self.image)
+            opt.set("right", value: right.image)
+            opt.set("boolean", value: VipsOperationBoolean.eor)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("boolean", options: &opt)
+        }
+    }
+    
+    /// Perform bitwise XOR with a constant.
+    ///
+    /// This operation performs bitwise exclusive OR between each pixel and a constant value.
+    ///
+    /// - Parameter c: The constant value to XOR with
+    /// - Returns: A new image with bitwise XOR of each pixel and the constant
+    /// - Throws: `VIPSError` if the operation fails
+    public func eorimage_const(_ c: Double) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("c", value: [c])
+            opt.set("boolean", value: VipsOperationBoolean.eor)
             opt.set("out", value: &out)
             
             try VIPSImage.call("boolean_const", options: &opt)
@@ -1001,6 +1334,10 @@ extension VIPSImage {
     
     public static func |(lhs: VIPSImage, rhs: VIPSImage) throws -> VIPSImage {
         return try lhs.orimage(rhs)
+    }
+    
+    public static func ^(lhs: VIPSImage, rhs: VIPSImage) throws -> VIPSImage {
+        return try lhs.eorimage(rhs)
     }
     
     public static func <<(lhs: VIPSImage, rhs: Int) throws -> VIPSImage {

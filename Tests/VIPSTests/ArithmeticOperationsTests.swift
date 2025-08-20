@@ -456,4 +456,265 @@ struct ArithmeticOperationsTests {
         let format = result.format
         #expect(format == .uchar)
     }
+    
+    // MARK: - Inverse Trigonometric Operations Tests
+    
+    @Test
+    func testAsin() throws {
+        // Create a test image with value 1.0
+        let image = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 1.0)
+        
+        let result = try image.asin()
+        
+        // asin(1.0) = 90 degrees
+        let avg = try result.avg()
+        #expect(abs(avg - 90.0) < 0.01)
+    }
+    
+    @Test
+    func testAcos() throws {
+        // Create a test image with value 0.0
+        let image = try VIPSImage.black(3, 3, bands: 1)
+        
+        let result = try image.acos()
+        
+        // acos(0.0) = 90 degrees
+        let avg = try result.avg()
+        #expect(abs(avg - 90.0) < 0.01)
+    }
+    
+    @Test
+    func testAtan() throws {
+        // Create a test image with value 1.0
+        let image = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 1.0)
+        
+        let result = try image.atan()
+        
+        // atan(1.0) = 45 degrees
+        let avg = try result.avg()
+        #expect(abs(avg - 45.0) < 0.01)
+    }
+    
+    // MARK: - Hyperbolic Functions Tests
+    
+    @Test
+    func testSinh() throws {
+        // Create a test image with value 0
+        let image = try VIPSImage.black(3, 3, bands: 1)
+        
+        let result = try image.sinh()
+        
+        // sinh(0) = 0
+        let avg = try result.avg()
+        #expect(abs(avg) < 0.01)
+    }
+    
+    @Test
+    func testCosh() throws {
+        // Create a test image with value 0
+        let image = try VIPSImage.black(3, 3, bands: 1)
+        
+        let result = try image.cosh()
+        
+        // cosh(0) = 1
+        let avg = try result.avg()
+        #expect(abs(avg - 1.0) < 0.01)
+    }
+    
+    @Test
+    func testTanh() throws {
+        // Create a test image with value 0
+        let image = try VIPSImage.black(3, 3, bands: 1)
+        
+        let result = try image.tanh()
+        
+        // tanh(0) = 0
+        let avg = try result.avg()
+        #expect(abs(avg) < 0.01)
+    }
+    
+    // MARK: - Inverse Hyperbolic Functions Tests
+    
+    @Test
+    func testAsinh() throws {
+        // Create a test image with value 0
+        let image = try VIPSImage.black(3, 3, bands: 1)
+        
+        let result = try image.asinh()
+        
+        // asinh(0) = 0
+        let avg = try result.avg()
+        #expect(abs(avg) < 0.01)
+    }
+    
+    @Test
+    func testAcosh() throws {
+        // Create a test image with value 1.0
+        let image = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 1.0)
+        
+        let result = try image.acosh()
+        
+        // acosh(1) = 0
+        let avg = try result.avg()
+        #expect(abs(avg) < 0.01)
+    }
+    
+    @Test
+    func testAtanh() throws {
+        // Create a test image with value 0
+        let image = try VIPSImage.black(3, 3, bands: 1)
+        
+        let result = try image.atanh()
+        
+        // atanh(0) = 0
+        let avg = try result.avg()
+        #expect(abs(avg) < 0.01)
+    }
+    
+    // MARK: - Additional Exponential Operations Tests
+    
+    @Test
+    func testExp10() throws {
+        // Create a test image with value 2
+        let image = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 2.0)
+        
+        let result = try image.exp10()
+        
+        // 10^2 = 100
+        let avg = try result.avg()
+        #expect(abs(avg - 100.0) < 0.01)
+    }
+    
+    // MARK: - Math2 Operations Tests
+    
+    @Test
+    func testWopImage() throws {
+        // Create exponent image with value 2
+        let exponent = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 2.0)
+        
+        // Create base image with value 3
+        let base = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 3.0)
+        
+        let result = try exponent.wop(base)
+        
+        // 3^2 = 9 (wop swaps the arguments)
+        let avg = try result.avg()
+        #expect(abs(avg - 9.0) < 0.01)
+    }
+    
+    @Test
+    func testWopConst() throws {
+        // Create exponent image with value 3
+        let exponent = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 3.0)
+        
+        let result = try exponent.wop(2.0)
+        
+        // 2^3 = 8
+        let avg = try result.avg()
+        #expect(abs(avg - 8.0) < 0.01)
+    }
+    
+    @Test
+    func testRemainderImage() throws {
+        // Create dividend image with value 13
+        let dividend = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 13.0)
+        
+        // Create divisor image with value 5
+        let divisor = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 5.0)
+        
+        let result = try dividend.remainder(divisor)
+        
+        // 13 % 5 = 3
+        let avg = try result.avg()
+        #expect(abs(avg - 3.0) < 0.01)
+    }
+    
+    @Test
+    func testRemainderConst() throws {
+        // Create dividend image with value 17
+        let dividend = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 17.0)
+        
+        let result = try dividend.remainder_const(7.0)
+        
+        // 17 % 7 = 3
+        let avg = try result.avg()
+        #expect(abs(avg - 3.0) < 0.01)
+    }
+    
+    @Test
+    func testRemainderConstInt() throws {
+        // Create dividend image with value 20
+        let dividend = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 20.0)
+        
+        let result = try dividend.remainder_const(6)
+        
+        // 20 % 6 = 2
+        let avg = try result.avg()
+        #expect(abs(avg - 2.0) < 0.01)
+    }
+    
+    // MARK: - Bitwise XOR Operations Tests
+    
+    @Test
+    func testEorImage() throws {
+        // Create image with value 12 (binary: 1100)
+        let left = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 12.0)
+            .cast(.uchar)
+        
+        // Create image with value 5 (binary: 0101)
+        let right = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 5.0)
+            .cast(.uchar)
+        
+        let result = try left.eorimage(right)
+        
+        // 12 ^ 5 = 9 (binary: 1001)
+        let avg = try result.avg()
+        #expect(abs(avg - 9.0) < 0.01)
+    }
+    
+    @Test
+    func testEorImageConst() throws {
+        // Create image with value 15 (binary: 1111)
+        let image = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 15.0)
+            .cast(.uchar)
+        
+        let result = try image.eorimage_const(10.0)
+        
+        // 15 ^ 10 = 5 (binary: 0101)
+        let avg = try result.avg()
+        #expect(abs(avg - 5.0) < 0.01)
+    }
+    
+    @Test
+    func testXorOperator() throws {
+        // Create image with value 7 (binary: 0111)
+        let left = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 7.0)
+            .cast(.uchar)
+        
+        // Create image with value 3 (binary: 0011)
+        let right = try VIPSImage.black(3, 3, bands: 1)
+            .linear(0.0, 3.0)
+            .cast(.uchar)
+        
+        let result = try left ^ right
+        
+        // 7 ^ 3 = 4 (binary: 0100)
+        let avg = try result.avg()
+        #expect(abs(avg - 4.0) < 0.01)
+    }
 }
