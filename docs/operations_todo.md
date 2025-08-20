@@ -23,18 +23,18 @@ This document lists the libvips operations that still need to be implemented in 
 
 ### Math Operations (Single Image) 🎯
 - ✅ `sin`, `cos`, `tan` - Trigonometric functions
-- `asin`, `acos`, `atan` - Inverse trigonometric
-- `sinh`, `cosh`, `tanh` - Hyperbolic functions
-- `asinh`, `acosh`, `atanh` - Inverse hyperbolic
+- ✅ `asin`, `acos`, `atan` - Inverse trigonometric
+- ✅ `sinh`, `cosh`, `tanh` - Hyperbolic functions
+- ✅ `asinh`, `acosh`, `atanh` - Inverse hyperbolic
 - ✅ `log`, `log10` - Logarithmic functions
 - ✅ `exp` - Exponential function
-- `exp10` - Base-10 exponential function
+- ✅ `exp10` - Base-10 exponential function
 
 ### Math2 Operations (Two Images/Constants) 🎯
 - ✅ `pow` - Power operation (with image and constant versions)
-- `wop` - Raise to power, swapped arguments
+- ✅ `wop` - Raise to power, swapped arguments
 - ✅ `atan2` - Two-argument arctangent
-- `remainder` - Remainder after division
+- ✅ `remainder` - Remainder after division
 
 ### Complex Number Operations ❌
 - `complex` - Combine two images as complex
@@ -56,9 +56,9 @@ This document lists the libvips operations that still need to be implemented in 
 
 ### Boolean/Bitwise Operations 🎯
 - ✅ `andimage`, `orimage` - Bitwise AND, OR (with `&` and `|` operators)
-- `eorimage` - Bitwise XOR
+- ✅ `eorimage` - Bitwise XOR (with `^` operator)
 - ✅ `lshift`, `rshift` - Bit shift operations (with `<<` and `>>` operators)
-- ✅ Const versions: `andimage_const`, `orimage_const`, `lshift_const`, `rshift_const`
+- ✅ Const versions: `andimage_const`, `orimage_const`, `eorimage_const`, `lshift_const`, `rshift_const`
 - Band operations: `bandand`, `bandor`, `bandeor`
 
 ### Statistical Operations 🎯
