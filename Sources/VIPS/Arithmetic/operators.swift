@@ -479,6 +479,356 @@ extension VIPSImage {
     public func moreeq_const(_ c: Double) throws -> VIPSImage {
         return try self.relational_const(.moreeq, c)
     }
+    
+    // MARK: - Trigonometric Operations
+    
+    /// Calculate sine of an image.
+    ///
+    /// Perform pixel-wise sine operation, where each pixel is treated as an angle in degrees.
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with the sine of each pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func sin() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.sin)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
+    /// Calculate cosine of an image.
+    ///
+    /// Perform pixel-wise cosine operation, where each pixel is treated as an angle in degrees.
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with the cosine of each pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func cos() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.cos)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
+    /// Calculate tangent of an image.
+    ///
+    /// Perform pixel-wise tangent operation, where each pixel is treated as an angle in degrees.
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with the tangent of each pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func tan() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.tan)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
+    // MARK: - Exponential and Logarithmic Operations
+    
+    /// Calculate e^x for each pixel.
+    ///
+    /// Perform pixel-wise exponential operation, calculating e raised to the power of each pixel value.
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with e^x for each pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func exp() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.exp)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
+    /// Calculate natural logarithm of an image.
+    ///
+    /// Perform pixel-wise natural logarithm (base e). 
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with the natural logarithm of each pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func log() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.log)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
+    /// Calculate base-10 logarithm of an image.
+    ///
+    /// Perform pixel-wise base-10 logarithm.
+    /// Non-complex images are cast to float before the operation. Complex images are not supported.
+    ///
+    /// - Returns: A new image with the base-10 logarithm of each pixel
+    /// - Throws: `VIPSError` if the operation fails
+    public func log10() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("math", value: VipsOperationMath.log10)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math", options: &opt)
+        }
+    }
+    
+    // MARK: - Math2 Operations (Two arguments)
+    
+    /// Raise an image to a power of another image.
+    ///
+    /// This operation calculates left^right pixel-wise and writes the result to a new image.
+    /// If the images differ in size, the smaller image is enlarged to match the larger.
+    /// Non-complex images are cast to float before the operation.
+    ///
+    /// - Parameter exponent: The exponent image
+    /// - Returns: A new image with each pixel being base^exponent
+    /// - Throws: `VIPSError` if the operation fails
+    public func pow(_ exponent: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, exponent]) { out in
+            var opt = VIPSOption()
+            
+            opt.set("left", value: self.image)
+            opt.set("right", value: exponent.image)
+            opt.set("math2", value: VipsOperationMath2.pow)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math2", options: &opt)
+        }
+    }
+    
+    /// Raise an image to a constant power.
+    ///
+    /// This operation calculates pixel^exponent for each pixel and writes the result to a new image.
+    /// Non-complex images are cast to float before the operation.
+    ///
+    /// - Parameter exponent: The constant exponent  
+    /// - Returns: A new image with each pixel raised to the given power
+    /// - Throws: `VIPSError` if the operation fails
+    public func pow(_ exponent: Double) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("c", value: [exponent])
+            opt.set("math2", value: VipsOperationMath2.pow)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math2_const", options: &opt)
+        }
+    }
+    
+    /// Calculate two-argument arctangent.
+    ///
+    /// This operation calculates atan2(left, right) pixel-wise.
+    /// The result is the angle in degrees whose tangent is left/right, 
+    /// using the signs of both to determine the quadrant.
+    ///
+    /// - Parameter x: The x-coordinate image
+    /// - Returns: A new image with atan2(y, x) in degrees for each pixel pair
+    /// - Throws: `VIPSError` if the operation fails
+    public func atan2(_ x: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, x]) { out in
+            var opt = VIPSOption()
+            
+            opt.set("left", value: self.image)
+            opt.set("right", value: x.image)
+            opt.set("math2", value: VipsOperationMath2.atan2)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("math2", options: &opt)
+        }
+    }
+    
+    // MARK: - Boolean/Bitwise Operations
+    
+    /// Perform bitwise AND with another image.
+    ///
+    /// This operation performs bitwise AND on corresponding pixels from two images.
+    /// If the images differ in size, the smaller image is enlarged to match the larger.
+    ///
+    /// - Parameter right: The right-hand side image
+    /// - Returns: A new image with bitwise AND of each pixel pair
+    /// - Throws: `VIPSError` if the operation fails
+    public func andimage(_ right: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, right]) { out in
+            var opt = VIPSOption()
+            
+            opt.set("left", value: self.image)
+            opt.set("right", value: right.image)
+            opt.set("boolean", value: VipsOperationBoolean.and)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("boolean", options: &opt)
+        }
+    }
+    
+    /// Perform bitwise AND with a constant.
+    ///
+    /// This operation performs bitwise AND between each pixel and a constant value.
+    ///
+    /// - Parameter c: The constant value to AND with
+    /// - Returns: A new image with bitwise AND of each pixel and the constant
+    /// - Throws: `VIPSError` if the operation fails
+    public func andimage_const(_ c: Double) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("c", value: [c])
+            opt.set("boolean", value: VipsOperationBoolean.and)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("boolean_const", options: &opt)
+        }
+    }
+    
+    /// Perform bitwise OR with another image.
+    ///
+    /// This operation performs bitwise OR on corresponding pixels from two images.
+    /// If the images differ in size, the smaller image is enlarged to match the larger.
+    ///
+    /// - Parameter right: The right-hand side image
+    /// - Returns: A new image with bitwise OR of each pixel pair
+    /// - Throws: `VIPSError` if the operation fails
+    public func orimage(_ right: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, right]) { out in
+            var opt = VIPSOption()
+            
+            opt.set("left", value: self.image)
+            opt.set("right", value: right.image)
+            opt.set("boolean", value: VipsOperationBoolean.or)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("boolean", options: &opt)
+        }
+    }
+    
+    /// Perform bitwise OR with a constant.
+    ///
+    /// This operation performs bitwise OR between each pixel and a constant value.
+    ///
+    /// - Parameter c: The constant value to OR with
+    /// - Returns: A new image with bitwise OR of each pixel and the constant
+    /// - Throws: `VIPSError` if the operation fails
+    public func orimage_const(_ c: Double) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("c", value: [c])
+            opt.set("boolean", value: VipsOperationBoolean.or)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("boolean_const", options: &opt)
+        }
+    }
+    
+    /// Perform bitwise left shift.
+    ///
+    /// This operation shifts each pixel value left by n bits.
+    ///
+    /// - Parameter right: An image containing the shift amounts
+    /// - Returns: A new image with left-shifted pixel values
+    /// - Throws: `VIPSError` if the operation fails
+    public func lshift(_ right: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, right]) { out in
+            var opt = VIPSOption()
+            
+            opt.set("left", value: self.image)
+            opt.set("right", value: right.image)
+            opt.set("boolean", value: VipsOperationBoolean.lshift)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("boolean", options: &opt)
+        }
+    }
+    
+    /// Perform bitwise left shift by a constant.
+    ///
+    /// This operation shifts each pixel value left by n bits.
+    ///
+    /// - Parameter n: The number of bits to shift
+    /// - Returns: A new image with left-shifted pixel values
+    /// - Throws: `VIPSError` if the operation fails
+    public func lshift_const(_ n: Int) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("c", value: [Double(n)])
+            opt.set("boolean", value: VipsOperationBoolean.lshift)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("boolean_const", options: &opt)
+        }
+    }
+    
+    /// Perform bitwise right shift.
+    ///
+    /// This operation shifts each pixel value right by n bits.
+    ///
+    /// - Parameter right: An image containing the shift amounts
+    /// - Returns: A new image with right-shifted pixel values
+    /// - Throws: `VIPSError` if the operation fails
+    public func rshift(_ right: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, right]) { out in
+            var opt = VIPSOption()
+            
+            opt.set("left", value: self.image)
+            opt.set("right", value: right.image)
+            opt.set("boolean", value: VipsOperationBoolean.rshift)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("boolean", options: &opt)
+        }
+    }
+    
+    /// Perform bitwise right shift by a constant.
+    ///
+    /// This operation shifts each pixel value right by n bits.
+    ///
+    /// - Parameter n: The number of bits to shift
+    /// - Returns: A new image with right-shifted pixel values
+    /// - Throws: `VIPSError` if the operation fails
+    public func rshift_const(_ n: Int) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("c", value: [Double(n)])
+            opt.set("boolean", value: VipsOperationBoolean.rshift)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("boolean_const", options: &opt)
+        }
+    }
+    
 }
 
 
@@ -626,5 +976,23 @@ extension VIPSImage {
     
     public static func >=(lhs: Double, rhs: VIPSImage) throws -> VIPSImage {
         return try rhs.lesseq_const(lhs)  // Note: reversed
+    }
+    
+    // MARK: - Bitwise Operators
+    
+    public static func &(lhs: VIPSImage, rhs: VIPSImage) throws -> VIPSImage {
+        return try lhs.andimage(rhs)
+    }
+    
+    public static func |(lhs: VIPSImage, rhs: VIPSImage) throws -> VIPSImage {
+        return try lhs.orimage(rhs)
+    }
+    
+    public static func <<(lhs: VIPSImage, rhs: Int) throws -> VIPSImage {
+        return try lhs.lshift_const(rhs)
+    }
+    
+    public static func >>(lhs: VIPSImage, rhs: Int) throws -> VIPSImage {
+        return try lhs.rshift_const(rhs)
     }
 }

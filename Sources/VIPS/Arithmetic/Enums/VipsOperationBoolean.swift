@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsOperationBoolean = Cvips.VipsOperationBoolean
+
 extension VipsOperationBoolean {
     public static var and: Self { VIPS_OPERATION_BOOLEAN_AND }
     public static var or: Self { VIPS_OPERATION_BOOLEAN_OR }

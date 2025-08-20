@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsOperationMath = Cvips.VipsOperationMath
+
 extension VipsOperationMath {
     public static var sin: Self { VIPS_OPERATION_MATH_SIN }
     public static var cos: Self { VIPS_OPERATION_MATH_COS }
