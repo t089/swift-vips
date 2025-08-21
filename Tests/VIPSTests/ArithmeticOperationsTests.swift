@@ -835,13 +835,16 @@ struct ArithmeticOperationsTests {
         // Get statistics
         let stats = try img.stats()
         
-        // Verify we got statistics
-        _ = stats
+        // In VIPS 8.15, stats returns different dimensions
+        // Width corresponds to statistics columns (10 stats)
+        // Height corresponds to bands (1 band = 2 rows for min/max positions)
+        let width = stats.width
+        let height = stats.height
         
-        // TODO: Fix type inference issue with width/height properties in tests
-        // Stats should return an image with width = bands, height = 10
-        // #expect(stats.width == 1)  // 1 band
-        // #expect(stats.height == 10)  // 10 statistics rows
+        // The stats image contains statistics in a specific format
+        // For VIPS 8.15.1, it returns width=10 (number of statistics), height=2
+        #expect(width == 10)  // 10 statistics columns
+        #expect(height == 2)  // 2 rows for this version
     }
     
     @Test
@@ -852,17 +855,17 @@ struct ArithmeticOperationsTests {
         // Get profiles (averages across rows and columns)
         let profiles = try img.profile()
         
-        // Verify we got both columns and rows profiles
-        _ = profiles.columns
-        _ = profiles.rows
-        
-        // TODO: Fix type inference issue with width/height properties in tests
         // Column profile should be 3x1 (average of each column)
         // Row profile should be 1x3 (average of each row)
-        // #expect(profiles.columns.width == 3)
-        // #expect(profiles.columns.height == 1)
-        // #expect(profiles.rows.width == 1)
-        // #expect(profiles.rows.height == 3)
+        let colWidth = profiles.columns.width
+        let colHeight = profiles.columns.height
+        let rowWidth = profiles.rows.width
+        let rowHeight = profiles.rows.height
+        
+        #expect(colWidth == 3)
+        #expect(colHeight == 1)
+        #expect(rowWidth == 1)
+        #expect(rowHeight == 3)
     }
     
     @Test
@@ -873,17 +876,17 @@ struct ArithmeticOperationsTests {
         // Project to get row and column sums
         let projection = try img.project()
         
-        // Verify we got both rows and columns projections
-        _ = projection.rows
-        _ = projection.columns
-        
-        // TODO: Fix type inference issue with width/height properties in tests
         // Each row should have same sum (all pixels are 0)
         // Each column should have same sum (all pixels are 0)
-        // #expect(projection.rows.width == 1)
-        // #expect(projection.rows.height == 3)
-        // #expect(projection.columns.width == 3)
-        // #expect(projection.columns.height == 1)
+        let rowWidth = projection.rows.width
+        let rowHeight = projection.rows.height
+        let colWidth = projection.columns.width
+        let colHeight = projection.columns.height
+        
+        #expect(rowWidth == 1)
+        #expect(rowHeight == 3)
+        #expect(colWidth == 3)
+        #expect(colHeight == 1)
     }
     
     // MARK: - Band Operations Tests
