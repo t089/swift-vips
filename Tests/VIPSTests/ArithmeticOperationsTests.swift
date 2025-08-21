@@ -829,22 +829,88 @@ struct ArithmeticOperationsTests {
     
     @Test
     func testStats() throws {
-        // Create an image with varying values
-        let img = try VIPSImage.black(10, 10, bands: 1)
+        // Create a simple test image with uniform values for predictable statistics
+        // Using a 4x4 image with value 5.0 everywhere for simple verification
+        let testImg = try VIPSImage.black(4, 4, bands: 1).linear(0.0, 5.0)
         
         // Get statistics
-        let stats = try img.stats()
+        let stats = try testImg.stats()
         
-        // In VIPS 8.15, stats returns different dimensions
-        // Width corresponds to statistics columns (10 stats)
-        // Height corresponds to bands (1 band = 2 rows for min/max positions)
-        let width = stats.width
-        let height = stats.height
+        // Verify the stats image dimensions
+        // Stats image format:
+        // - Width = 10 (number of statistics columns)
+        // - Height = n+1 where n is number of bands
+        // For a 1-band image: height = 2 (row 0: all bands together, row 1: band 0)
+        #expect(stats.width == 10, "Stats should have 10 columns for 10 statistics")
+        #expect(stats.height == 2, "Stats should have 2 rows for 1-band image")
         
-        // The stats image contains statistics in a specific format
-        // For VIPS 8.15.1, it returns width=10 (number of statistics), height=2
-        #expect(width == 10)  // 10 statistics columns
-        #expect(height == 2)  // 2 rows for this version
+        // The 10 statistics columns are documented as follows:
+        // Column 0: minimum
+        // Column 1: maximum
+        // Column 2: sum
+        // Column 3: sum of squares
+        // Column 4: mean
+        // Column 5: standard deviation
+        // Column 6: x coordinate of minimum
+        // Column 7: y coordinate of minimum
+        // Column 8: x coordinate of maximum
+        // Column 9: y coordinate of maximum
+        
+        // For an image with all values = 5.0:
+        // - Minimum = 5.0
+        // - Maximum = 5.0
+        // - Sum = 5.0 * 16 = 80.0
+        // - Sum of squares = 5.0² * 16 = 400.0
+        // - Mean = 5.0
+        // - Standard deviation = 0.0 (no variation)
+        // - Min/max coordinates: could be any pixel (typically 0,0)
+        
+        // Verify using convenience methods
+        let testMin = try testImg.min()
+        let testMax = try testImg.max()
+        let testAvg = try testImg.avg()
+        let testDev = try testImg.deviate()
+        
+        #expect(testMin == 5.0, "Minimum should be 5.0")
+        #expect(testMax == 5.0, "Maximum should be 5.0")
+        #expect(testAvg == 5.0, "Mean should be 5.0")
+        #expect(testDev == 0.0, "Standard deviation should be 0.0 for uniform image")
+        
+        // Test with a more complex image using identity LUT
+        // Identity creates a gradient of values
+            
+        // Add a known pattern by using multiple linear operations
+        // Create an image with values 1, 2, 3, ... 16
+        let patternImg = try VIPSImage.identity(bands: 1, size: 16)
+            .cast(.double)
+            .linear(1.0, 1.0)  // Values 1 to 16
+        
+        // For identity image scaled to 1-16:
+        // Min = 1, Max = 16, Mean = 8.5
+        let patternStats = try patternImg.stats()
+        #expect(patternStats.width == 10, "Pattern stats should have 10 columns")
+        
+        // Additional test: multi-band image statistics
+        let band1 = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 2.0)  // All 2s
+        let band2 = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 4.0)  // All 4s
+        let multiBand = try band1.bandjoin([band2])
+        
+        let multiBandStats = try multiBand.stats()
+        
+        // For a 2-band image: height should be 3 (row 0: all bands, row 1: band 0, row 2: band 1)
+        #expect(multiBandStats.width == 10, "Multi-band stats should have 10 columns")
+        #expect(multiBandStats.height == 3, "Stats should have 3 rows for 2-band image")
+        
+        // Verify the statistics for each band
+        let band1Min = try band1.min()
+        let band1Max = try band1.max()
+        let band2Min = try band2.min()
+        let band2Max = try band2.max()
+        
+        #expect(band1Min == 2.0, "Band 1 minimum should be 2.0")
+        #expect(band1Max == 2.0, "Band 1 maximum should be 2.0")
+        #expect(band2Min == 4.0, "Band 2 minimum should be 4.0")
+        #expect(band2Max == 4.0, "Band 2 maximum should be 4.0")
     }
     
     @Test
