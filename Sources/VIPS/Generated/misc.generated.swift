@@ -836,6 +836,9 @@ extension VIPSImage {
         }
     }
 
+    // VipsSdfShape is not available in the current version of libvips
+    // Commenting out until the library is updated
+    /*
     /// Create an sdf image
     ///
     /// - Parameters:
@@ -878,6 +881,7 @@ extension VIPSImage {
             try VIPSImage.call("sdf", options: &opt)
         }
     }
+    */
 
     /// Check sequential access
     ///

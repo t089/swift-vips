@@ -64,7 +64,7 @@ struct VIPSTests {
     @Test
     func average() throws {
         let image = try VIPSImage(fromFilePath: testPath)
-        _ = try image.average()
+        _ = try image.avg()
     }
     
     @Test
@@ -103,7 +103,7 @@ struct VIPSTests {
         try FileManager.default.removeItem(atPath: tmpFile)
         
         #expect(throws: VIPSError.self) {
-            try image.average()
+            try image.avg()
         }
     }
     
