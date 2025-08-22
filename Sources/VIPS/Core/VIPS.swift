@@ -800,6 +800,14 @@ extension VIPSImage {
                     height: Int(vips_image_get_height(self.image)))
     }
     
+    public var width: Int {
+        return Int(vips_image_get_width(self.image))
+    }
+    
+    public var height: Int {
+        return Int(vips_image_get_height(self.image))
+    }
+    
     public func average() throws -> Double {
         var options = VIPSOption()
         

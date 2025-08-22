@@ -5,7 +5,7 @@
 //  Created by Tobias Haeberle on 29.10.21.
 //
 
-
+import Cvips
 
 extension VIPSImage {
     /// Pass an image through a linear transform, ie. (out = in * a + b). Output is float 
@@ -1346,5 +1346,380 @@ extension VIPSImage {
     
     public static func >>(lhs: VIPSImage, rhs: Int) throws -> VIPSImage {
         return try lhs.rshift(rhs)
+    }
+}
+
+// MARK: - Complex Number Operations
+
+extension VIPSImage {
+    /// Combine two images as a complex image.
+    ///
+    /// This operation combines two real images to create a complex image.
+    /// The first image becomes the real part and the second image becomes the imaginary part.
+    /// Both images must have the same dimensions and number of bands.
+    ///
+    /// - Parameter imaginary: The image to use as the imaginary part
+    /// - Returns: A new complex image
+    /// - Throws: `VIPSError` if the operation fails or images are incompatible
+    public func complex(_ imaginary: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, imaginary]) { out in
+            var opt = VIPSOption()
+            
+            opt.set("left", value: self.image)
+            opt.set("right", value: imaginary.image)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("complexform", options: &opt)
+        }
+    }
+    
+    /// Convert real and imaginary images to complex form.
+    ///
+    /// This is an alias for `complex(_:)` to match the libvips naming.
+    ///
+    /// - Parameter imaginary: The image to use as the imaginary part
+    /// - Returns: A new complex image
+    /// - Throws: `VIPSError` if the operation fails
+    public func complexform(_ imaginary: VIPSImage) throws -> VIPSImage {
+        return try complex(imaginary)
+    }
+    
+    /// Perform a complex operation on an image.
+    ///
+    /// This operation performs various transformations on complex images:
+    /// - `.polar`: Convert complex to polar form (magnitude and phase)
+    /// - `.rect`: Convert polar to rectangular form (real and imaginary)
+    /// - `.conj`: Complex conjugate
+    ///
+    /// - Parameter operation: The complex operation to perform
+    /// - Returns: A new image with the operation applied
+    /// - Throws: `VIPSError` if the operation fails
+    public func complex(_ operation: VipsOperationComplex) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("cmplx", value: operation)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("complex", options: &opt)
+        }
+    }
+    
+    /// Convert complex image to polar form.
+    ///
+    /// Converts a complex image from rectangular (real, imaginary) to polar (magnitude, phase) form.
+    /// The output has two bands: magnitude and phase (in degrees).
+    ///
+    /// - Returns: A new image in polar form
+    /// - Throws: `VIPSError` if the operation fails
+    public func polar() throws -> VIPSImage {
+        return try complex(.polar)
+    }
+    
+    /// Convert polar image to rectangular form.
+    ///
+    /// Converts a complex image from polar (magnitude, phase) to rectangular (real, imaginary) form.
+    /// The input should have two bands: magnitude and phase (in degrees).
+    ///
+    /// - Returns: A new complex image in rectangular form
+    /// - Throws: `VIPSError` if the operation fails
+    public func rect() throws -> VIPSImage {
+        return try complex(.rect)
+    }
+    
+    /// Calculate the complex conjugate.
+    ///
+    /// For a complex number a + bi, returns a - bi.
+    /// This operation negates the imaginary part while keeping the real part unchanged.
+    ///
+    /// - Returns: A new image with the complex conjugate
+    /// - Throws: `VIPSError` if the operation fails
+    public func conj() throws -> VIPSImage {
+        return try complex(.conj)
+    }
+    
+    /// Extract a component from a complex image.
+    ///
+    /// This operation extracts either the real or imaginary component from a complex image.
+    ///
+    /// - Parameter get: The component to extract (.real or .imag)
+    /// - Returns: A new real-valued image containing the specified component
+    /// - Throws: `VIPSError` if the operation fails
+    public func complexget(_ get: VipsOperationComplexget) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("get", value: get)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("complexget", options: &opt)
+        }
+    }
+    
+    /// Extract the real part from a complex image.
+    ///
+    /// Returns a real-valued image containing only the real component of the complex input.
+    ///
+    /// - Returns: A new image containing the real part
+    /// - Throws: `VIPSError` if the operation fails
+    public func real() throws -> VIPSImage {
+        return try complexget(.real)
+    }
+    
+    /// Extract the imaginary part from a complex image.
+    ///
+    /// Returns a real-valued image containing only the imaginary component of the complex input.
+    ///
+    /// - Returns: A new image containing the imaginary part
+    /// - Throws: `VIPSError` if the operation fails
+    public func imag() throws -> VIPSImage {
+        return try complexget(.imag)
+    }
+    
+    /// Perform a binary complex operation on two images.
+    ///
+    /// Currently supports cross-phase operation for comparing phase between two complex images.
+    ///
+    /// - Parameters:
+    ///   - other: The second complex image
+    ///   - operation: The complex operation to perform
+    /// - Returns: A new image with the operation result
+    /// - Throws: `VIPSError` if the operation fails
+    public func complex2(_ other: VIPSImage, operation: VipsOperationComplex2) throws -> VIPSImage {
+        return try VIPSImage([self, other]) { out in
+            var opt = VIPSOption()
+            
+            opt.set("left", value: self.image)
+            opt.set("right", value: other.image)
+            opt.set("cmplx", value: operation)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("complex2", options: &opt)
+        }
+    }
+    
+    /// Calculate the cross-phase of two complex images.
+    ///
+    /// Computes the phase difference between two complex images.
+    /// Useful for phase correlation and related signal processing tasks.
+    ///
+    /// - Parameter other: The second complex image
+    /// - Returns: A new image containing the cross-phase
+    /// - Throws: `VIPSError` if the operation fails
+    public func crossPhase(_ other: VIPSImage) throws -> VIPSImage {
+        return try complex2(other, operation: .crossPhase)
+    }
+}
+
+// MARK: - Statistical Operations
+
+extension VIPSImage {
+    /// Sum an array of images element-wise.
+    ///
+    /// This operation sums an array of images pixel by pixel.
+    /// All images must have the same dimensions. If the images have different numbers of bands,
+    /// images with fewer bands are expanded by duplicating the last band.
+    ///
+    /// - Parameter images: Array of images to sum
+    /// - Returns: A new image containing the element-wise sum
+    /// - Throws: `VIPSError` if the operation fails or images are incompatible
+    public static func sum(_ images: [VIPSImage]) throws -> VIPSImage {
+        guard !images.isEmpty else {
+            throw VIPSError("Cannot sum empty array of images")
+        }
+        
+        guard images.count > 1 else {
+            // If only one image, return it directly
+            return images[0]
+        }
+        
+        return try VIPSImage(images) { out in
+            var opt = VIPSOption()
+            
+            // vips_sum expects an array of images
+            opt.set("in", value: images)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("sum", options: &opt)
+        }
+    }
+    
+    /// Calculate comprehensive statistics for an image.
+    ///
+    /// Returns an image containing statistics for each band:
+    /// - Row 0: minimum values
+    /// - Row 1: maximum values  
+    /// - Row 2: sum of all values
+    /// - Row 3: sum of squares
+    /// - Row 4: mean values
+    /// - Row 5: standard deviation
+    /// 
+    /// Additional rows may contain x and y coordinates of min/max values.
+    ///
+    /// - Returns: A new image containing statistics (width = number of bands, height = 10)
+    /// - Throws: `VIPSError` if the operation fails
+    public func stats() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("stats", options: &opt)
+        }
+    }
+    
+    /// Measure labeled regions in an image.
+    ///
+    /// This operation assumes the image contains labeled regions (connected components)
+    /// where each region has a unique integer label. It calculates statistics for each region.
+    ///
+    /// - Parameters:
+    ///   - h: Number of horizontal patches to divide the image into
+    ///   - v: Number of vertical patches to divide the image into
+    /// - Returns: A new image containing measurements for each region
+    /// - Throws: `VIPSError` if the operation fails
+    public func measure(h: Int = 1, v: Int = 1) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("out", value: &out)
+            opt.set("h", value: h)
+            opt.set("v", value: v)
+            
+            try VIPSImage.call("measure", options: &opt)
+        }
+    }
+    
+    /// Extract profiles from an image.
+    ///
+    /// Creates 1D profiles by averaging across rows and columns.
+    /// Returns two images: column profile (vertical average) and row profile (horizontal average).
+    ///
+    /// - Returns: A tuple containing (columns profile, rows profile)
+    /// - Throws: `VIPSError` if the operation fails
+    public func profile() throws -> (columns: VIPSImage, rows: VIPSImage) {
+        var columnsOut: UnsafeMutablePointer<VipsImage>?
+        var rowsOut: UnsafeMutablePointer<VipsImage>?
+        
+        var opt = VIPSOption()
+        
+        opt.set("in", value: self.image)
+        opt.set("columns", value: &columnsOut)
+        opt.set("rows", value: &rowsOut)
+        
+        try VIPSImage.call("profile", options: &opt)
+        
+        guard let colsPtr = columnsOut, let rowsPtr = rowsOut else {
+            throw VIPSError("Failed to get profile outputs")
+        }
+        
+        // Create output images with references to keep input alive
+        // Use the init with 'other' parameter to keep self alive
+        let columns = VIPSImage(self) { ptr in
+            ptr = colsPtr
+        }
+        
+        let rows = VIPSImage(self) { ptr in
+            ptr = rowsPtr
+        }
+        
+        return (columns, rows)
+    }
+    
+    /// Project rows and columns to get sums.
+    ///
+    /// Returns two 1D images containing the sum of each row and column.
+    /// Useful for creating projections and histograms.
+    ///
+    /// - Returns: A tuple containing (row sums, column sums)
+    /// - Throws: `VIPSError` if the operation fails
+    public func project() throws -> (rows: VIPSImage, columns: VIPSImage) {
+        var rowsOut: UnsafeMutablePointer<VipsImage>?
+        var columnsOut: UnsafeMutablePointer<VipsImage>?
+        
+        var opt = VIPSOption()
+        
+        opt.set("in", value: self.image)
+        opt.set("rows", value: &rowsOut)
+        opt.set("columns", value: &columnsOut)
+        
+        try VIPSImage.call("project", options: &opt)
+        
+        guard let rowsPtr = rowsOut, let colsPtr = columnsOut else {
+            throw VIPSError("Failed to get projection outputs")
+        }
+        
+        // Create output images with references to keep input alive
+        // Use the init with 'other' parameter to keep self alive
+        let rows = VIPSImage(self) { ptr in
+            ptr = rowsPtr
+        }
+        
+        let columns = VIPSImage(self) { ptr in
+            ptr = colsPtr
+        }
+        
+        return (rows, columns)
+    }
+}
+
+// MARK: - Band Operations
+
+extension VIPSImage {
+    /// Perform a boolean operation across bands.
+    ///
+    /// Reduces multiple bands to a single band by performing the specified
+    /// boolean operation on corresponding pixels across all bands.
+    ///
+    /// - Parameter operation: The boolean operation to perform
+    /// - Returns: A new single-band image
+    /// - Throws: `VIPSError` if the operation fails
+    public func bandbool(_ operation: VipsOperationBoolean) throws -> VIPSImage {
+        return try VIPSImage(self) { out in
+            var opt = VIPSOption()
+            
+            opt.set("in", value: self.image)
+            opt.set("boolean", value: operation)
+            opt.set("out", value: &out)
+            
+            try VIPSImage.call("bandbool", options: &opt)
+        }
+    }
+    
+    /// Perform bitwise AND operation across bands.
+    ///
+    /// Reduces multiple bands to a single band by performing bitwise AND
+    /// on corresponding pixels across all bands.
+    ///
+    /// - Returns: A new single-band image
+    /// - Throws: `VIPSError` if the operation fails
+    public func bandand() throws -> VIPSImage {
+        return try bandbool(.and)
+    }
+    
+    /// Perform bitwise OR operation across bands.
+    ///
+    /// Reduces multiple bands to a single band by performing bitwise OR
+    /// on corresponding pixels across all bands.
+    ///
+    /// - Returns: A new single-band image
+    /// - Throws: `VIPSError` if the operation fails
+    public func bandor() throws -> VIPSImage {
+        return try bandbool(.or)
+    }
+    
+    /// Perform bitwise XOR (exclusive OR) operation across bands.
+    ///
+    /// Reduces multiple bands to a single band by performing bitwise XOR
+    /// on corresponding pixels across all bands.
+    ///
+    /// - Returns: A new single-band image
+    /// - Throws: `VIPSError` if the operation fails
+    public func bandeor() throws -> VIPSImage {
+        return try bandbool(.eor)
     }
 }

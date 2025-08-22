@@ -717,4 +717,315 @@ struct ArithmeticOperationsTests {
         let avg = try result.avg()
         #expect(abs(avg - 4.0) < 0.01)
     }
+    
+    // MARK: - Complex Number Operations Tests
+    
+    @Test
+    func testComplexForm() throws {
+        // Create real and imaginary parts
+        let real = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 3.0)  // real = 3
+        let imag = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 4.0)  // imag = 4
+        
+        // Combine into complex image
+        let complex = try real.complex(imag)
+        
+        // Complex image should have format COMPLEX
+        #expect(complex.bands == 1)
+        
+        // Alternative method
+        let complex2 = try real.complexform(imag)
+        #expect(complex2.bands == 1)
+    }
+    
+    @Test
+    func testPolarAndRect() throws {
+        // Create a complex number 3 + 4i
+        let real = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 3.0)
+        let imag = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 4.0)
+        let complex = try real.complex(imag)
+        
+        // Convert to polar form
+        let polar = try complex.polar()
+        
+        // Magnitude should be 5 (sqrt(3² + 4²))
+        // Phase should be atan(4/3) ≈ 53.13 degrees
+        
+        // Convert back to rectangular
+        let rect = try polar.rect()
+        
+        // Should get back approximately 3 + 4i
+        let realPart = try rect.real()
+        let imagPart = try rect.imag()
+        
+        let realAvg = try realPart.avg()
+        let imagAvg = try imagPart.avg()
+        
+        #expect(abs(realAvg - 3.0) < 0.1)
+        #expect(abs(imagAvg - 4.0) < 0.1)
+    }
+    
+    @Test
+    func testComplexConjugate() throws {
+        // Create complex number 2 + 3i
+        let real = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 2.0)
+        let imag = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 3.0)
+        let complex = try real.complex(imag)
+        
+        // Get conjugate (2 - 3i)
+        let conjugate = try complex.conj()
+        
+        // Extract parts
+        let conjReal = try conjugate.real()
+        let conjImag = try conjugate.imag()
+        
+        // Real part should remain 2
+        #expect(abs(try conjReal.avg() - 2.0) < 0.01)
+        // Imaginary part should be -3
+        #expect(abs(try conjImag.avg() - (-3.0)) < 0.01)
+    }
+    
+    @Test
+    func testRealAndImag() throws {
+        // Create complex number 5 + 7i
+        let real = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 5.0)
+        let imag = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 7.0)
+        let complex = try real.complex(imag)
+        
+        // Extract real and imaginary parts
+        let extractedReal = try complex.real()
+        let extractedImag = try complex.imag()
+        
+        #expect(abs(try extractedReal.avg() - 5.0) < 0.01)
+        #expect(abs(try extractedImag.avg() - 7.0) < 0.01)
+    }
+    
+    // MARK: - Statistical Operations Tests
+    
+    @Test
+    func testSum() throws {
+        // Create three images with different values
+        let img1 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 10.0)
+        let img2 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 20.0)
+        let img3 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 30.0)
+        
+        // Sum them
+        let sum = try VIPSImage.sum([img1, img2, img3])
+        
+        // Should be 10 + 20 + 30 = 60 per pixel
+        let avg = try sum.avg()
+        #expect(abs(avg - 60.0) < 0.01)
+    }
+    
+    @Test
+    func testSumSingleImage() throws {
+        let img = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 42.0)
+        
+        // Sum of single image should return the image itself
+        let sum = try VIPSImage.sum([img])
+        
+        let avg = try sum.avg()
+        #expect(abs(avg - 42.0) < 0.01)
+    }
+    
+    @Test
+    func testStats() throws {
+        // Create a simple test image with uniform values for predictable statistics
+        // Using a 4x4 image with value 5.0 everywhere for simple verification
+        let testImg = try VIPSImage.black(4, 4, bands: 1).linear(0.0, 5.0)
+        
+        // Get statistics
+        let stats = try testImg.stats()
+        
+        // Verify the stats image dimensions
+        // Stats image format:
+        // - Width = 10 (number of statistics columns)
+        // - Height = n+1 where n is number of bands
+        // For a 1-band image: height = 2 (row 0: all bands together, row 1: band 0)
+        #expect(stats.width == 10, "Stats should have 10 columns for 10 statistics")
+        #expect(stats.height == 2, "Stats should have 2 rows for 1-band image")
+        
+        // The 10 statistics columns are documented as follows:
+        // Column 0: minimum
+        // Column 1: maximum
+        // Column 2: sum
+        // Column 3: sum of squares
+        // Column 4: mean
+        // Column 5: standard deviation
+        // Column 6: x coordinate of minimum
+        // Column 7: y coordinate of minimum
+        // Column 8: x coordinate of maximum
+        // Column 9: y coordinate of maximum
+        
+        // Read the actual statistics from row 0 (all bands together)
+        // For a 4x4 image with all values = 5.0:
+        let row0Stats = try (0..<10).map { x in
+            try stats.getpoint(x: x, y: 0)[0]
+        }
+        
+        // Verify each statistic:
+        #expect(row0Stats[0] == 5.0, "Column 0 (minimum) should be 5.0, got \(row0Stats[0])")
+        #expect(row0Stats[1] == 5.0, "Column 1 (maximum) should be 5.0, got \(row0Stats[1])")
+        #expect(row0Stats[2] == 80.0, "Column 2 (sum) should be 80.0 (5.0 * 16), got \(row0Stats[2])")
+        #expect(row0Stats[3] == 400.0, "Column 3 (sum of squares) should be 400.0 (25 * 16), got \(row0Stats[3])")
+        #expect(row0Stats[4] == 5.0, "Column 4 (mean) should be 5.0, got \(row0Stats[4])")
+        #expect(row0Stats[5] == 0.0, "Column 5 (std dev) should be 0.0, got \(row0Stats[5])")
+        // Coordinates can be any pixel since all values are the same
+        #expect(row0Stats[6] >= 0 && row0Stats[6] < 4, "Column 6 (x of min) should be valid coordinate")
+        #expect(row0Stats[7] >= 0 && row0Stats[7] < 4, "Column 7 (y of min) should be valid coordinate")
+        #expect(row0Stats[8] >= 0 && row0Stats[8] < 4, "Column 8 (x of max) should be valid coordinate")
+        #expect(row0Stats[9] >= 0 && row0Stats[9] < 4, "Column 9 (y of max) should be valid coordinate")
+        
+        // Test with a more complex image with varied values
+        // For testing varied values, let's use the identity LUT
+        // Identity creates a 256x1 image with values 0-255
+        let identityImg = try VIPSImage.identity(bands: 1, size: 256)
+            .cast(.double)
+        
+        // Extract just the first 9 pixels using crop
+        let variedImg = try identityImg.crop(left: 0, top: 0, width: 9, height: 1)
+            .linear(1.0, 1.0)  // Add 1 to get values 1-9
+        
+        let variedStats = try variedImg.stats()
+        #expect(variedStats.width == 10, "Varied stats should have 10 columns")
+        
+        // Read statistics for cropped identity image (values 1-9)
+        let variedRow0 = try (0..<10).map { x in
+            try variedStats.getpoint(x: x, y: 0)[0]
+        }
+        
+        // Verify statistics for values 1-9:
+        #expect(variedRow0[0] == 1.0, "Minimum should be 1.0, got \(variedRow0[0])")
+        #expect(variedRow0[1] == 9.0, "Maximum should be 9.0, got \(variedRow0[1])")
+        // Sum: 1+2+3+4+5+6+7+8+9 = 45
+        #expect(variedRow0[2] == 45.0, "Sum should be 45.0, got \(variedRow0[2])")
+        // Sum of squares: 1+4+9+16+25+36+49+64+81 = 285
+        #expect(variedRow0[3] == 285.0, "Sum of squares should be 285.0, got \(variedRow0[3])")
+        // Mean: 45/9 = 5
+        #expect(variedRow0[4] == 5.0, "Mean should be 5.0, got \(variedRow0[4])")
+        // Std dev: For values 1-9, the population std dev is ~2.738
+        // The sample std dev would be slightly higher
+        #expect(abs(variedRow0[5] - 2.7386128) < 0.001, "Std dev should be ~2.738, got \(variedRow0[5])")
+        
+        // Additional test: multi-band image statistics
+        let band1 = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 2.0)  // All 2s
+        let band2 = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 4.0)  // All 4s
+        let multiBand = try band1.bandjoin([band2])
+        
+        let multiBandStats = try multiBand.stats()
+        
+        // For a 2-band image: height should be 3 (row 0: all bands, row 1: band 0, row 2: band 1)
+        #expect(multiBandStats.width == 10, "Multi-band stats should have 10 columns")
+        #expect(multiBandStats.height == 3, "Stats should have 3 rows for 2-band image")
+        
+        // Verify statistics for band 0 (row 1) from the stats image
+        let band0Stats = try (0..<10).map { x in
+            try multiBandStats.getpoint(x: x, y: 1)[0]
+        }
+        #expect(band0Stats[0] == 2.0, "Band 0 minimum should be 2.0, got \(band0Stats[0])")
+        #expect(band0Stats[1] == 2.0, "Band 0 maximum should be 2.0, got \(band0Stats[1])")
+        #expect(band0Stats[2] == 8.0, "Band 0 sum should be 8.0 (2.0 * 4), got \(band0Stats[2])")
+        #expect(band0Stats[3] == 16.0, "Band 0 sum of squares should be 16.0 (4 * 4), got \(band0Stats[3])")
+        #expect(band0Stats[4] == 2.0, "Band 0 mean should be 2.0, got \(band0Stats[4])")
+        #expect(band0Stats[5] == 0.0, "Band 0 std dev should be 0.0, got \(band0Stats[5])")
+        
+        // Verify statistics for band 1 (row 2) from the stats image
+        let band1Stats = try (0..<10).map { x in
+            try multiBandStats.getpoint(x: x, y: 2)[0]
+        }
+        #expect(band1Stats[0] == 4.0, "Band 1 minimum should be 4.0, got \(band1Stats[0])")
+        #expect(band1Stats[1] == 4.0, "Band 1 maximum should be 4.0, got \(band1Stats[1])")
+        #expect(band1Stats[2] == 16.0, "Band 1 sum should be 16.0 (4.0 * 4), got \(band1Stats[2])")
+        #expect(band1Stats[3] == 64.0, "Band 1 sum of squares should be 64.0 (16 * 4), got \(band1Stats[3])")
+        #expect(band1Stats[4] == 4.0, "Band 1 mean should be 4.0, got \(band1Stats[4])")
+        #expect(band1Stats[5] == 0.0, "Band 1 std dev should be 0.0, got \(band1Stats[5])")
+    }
+    
+    @Test
+    func testProfile() throws {
+        // Create a simple 3x3 image with known values
+        let img = try VIPSImage.black(3, 3, bands: 1).linear(1.0, 1.0)
+        
+        // Get profiles (averages across rows and columns)
+        let profiles = try img.profile()
+        
+        // Column profile should be 3x1 (average of each column)
+        // Row profile should be 1x3 (average of each row)
+        let colWidth = profiles.columns.width
+        let colHeight = profiles.columns.height
+        let rowWidth = profiles.rows.width
+        let rowHeight = profiles.rows.height
+        
+        #expect(colWidth == 3)
+        #expect(colHeight == 1)
+        #expect(rowWidth == 1)
+        #expect(rowHeight == 3)
+    }
+    
+    @Test
+    func testProject() throws {
+        // Create a simple 3x3 image with known values
+        let img = try VIPSImage.black(3, 3, bands: 1).linear(1.0, 0.0)
+        
+        // Project to get row and column sums
+        let projection = try img.project()
+        
+        // Each row should have same sum (all pixels are 0)
+        // Each column should have same sum (all pixels are 0)
+        let rowWidth = projection.rows.width
+        let rowHeight = projection.rows.height
+        let colWidth = projection.columns.width
+        let colHeight = projection.columns.height
+        
+        #expect(rowWidth == 1)
+        #expect(rowHeight == 3)
+        #expect(colWidth == 3)
+        #expect(colHeight == 1)
+    }
+    
+    // MARK: - Band Operations Tests
+    
+    @Test
+    func testBandAnd() throws {
+        // Create multi-band image
+        let band1 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 7.0).cast(.uchar)  // 0b0111
+        let band2 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 5.0).cast(.uchar)  // 0b0101
+        let img = try band1.bandjoin([band2])
+        
+        // AND across bands: 7 & 5 = 5
+        let result = try img.bandand()
+        
+        #expect(result.bands == 1)
+        let avg = try result.avg()
+        #expect(abs(avg - 5.0) < 0.01)
+    }
+    
+    @Test
+    func testBandOr() throws {
+        // Create multi-band image
+        let band1 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 4.0).cast(.uchar)  // 0b0100
+        let band2 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 2.0).cast(.uchar)  // 0b0010
+        let img = try band1.bandjoin([band2])
+        
+        // OR across bands: 4 | 2 = 6
+        let result = try img.bandor()
+        
+        #expect(result.bands == 1)
+        let avg = try result.avg()
+        #expect(abs(avg - 6.0) < 0.01)
+    }
+    
+    @Test
+    func testBandEor() throws {
+        // Create multi-band image
+        let band1 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 7.0).cast(.uchar)  // 0b0111
+        let band2 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 3.0).cast(.uchar)  // 0b0011
+        let img = try band1.bandjoin([band2])
+        
+        // XOR across bands: 7 ^ 3 = 4
+        let result = try img.bandeor()
+        
+        #expect(result.bands == 1)
+        let avg = try result.avg()
+        #expect(abs(avg - 4.0) < 0.01)
+    }
 }

@@ -36,17 +36,17 @@ This document lists the libvips operations that still need to be implemented in 
 - ✅ `atan2` - Two-argument arctangent
 - ✅ `remainder` - Remainder after division
 
-### Complex Number Operations ❌
-- `complex` - Combine two images as complex
-- `complex2` - Perform complex operation
-- `complexform` - Convert real and imaginary to complex
-- `complexget` - Extract component from complex
-- `conj` - Complex conjugate
-- `cross_phase` - Cross phase of two complex images
-- `polar` - Convert complex to polar form
-- `rect` - Convert polar to rectangular form
-- `real` - Extract real part
-- `imag` - Extract imaginary part
+### Complex Number Operations ✅
+- ✅ `complex` - Combine two images as complex
+- ✅ `complex2` - Perform complex operation
+- ✅ `complexform` - Convert real and imaginary to complex
+- ✅ `complexget` - Extract component from complex
+- ✅ `conj` - Complex conjugate
+- ✅ `cross_phase` - Cross phase of two complex images
+- ✅ `polar` - Convert complex to polar form
+- ✅ `rect` - Convert polar to rectangular form
+- ✅ `real` - Extract real part
+- ✅ `imag` - Extract imaginary part
 
 ### Relational Operations ✅
 - `equal`, `notequal` - Equality comparison
@@ -54,19 +54,19 @@ This document lists the libvips operations that still need to be implemented in 
 - `more`, `moreeq` - Greater than comparisons
 - Const versions: `equal_const`, `notequal_const`, `less_const`, `lesseq_const`, `more_const`, `moreeq_const`
 
-### Boolean/Bitwise Operations 🎯
+### Boolean/Bitwise Operations ✅
 - ✅ `andimage`, `orimage` - Bitwise AND, OR (with `&` and `|` operators)
 - ✅ `eorimage` - Bitwise XOR (with `^` operator)
 - ✅ `lshift`, `rshift` - Bit shift operations (with `<<` and `>>` operators)
 - ✅ Const versions: `andimage_const`, `orimage_const`, `eorimage_const`, `lshift_const`, `rshift_const`
-- Band operations: `bandand`, `bandor`, `bandeor`
+- ✅ Band operations: `bandand`, `bandor`, `bandeor`
 
-### Statistical Operations 🎯
-- `sum` - Sum array of images
-- `stats` - Calculate multiple statistics
-- `measure` - Measure labeled regions
-- `profile` - Extract profile from image
-- `project` - Project rows/columns
+### Statistical Operations ✅
+- ✅ `sum` - Sum array of images
+- ✅ `stats` - Calculate multiple statistics
+- ✅ `measure` - Measure labeled regions
+- ✅ `profile` - Extract profile from image
+- ✅ `project` - Project rows/columns
 
 ## Color Space Operations
 
@@ -338,7 +338,7 @@ None currently implemented. These are specialized operations for image stitching
 5. **Statistical**: sum, stats, measure
 
 ### Low Priority
-1. **Complex Operations**: Complex number handling
+1. ~~**Complex Operations**: Complex number handling~~ (Completed)
 2. **Specialized Formats**: Medical imaging formats
 3. **Frequency Domain**: FFT operations
 4. **Mosaicing**: Image stitching operations
