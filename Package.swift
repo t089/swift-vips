@@ -34,6 +34,9 @@ let package = Package(
         .executableTarget(name: "vips-tool",
             dependencies: ["VIPS", "Cvips"]
         ),
+        .executableTarget(name: "stress_test",
+            dependencies: ["VIPS", "Cvips"]
+        ),
         .testTarget(
             name: "VIPSTests",
             dependencies: ["VIPS"],

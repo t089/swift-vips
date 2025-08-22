@@ -889,7 +889,7 @@ extension VIPSImage {
         let areaPtr = shim_vips_area(blob)
         let buffer = UnsafeRawBufferPointer(start: areaPtr!.pointee.data, count: Int(areaPtr!.pointee.length))
         
-        defer { vips_area_unref(shim_vips_area(blob)) }
+        // Note: Don't manually unref output blobs - vips_object_unref_outputs handles it
         
         return Array(buffer)
     }
@@ -915,7 +915,7 @@ extension VIPSImage {
         let areaPtr = shim_vips_area(blob)
         let buffer = UnsafeRawBufferPointer(start: areaPtr!.pointee.data, count: Int(areaPtr!.pointee.length))
         
-        defer { vips_area_unref(shim_vips_area(blob)) }
+        // Note: Don't manually unref output blobs - vips_object_unref_outputs handles it
         
         return Array(buffer)
     }
@@ -942,7 +942,7 @@ extension VIPSImage {
         let areaPtr = shim_vips_area(blob)
         let buffer = UnsafeRawBufferPointer(start: areaPtr!.pointee.data, count: Int(areaPtr!.pointee.length))
         
-        defer { vips_area_unref(shim_vips_area(blob)) }
+        // Note: Don't manually unref output blobs - vips_object_unref_outputs handles it
         
         return Array(buffer)
     }
@@ -1012,7 +1012,7 @@ extension VIPSImage {
         let areaPtr = shim_vips_area(blob)
         let buffer = UnsafeRawBufferPointer(start: areaPtr!.pointee.data, count: Int(areaPtr!.pointee.length))
         
-        defer { vips_area_unref(shim_vips_area(blob)) }
+        // Note: Don't manually unref output blobs - vips_object_unref_outputs handles it
         
         return Array(buffer)
     }
@@ -1063,7 +1063,7 @@ extension VIPSImage {
         let areaPtr = shim_vips_area(blob)
         let buffer = UnsafeRawBufferPointer(start: areaPtr!.pointee.data, count: Int(areaPtr!.pointee.length))
 
-        defer { vips_area_unref(shim_vips_area(blob)) }
+        // Note: Don't manually unref output blobs - vips_object_unref_outputs handles it
 
         return Array(buffer)
     }
@@ -1085,7 +1085,7 @@ extension VIPSImage {
         let areaPtr = shim_vips_area(blob)
         let buffer = UnsafeRawBufferPointer(start: areaPtr!.pointee.data, count: Int(areaPtr!.pointee.length))
         
-        defer { vips_area_unref(shim_vips_area(blob)) }
+        // Note: Don't manually unref output blobs - vips_object_unref_outputs handles it
         
         return Array(buffer)
     }
