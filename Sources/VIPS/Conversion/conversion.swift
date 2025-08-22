@@ -74,6 +74,7 @@ extension VIPSImage {
     // MARK: - Geometric Transforms
     
     /// Flip an image horizontally or vertically.
+    /// - Parameter direction: .horizontal or .vertical flip
     public func flip(direction: VIPSDirection) throws -> VIPSImage {
         try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -87,6 +88,7 @@ extension VIPSImage {
     }
     
     /// Rotate an image by a multiple of 90 degrees.
+    /// - Parameter angle: .d0, .d90, .d180, or .d270
     public func rot(angle: VIPSAngle) throws -> VIPSImage {
         try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -113,6 +115,7 @@ extension VIPSImage {
     }
     
     /// Rotate an image by a multiple of 45 degrees.
+    /// - Parameter angle: .d0, .d45, .d90, .d135, .d180, .d225, .d270, or .d315
     public func rot45(angle: VIPSAngle45) throws -> VIPSImage {
         try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -126,6 +129,13 @@ extension VIPSImage {
     }
     
     /// Embed an image in a larger image.
+    /// - Parameters:
+    ///   - x: Left edge of input in output
+    ///   - y: Top edge of input in output  
+    ///   - width: Output image width
+    ///   - height: Output image height
+    ///   - extend: How to generate extra pixels (.black, .copy, .repeat, .mirror, .white, .background)
+    ///   - background: Color for background pixels
     public func embed(
         x: Int,
         y: Int,
@@ -154,7 +164,10 @@ extension VIPSImage {
         }
     }
     
-    /// Zoom an image by an integer factor.
+    /// Zoom an image by integer factors.
+    /// - Parameters:
+    ///   - xfac: Horizontal zoom factor
+    ///   - yfac: Vertical zoom factor
     public func zoom(xfac: Int, yfac: Int) throws -> VIPSImage {
         try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -168,7 +181,10 @@ extension VIPSImage {
         }
     }
     
-    /// Wrap image edges.
+    /// Wrap image origin, moving pixels from one edge to the opposite.
+    /// - Parameters:
+    ///   - x: Horizontal shift
+    ///   - y: Vertical shift
     public func wrap(x: Int? = nil, y: Int? = nil) throws -> VIPSImage {
         try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -188,7 +204,16 @@ extension VIPSImage {
     
     // MARK: - Array/Band Operations
     
-    /// Join an array of images into a single image.
+    /// Join an array of images into a grid.
+    /// - Parameters:
+    ///   - images: Array of input images
+    ///   - across: Number of images per row
+    ///   - shim: Pixels between images
+    ///   - background: Color for spacing
+    ///   - halign: Horizontal alignment (.low, .centre, .high)
+    ///   - valign: Vertical alignment (.low, .centre, .high)
+    ///   - hspacing: Horizontal spacing
+    ///   - vspacing: Vertical spacing
     public static func arrayjoin(
         images: [VIPSImage],
         across: Int? = nil,
@@ -234,7 +259,10 @@ extension VIPSImage {
         }
     }
     
-    /// Rank filter across bands.
+    /// Band-wise rank filter - select the nth value across bands.
+    /// - Parameters:
+    ///   - images: Additional images to rank with this one
+    ///   - index: Which ranked value to select (0=min, -1=median, n-1=max)
     public func bandrank(images: [VIPSImage], index: Int? = nil) throws -> VIPSImage {
         let allImages = [self] + images
         
@@ -251,7 +279,8 @@ extension VIPSImage {
         }
     }
     
-    /// Fold bands up into width.
+    /// Fold bands up into x axis (width).
+    /// - Parameter factor: Fold by this factor (default uses number of bands)
     public func bandfold(factor: Int? = nil) throws -> VIPSImage {
         try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -266,7 +295,8 @@ extension VIPSImage {
         }
     }
     
-    /// Unfold bands from width.
+    /// Unfold x axis (width) into bands.
+    /// - Parameter factor: Unfold by this factor
     public func bandunfold(factor: Int? = nil) throws -> VIPSImage {
         try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -281,7 +311,7 @@ extension VIPSImage {
         }
     }
     
-    /// Band-wise average.
+    /// Calculate band-wise average, reducing bands to 1.
     public func bandmean() throws -> VIPSImage {
         try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -293,7 +323,8 @@ extension VIPSImage {
         }
     }
     
-    /// Most significant byte of an image.
+    /// Pick most-significant byte from an image.
+    /// - Parameter band: Band to extract MSB from (default 0)
     public func msb(band: Int? = nil) throws -> VIPSImage {
         try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -310,7 +341,10 @@ extension VIPSImage {
     
     // MARK: - Image Adjustments
     
-    /// Scale an image to 0-255.
+    /// Scale an image to uchar (0-255) range.
+    /// - Parameters:
+    ///   - exp: Exponent for log scale (default 0.25)
+    ///   - log: Use logarithmic scale
     public func scale(exp: Double? = nil, log: Bool? = nil) throws -> VIPSImage {
         try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -328,7 +362,10 @@ extension VIPSImage {
         }
     }
     
-    /// Flatten alpha channel to background.
+    /// Flatten alpha channel out of an image.
+    /// - Parameters:
+    ///   - background: Background color values
+    ///   - maxAlpha: Maximum value of alpha channel (default 255)
     public func flatten(background: [Double]? = nil, maxAlpha: Double? = nil) throws -> VIPSImage {
         try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -346,7 +383,8 @@ extension VIPSImage {
         }
     }
     
-    /// Premultiply image alpha.
+    /// Premultiply image alpha channel.
+    /// - Parameter maxAlpha: Maximum value of alpha channel (default 255)
     public func premultiply(maxAlpha: Double? = nil) throws -> VIPSImage {
         try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -361,7 +399,10 @@ extension VIPSImage {
         }
     }
     
-    /// Unpremultiply image alpha.
+    /// Unpremultiply image alpha channel.
+    /// - Parameters:
+    ///   - maxAlpha: Maximum value of alpha channel (default 255)
+    ///   - alphaBand: Band to use as alpha (default 3)
     public func unpremultiply(maxAlpha: Double? = nil, alphaBand: Int? = nil) throws -> VIPSImage {
         try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -380,6 +421,8 @@ extension VIPSImage {
     }
     
     /// Add an alpha channel.
+    /// Note: This is a convenience method - VIPS doesn't have a native addalpha operation.
+    /// It creates a fully opaque alpha channel (255) and joins it to the image.
     public func addalpha() throws -> VIPSImage {
         // Create a constant image for the alpha channel (fully opaque = 255)
         let alphaChannel = try VIPSImage.black(self.width, self.height, bands: 1).linear(0.0, 255.0)
@@ -389,7 +432,12 @@ extension VIPSImage {
     
     // MARK: - Conditional Operations
     
-    /// Use one image or another based on a condition.
+    /// Conditional image selection (ternary operation).
+    /// Non-zero pixels in condition select from in1, zero pixels select from in2.
+    /// - Parameters:
+    ///   - in1: Source for TRUE (non-zero) pixels
+    ///   - in2: Source for FALSE (zero) pixels
+    ///   - blend: Blend smoothly between images
     public func ifthenelse(in1: VIPSImage, in2: VIPSImage, blend: Bool? = nil) throws -> VIPSImage {
         try VIPSImage([self, in1, in2]) { out in
             var opt = VIPSOption()
@@ -408,7 +456,13 @@ extension VIPSImage {
     
     // MARK: - Image Composition
     
-    /// Insert an image into another.
+    /// Insert sub-image into main image at position.
+    /// - Parameters:
+    ///   - sub: Sub-image to insert
+    ///   - x: Left edge of sub in main
+    ///   - y: Top edge of sub in main
+    ///   - expand: Expand output to hold both images
+    ///   - background: Color for new pixels
     public func insert(
         sub: VIPSImage,
         x: Int,
@@ -436,6 +490,13 @@ extension VIPSImage {
     }
     
     /// Join two images along an edge.
+    /// - Parameters:
+    ///   - in2: Second image to join
+    ///   - direction: .horizontal (left-right) or .vertical (top-bottom)
+    ///   - expand: Expand output to hold both images
+    ///   - shim: Pixels between images
+    ///   - background: Color for new pixels
+    ///   - align: Alignment (.low, .centre, .high)
     public func join(
         in2: VIPSImage,
         direction: VIPSDirection,
