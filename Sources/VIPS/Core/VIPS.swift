@@ -229,6 +229,13 @@ public struct VIPSOption {
         g_value_set_int(&pair.value, gint(value))
         self.pairs.append(pair)
     }
+
+    public mutating func set(_ name: String, value: VIPSInterpolate) {
+        let pair = Pair(name: name, input: true)
+        g_value_init(&pair.value, vips_interpolate_get_type())
+        g_value_set_object(&pair.value, value.interpolate)
+        self.pairs.append(pair)
+    }
     
     public mutating func set<V>(_ name: String, value: V?) where V : BinaryInteger {
         guard let v = value else { return }
