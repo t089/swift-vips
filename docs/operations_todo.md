@@ -105,33 +105,33 @@ This document lists the libvips operations that still need to be implemented in 
 ### To Implement 🎯
 
 #### Geometric Transforms
-- `embed` - Embed image in larger image
-- `flip` - Flip horizontally/vertically
-- `rot90`, `rot180`, `rot270` - Fixed rotations
-- `rot45` - 45-degree rotation options
+- ✅ `embed` - Embed image in larger image
+- ✅ `flip` - Flip horizontally/vertically
+- ✅ `rot90`, `rot180`, `rot270` - Fixed rotations
+- ✅ `rot45` - 45-degree rotation options
 - `transpose3d` - 3D transpose
-- `wrap` - Wrap image edges
-- `zoom` - Integer zoom
+- ✅ `wrap` - Wrap image edges
+- ✅ `zoom` - Integer zoom
 
 #### Array/Band Operations
-- `arrayjoin` - Join array of images
-- `bandrank` - Rank filter across bands
-- `bandfold`, `bandunfold` - Fold/unfold bands
-- `bandmean` - Mean across bands
+- ✅ `arrayjoin` - Join array of images
+- ✅ `bandrank` - Rank filter across bands
+- ✅ `bandfold`, `bandunfold` - Fold/unfold bands
+- ✅ `bandmean` - Mean across bands
 - `bandbool` - Boolean operation across bands
-- `msb` - Most significant byte
+- ✅ `msb` - Most significant byte
 
 #### Image Adjustments
-- `scale` - Scale pixel values to 0-255
+- ✅ `scale` - Scale pixel values to 0-255
 - `byteswap` - Swap byte order
 - `falsecolour` - False color mapping
-- `flatten` - Flatten alpha against background
-- `premultiply`, `unpremultiply` - Alpha premultiplication
-- `addalpha` - Add alpha channel
-- `ifthenelse` - Conditional selection
+- ✅ `flatten` - Flatten alpha against background
+- ✅ `premultiply`, `unpremultiply` - Alpha premultiplication
+- ✅ `addalpha` - Add alpha channel
+- ✅ `ifthenelse` - Conditional selection
 - `switch` - Multi-way switch
-- `insert` - Insert sub-image
-- `join` - Join two images
+- ✅ `insert` - Insert sub-image
+- ✅ `join` - Join two images
 
 #### Data Conversion
 - `copy_file` - Copy with file metadata
