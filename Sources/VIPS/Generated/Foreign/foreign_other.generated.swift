@@ -10,17 +10,7 @@ import CvipsShim
 
 extension VIPSImage {
 
-    /// Load an Analyze 6.0 file. If `filename` is "fred.img", this will look for
-    /// an image header called "fred.hdr" and pixel data in "fred.img". You can
-    /// also load "fred" or "fred.hdr".
-    ///
-    /// Images are
-    /// loaded lazilly and byte-swapped, if necessary. The Analyze metadata is read
-    /// and attached.
-    ///
-    /// See also: vips_image_new_from_file().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load an analyze6 image
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -51,42 +41,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `skip`: skip this many lines at start of file
-    /// * `lines`: read this many lines from file
-    /// * `whitespace`: set of whitespace characters
-    /// * `separator`: set of separator characters
-    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
-    ///
-    /// Load a CSV (comma-separated values) file. The output image is always 1
-    /// band (monochrome), `VIPS_FORMAT_DOUBLE`. Use vips_bandfold() to turn
-    /// RGBRGBRGB mono images into colour iamges.
-    ///
-    /// Items in lines can be either floating point numbers in the C locale, or
-    /// strings enclosed in double-quotes ("), or empty.
-    /// You can use a backslash (\) within the quotes to escape special characters,
-    /// such as quote marks.
-    ///
-    /// `skip` sets the number of lines to skip at the start of the file.
-    /// Default zero.
-    ///
-    /// `lines` sets the number of lines to read from the file. Default -1,
-    /// meaning read all lines to end of file.
-    ///
-    /// `whitespace` sets the skippable whitespace characters.
-    /// Default space.
-    /// Whitespace characters are always run together.
-    ///
-    /// `separator` sets the characters that separate fields.
-    /// Default ;,tab. Separators are never run together.
-    ///
-    /// Use `fail_on` to set the type of error that will cause load to fail. By
-    /// default, loaders are permissive, that is, `VIPS_FAIL_ON_NONE`.
-    ///
-    /// See also: vips_image_new_from_file(), vips_bandfold().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load csv
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -133,19 +88,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `skip`: skip this many lines at start of file
-    /// * `lines`: read this many lines from file
-    /// * `whitespace`: set of whitespace characters
-    /// * `separator`: set of separator characters
-    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
-    ///
-    /// Exactly as vips_csvload(), but read from a source.
-    ///
-    /// See also: vips_csvload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load csv
     ///
     /// - Parameters:
     ///   - source: Source to load from
@@ -520,19 +463,7 @@ extension VIPSImage {
             try VIPSImage.call("dzsave_target", options: &opt)
     }
 
-    /// Read a FITS image file into a VIPS image.
-    ///
-    /// This operation can read images with up to three dimensions. Any higher
-    /// dimensions must be empty.
-    ///
-    /// It can read 8, 16 and 32-bit integer images, signed and unsigned, float and
-    /// double.
-    ///
-    /// FITS metadata is attached with the "fits-" prefix.
-    ///
-    /// See also: vips_image_new_from_file().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load a fits image
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -563,9 +494,7 @@ extension VIPSImage {
         }
     }
 
-    /// Exactly as vips_fitsload(), but read from a source.
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load fits from a source
     ///
     /// - Parameters:
     ///   - source: Source to load from
@@ -625,27 +554,7 @@ extension VIPSImage {
             try VIPSImage.call("fitssave", options: &opt)
     }
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, load this page
-    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
-    ///
-    /// Read a JPEG2000 image. The loader supports 8, 16 and 32-bit int pixel
-    /// values, signed and unsigned. It supports greyscale, RGB, YCC, CMYK and
-    /// multispectral colour spaces. It will read any ICC profile on the image.
-    ///
-    /// It will only load images where all channels have the same format.
-    ///
-    /// Use `page` to set the page to load, where page 0 is the base resolution
-    /// image and higher-numbered pages are x2 reductions. Use the metadata item
-    /// "n-pages" to find the number of pyramid layers.
-    ///
-    /// Use `fail_on` to set the type of error that will cause load to fail. By
-    /// default, loaders are permissive, that is, `VIPS_FAIL_ON_NONE`.
-    ///
-    /// See also: vips_image_new_from_file().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load jpeg2000 image
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -680,17 +589,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, load this page
-    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
-    ///
-    /// Exactly as vips_jp2kload(), but read from a buffer.
-    ///
-    /// You must not free the buffer while `out` is active. The
-    /// `VipsObject`::postclose signal on `out` is a good place to free.
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load jpeg2000 image
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -736,14 +635,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, load this page
-    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
-    ///
-    /// Exactly as vips_jp2kload(), but read from a source.
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load jpeg2000 image
     ///
     /// - Parameters:
     ///   - source: Source to load from
@@ -932,14 +824,7 @@ extension VIPSImage {
             try VIPSImage.call("jp2ksave_target", options: &opt)
     }
 
-    /// Read a JPEG-XL image.
-    ///
-    /// The JPEG-XL loader and saver are experimental features and may change
-    /// in future libvips versions.
-    ///
-    /// See also: vips_image_new_from_file().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load jpeg-xl image
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -978,9 +863,7 @@ extension VIPSImage {
         }
     }
 
-    /// Exactly as vips_jxlload(), but read from a buffer.
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load jpeg-xl image
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -1030,9 +913,7 @@ extension VIPSImage {
         }
     }
 
-    /// Exactly as vips_jxlload(), but read from a source.
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load jpeg-xl image
     ///
     /// - Parameters:
     ///   - source: Source to load from
@@ -1225,37 +1106,7 @@ extension VIPSImage {
             try VIPSImage.call("jxlsave_target", options: &opt)
     }
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, load from this page
-    /// * `n`: %gint, load this many pages
-    /// * `density`: string, canvas resolution for rendering vector formats like SVG
-    ///
-    /// Read in an image using libMagick, the ImageMagick library. This library can
-    /// read more than 80 file formats, including SVG, BMP, EPS, DICOM and many
-    /// others.
-    /// The reader can handle any ImageMagick image, including the float and double
-    /// formats. It will work with any quantum size, including HDR. Any metadata
-    /// attached to the libMagick image is copied on to the VIPS image.
-    ///
-    /// The reader should also work with most versions of GraphicsMagick. See the
-    /// "--with-magickpackage" configure option.
-    ///
-    /// The file format is usually guessed from the filename suffix, or sniffed
-    /// from the file contents.
-    ///
-    /// Normally it will only load the first image in a many-image sequence (such
-    /// as a GIF or a PDF). Use `page` and `n` to set the start page and number of
-    /// pages to load. Set `n` to -1 to load all pages from `page` onwards.
-    ///
-    /// `density` is "WxH" in DPI, e.g. "600x300" or "600" (default is "72x72"). See
-    /// the [density
-    /// docs](http://www.imagemagick.org/script/command-line-options.php`density`)
-    /// on the imagemagick website.
-    ///
-    /// See also: vips_image_new_from_file().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load file with imagemagick7
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -1298,21 +1149,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, load from this page
-    /// * `n`: %gint, load this many pages
-    /// * `density`: string, canvas resolution for rendering vector formats like SVG
-    ///
-    /// Read an image memory block using libMagick into a VIPS image. Exactly as
-    /// vips_magickload(), but read from a memory source.
-    ///
-    /// You must not free the buffer while `out` is active. The
-    /// `VipsObject`::postclose signal on `out` is a good place to free.
-    ///
-    /// See also: vips_magickload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load buffer with imagemagick7
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -1471,16 +1308,7 @@ extension VIPSImage {
         return VIPSBlob(vipsBlob)
     }
 
-    /// Read a Matlab save file into a VIPS image.
-    ///
-    /// This operation searches the save
-    /// file for the first array variable with between 1 and 3 dimensions and loads
-    /// it as an image. It will not handle complex images. It does not handle
-    /// sparse matrices.
-    ///
-    /// See also: vips_image_new_from_file().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load mat from file
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -1511,31 +1339,7 @@ extension VIPSImage {
         }
     }
 
-    /// Reads a matrix from a file.
-    ///
-    /// Matrix files have a simple format that's supposed to be easy to create with
-    /// a text editor or a spreadsheet.
-    ///
-    /// The first line has four numbers for width, height, scale and
-    /// offset (scale and offset may be omitted, in which case they default to 1.0
-    /// and 0.0). Scale must be non-zero. Width and height must be positive
-    /// integers. The numbers are separated by any mixture of spaces, commas,
-    /// tabs and quotation marks ("). The scale and offset fields may be
-    /// floating-point, and must use '.'
-    /// as a decimal separator.
-    ///
-    /// Subsequent lines each hold one row of matrix data, with numbers again
-    /// separated by any mixture of spaces, commas,
-    /// tabs and quotation marks ("). The numbers may be floating-point, and must
-    /// use '.'
-    /// as a decimal separator.
-    ///
-    /// Extra characters at the ends of lines or at the end of the file are
-    /// ignored.
-    ///
-    /// See also: vips_matrixload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load matrix
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -1566,11 +1370,7 @@ extension VIPSImage {
         }
     }
 
-    /// Exactly as vips_matrixload(), but read from a source.
-    ///
-    /// See also: vips_matrixload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load matrix
     ///
     /// - Parameters:
     ///   - source: Source to load from
@@ -1659,18 +1459,7 @@ extension VIPSImage {
             try VIPSImage.call("matrixsave_target", options: &opt)
     }
 
-    /// Read a OpenEXR file into a VIPS image.
-    ///
-    /// The reader can handle scanline and tiled OpenEXR images. It can't handle
-    /// OpenEXR colour management, image attributes, many pixel formats, anything
-    /// other than RGBA.
-    ///
-    /// This reader uses the rather limited OpenEXR C API. It should really be
-    /// redone in C++.
-    ///
-    /// See also: vips_image_new_from_file().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load an openexr image
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -1701,39 +1490,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `level`: %gint, load this level
-    /// * `associated`: %gchararray, load this associated image
-    /// * `attach_associated`: %gboolean, attach all associated images as metadata
-    /// * `autocrop`: %gboolean, crop to image bounds
-    ///
-    /// Read a virtual slide supported by the OpenSlide library into a VIPS image.
-    /// OpenSlide supports images in Aperio, Hamamatsu, MIRAX, Sakura, Trestle,
-    /// and Ventana formats.
-    ///
-    /// To facilitate zooming, virtual slide formats include multiple scaled-down
-    /// versions of the high-resolution image.  These are typically called
-    /// "levels".  By default, vips_openslideload() reads the highest-resolution
-    /// level (level 0).  Set `level` to the level number you want.
-    ///
-    /// In addition to the slide image itself, virtual slide formats sometimes
-    /// include additional images, such as a scan of the slide's barcode.
-    /// OpenSlide calls these "associated images".  To read an associated image,
-    /// set `associated` to the image's name.
-    /// A slide's associated images are listed in the
-    /// "slide-associated-images" metadata item.
-    ///
-    /// If you set `attach_associated`, then all associated images are attached as
-    /// metadata items. Use vips_image_get_image() on `out` to retrieve them. Images
-    /// are attached as "openslide-associated-XXXXX", where XXXXX is the name of the
-    /// associated image.
-    ///
-    /// The output of this operator is always RGBA.
-    ///
-    /// See also: vips_image_new_from_file().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load file with openslide
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -1784,16 +1541,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `level`: %gint, load this level
-    /// * `associated`: %gchararray, load this associated image
-    /// * `attach_associated`: %gboolean, attach all associated images as metadata
-    /// * `autocrop`: %gboolean, crop to image bounds
-    ///
-    /// Exactly as vips_openslideload(), but read from a source.
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load source with openslide
     ///
     /// - Parameters:
     ///   - source: Source to load from
@@ -1844,15 +1592,7 @@ extension VIPSImage {
         }
     }
 
-    /// Read a PPM/PBM/PGM/PFM file into a VIPS image.
-    ///
-    /// It can read 1, 8, 16 and 32 bit images, colour or monochrome,
-    /// stored in binary or in ASCII. One bit images become 8 bit VIPS images,
-    /// with 0 and 255 for 0 and 1.
-    ///
-    /// See also: vips_image_new_from_file().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load ppm from file
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -1883,19 +1623,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `skip`: skip this many lines at start of file
-    /// * `lines`: read this many lines from file
-    /// * `whitespace`: set of whitespace characters
-    /// * `separator`: set of separator characters
-    /// * `fail`: %gboolean, fail on errors
-    ///
-    /// Exactly as vips_ppmload(), but read from a source.
-    ///
-    /// See also: vips_ppmload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load ppm base class
     ///
     /// - Parameters:
     ///   - source: Source to load from
@@ -2008,22 +1736,7 @@ extension VIPSImage {
             try VIPSImage.call("ppmsave_target", options: &opt)
     }
 
-    /// Load a named profile.
-    ///
-    /// Profiles are loaded from four sources:
-    ///
-    /// - The special name `"none"` means no profile. `profile` will be `NULL` in this
-    ///   case.
-    ///
-    /// - `name` can be the name of one of the ICC profiles embedded in libvips.
-    ///   These names can be at least `"cmyk"`, `"p3"` and `"srgb"`.
-    ///
-    /// - `name` can be the full path to a file.
-    ///
-    /// - `name` can be the name of an ICC profile in the system profile directory
-    ///   for your platform.
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Load named icc profile
     ///
     /// - Parameters:
     ///   - name: Profile name
@@ -2044,23 +1757,7 @@ extension VIPSImage {
         return VIPSBlob(vipsBlob)
     }
 
-    /// Read a Radiance (HDR) file into a VIPS image.
-    ///
-    /// Radiance files are read as `VIPS_CODING_RAD`. They have one byte for each of
-    /// red, green and blue, and one byte of shared exponent. Some operations (like
-    /// vips_extract_area()) can work directly with images in this format, but
-    /// mmany (all the arithmetic operations, for example) will not. Unpack
-    /// `VIPS_CODING_RAD` images to 3 band float with vips_rad2float() if
-    /// you want to do arithmetic on them.
-    ///
-    /// This operation ignores some header fields, like VIEW and DATE. It will not
-    /// rotate/flip as the FORMAT string asks.
-    ///
-    /// Sections of this reader from Greg Ward and Radiance with kind permission.
-    ///
-    /// See also: vips_image_new_from_file().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load a radiance image from a file
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -2091,14 +1788,7 @@ extension VIPSImage {
         }
     }
 
-    /// Exactly as vips_radload(), but read from a HDR-formatted memory block.
-    ///
-    /// You must not free the buffer while `out` is active. The
-    /// `VipsObject`::postclose signal on `out` is a good place to free.
-    ///
-    /// See also: vips_radload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load rad from buffer
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -2140,11 +1830,7 @@ extension VIPSImage {
         }
     }
 
-    /// Exactly as vips_radload(), but read from a source.
-    ///
-    /// See also: vips_radload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load rad from source
     ///
     /// - Parameters:
     ///   - source: Source to load from
@@ -2269,25 +1955,7 @@ extension VIPSImage {
             try VIPSImage.call("radsave_target", options: &opt)
     }
 
-    /// Optional arguments:
-    ///
-    /// * `offset`: %guint64, offset in bytes from start of file
-    /// * `format`: `VipsBandFormat`, set image format
-    /// * `interpretation`: `VipsInterpretation`, set image interpretation
-    ///
-    /// This operation mmaps the file, setting up `out` so that access to that
-    /// image will read from the file.
-    ///
-    /// By default, it assumes uchar pixels. Use `format` to select something else.
-    ///
-    /// The image will be tagged as `VIPS_INTERPRETATION_MULTIBAND`. Use
-    /// `interpretation` to select something else.
-    ///
-    /// Use vips_byteswap() to reverse the byte ordering if necessary.
-    ///
-    /// See also: vips_image_new_from_file(), vips_copy(), vips_byteswap().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load raw data from a file
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -2430,11 +2098,7 @@ extension VIPSImage {
             try VIPSImage.call("rawsave_target", options: &opt)
     }
 
-    /// Read in a vips image.
-    ///
-    /// See also: vips_vipssave().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load vips from file
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -2465,9 +2129,7 @@ extension VIPSImage {
         }
     }
 
-    /// Exactly as vips_vipsload(), but read from a source.
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load vips from source
     ///
     /// - Parameters:
     ///   - source: Source to load from

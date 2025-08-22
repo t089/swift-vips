@@ -10,37 +10,7 @@ import CvipsShim
 
 extension VIPSImage {
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, page (top-level image number) to read
-    /// * `n`: %gint, load this many pages
-    /// * `thumbnail`: %gboolean, fetch thumbnail instead of image
-    /// * `unlimited`: %gboolean, remove all denial of service limits
-    ///
-    /// Read a HEIF image file into a VIPS image.
-    ///
-    /// Use `page` to select a page to render, numbering from zero. If neither `n`
-    /// nor `page` are set, `page` defaults to the primary page, otherwise to 0.
-    ///
-    /// Use `n` to select the number of pages to render. The default is 1. Pages are
-    /// rendered in a vertical column. Set to -1 to mean "until the end of the
-    /// document". Use vips_grid() to reorganise pages.
-    ///
-    /// HEIF images have a primary image. The metadata item `heif-primary` gives
-    /// the page number of the primary.
-    ///
-    /// If `thumbnail` is `TRUE`, then fetch a stored thumbnail rather than the
-    /// image.
-    ///
-    /// By default, input image dimensions are limited to 16384x16384.
-    /// If `unlimited` is `TRUE`, this increases to the maximum of 65535x65535.
-    ///
-    /// The bitdepth of the heic image is recorded in the metadata item
-    /// `heif-bitdepth`.
-    ///
-    /// See also: vips_image_new_from_file().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load a heif image
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -87,22 +57,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, page (top-level image number) to read
-    /// * `n`: %gint, load this many pages
-    /// * `thumbnail`: %gboolean, fetch thumbnail instead of image
-    /// * `unlimited`: %gboolean, remove all denial of service limits
-    ///
-    /// Read a HEIF image file into a VIPS image.
-    /// Exactly as vips_heifload(), but read from a memory buffer.
-    ///
-    /// You must not free the buffer while `out` is active. The
-    /// `VipsObject`::postclose signal on `out` is a good place to free.
-    ///
-    /// See also: vips_heifload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load a heif image
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -160,18 +115,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, page (top-level image number) to read
-    /// * `n`: %gint, load this many pages
-    /// * `thumbnail`: %gboolean, fetch thumbnail instead of image
-    /// * `unlimited`: %gboolean, remove all denial of service limits
-    ///
-    /// Exactly as vips_heifload(), but read from a source.
-    ///
-    /// See also: vips_heifload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load a heif image
     ///
     /// - Parameters:
     ///   - source: Source to load from

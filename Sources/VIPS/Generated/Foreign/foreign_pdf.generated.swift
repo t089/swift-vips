@@ -10,45 +10,7 @@ import CvipsShim
 
 extension VIPSImage {
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, load this page, numbered from zero
-    /// * `n`: %gint, load this many pages
-    /// * `dpi`: %gdouble, render at this DPI
-    /// * `scale`: %gdouble, scale render by this factor
-    /// * `background`: `VipsArrayDouble` background colour
-    /// * `password`: %gchararray background colour
-    ///
-    /// Render a PDF file into a VIPS image.
-    ///
-    /// The output image is always RGBA --- CMYK PDFs will be
-    /// converted. If you need CMYK bitmaps, you should use vips_magickload()
-    /// instead.
-    ///
-    /// Use `page` to select a page to render, numbering from zero.
-    ///
-    /// Use `n` to select the number of pages to render. The default is 1. Pages are
-    /// rendered in a vertical column, with each individual page aligned to the
-    /// left. Set to -1 to mean "until the end of the document". Use vips_grid()
-    /// to change page layout.
-    ///
-    /// Use `dpi` to set the rendering resolution. The default is 72. Additionally,
-    /// you can scale by setting `scale`. If you set both, they combine.
-    ///
-    /// Use `background` to set the background RGBA colour. The default is 255
-    /// (solid white), use eg. 0 for a transparent background.
-    ///
-    /// Use `password` to supply a decryption password.
-    ///
-    /// The operation fills a number of header fields with metadata, for example
-    /// "pdf-author". They may be useful.
-    ///
-    /// This function only reads the image header and does not render any pixel
-    /// data. Rendering occurs when pixels are accessed.
-    ///
-    /// See also: vips_image_new_from_file(), vips_magickload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load pdf from file
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -103,23 +65,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, load this page, numbered from zero
-    /// * `n`: %gint, load this many pages
-    /// * `dpi`: %gdouble, render at this DPI
-    /// * `scale`: %gdouble, scale render by this factor
-    /// * `background`: `VipsArrayDouble` background colour
-    ///
-    /// Read a PDF-formatted memory buffer into a VIPS image. Exactly as
-    /// vips_pdfload(), but read from memory.
-    ///
-    /// You must not free the buffer while `out` is active. The
-    /// `VipsObject`::postclose signal on `out` is a good place to free.
-    ///
-    /// See also: vips_pdfload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load pdf from buffer
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -185,19 +131,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, load this page, numbered from zero
-    /// * `n`: %gint, load this many pages
-    /// * `dpi`: %gdouble, render at this DPI
-    /// * `scale`: %gdouble, scale render by this factor
-    /// * `background`: `VipsArrayDouble` background colour
-    ///
-    /// Exactly as vips_pdfload(), but read from a source.
-    ///
-    /// See also: vips_pdfload()
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load pdf from source
     ///
     /// - Parameters:
     ///   - source: Source to load from

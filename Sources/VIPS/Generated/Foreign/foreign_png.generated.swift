@@ -10,27 +10,7 @@ import CvipsShim
 
 extension VIPSImage {
 
-    /// Optional arguments:
-    ///
-    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
-    /// * `unlimited`: %gboolean, remove all denial of service limits
-    ///
-    /// Read a PNG file into a VIPS image. It can read all png images, including 8-
-    /// and 16-bit images, 1 and 3 channel, with and without an alpha channel.
-    ///
-    /// Any ICC profile is read and attached to the VIPS image. It also supports
-    /// XMP metadata.
-    ///
-    /// Use `fail_on` to set the type of error that will cause load to fail. By
-    /// default, loaders are permissive, that is, `VIPS_FAIL_ON_NONE`.
-    ///
-    /// By default, the PNG loader limits the number of text and data chunks to
-    /// block some denial of service attacks. Set `unlimited` to disable these
-    /// limits.
-    ///
-    /// See also: vips_image_new_from_file().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load png from file
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -65,19 +45,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
-    /// * `unlimited`: %gboolean, Remove all denial of service limits
-    ///
-    /// Exactly as vips_pngload(), but read from a PNG-formatted memory block.
-    ///
-    /// You must not free the buffer while `out` is active. The
-    /// `VipsObject`::postclose signal on `out` is a good place to free.
-    ///
-    /// See also: vips_pngload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load png from buffer
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -123,16 +91,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
-    /// * `unlimited`: %gboolean, Remove all denial of service limits
-    ///
-    /// Exactly as vips_pngload(), but read from a source.
-    ///
-    /// See also: vips_pngload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load png from source
     ///
     /// - Parameters:
     ///   - source: Source to load from

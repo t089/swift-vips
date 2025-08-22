@@ -10,27 +10,7 @@ import CvipsShim
 
 extension VIPSImage {
 
-    /// Optional arguments:
-    ///
-    /// * `dpi`: %gdouble, render at this DPI
-    /// * `scale`: %gdouble, scale render by this factor
-    /// * `unlimited`: %gboolean, allow SVGs of any size
-    ///
-    /// Render a SVG file into a VIPS image.  Rendering uses the librsvg library
-    /// and should be fast.
-    ///
-    /// Use `dpi` to set the rendering resolution. The default is 72. You can also
-    /// scale the rendering by `scale`.
-    ///
-    /// This function only reads the image header and does not render any pixel
-    /// data. Rendering occurs when pixels are accessed.
-    ///
-    /// SVGs larger than 10MB are normally blocked for security. Set `unlimited` to
-    /// allow SVGs of any size.
-    ///
-    /// See also: vips_image_new_from_file().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load svg with rsvg
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -73,21 +53,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `dpi`: %gdouble, render at this DPI
-    /// * `scale`: %gdouble, scale render by this factor
-    /// * `unlimited`: %gboolean, allow SVGs of any size
-    ///
-    /// Read a SVG-formatted memory block into a VIPS image. Exactly as
-    /// vips_svgload(), but read from a memory buffer.
-    ///
-    /// You must not free the buffer while `out` is active. The
-    /// `VipsObject`::postclose signal on `out` is a good place to free.
-    ///
-    /// See also: vips_svgload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load svg with rsvg
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -141,11 +107,7 @@ extension VIPSImage {
         }
     }
 
-    /// Exactly as vips_svgload(), but read from a source.
-    ///
-    /// See also: vips_svgload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load svg from source
     ///
     /// - Parameters:
     ///   - source: Source to load from

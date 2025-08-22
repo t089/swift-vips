@@ -425,26 +425,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `csize`: size for third dimension
-    /// * `dsize`: size for fourth dimension
-    /// * `esize`: size for fifth dimension
-    ///
-    /// Create a two-band uint32 image where the elements in the first band have the
-    /// value of their x coordinate and elements in the second band have their y
-    /// coordinate.
-    ///
-    /// You can make any image where the value of a pixel is a function of its (x,
-    /// y) coordinate by combining this operator with the arithmetic operators.
-    ///
-    /// Set `csize`, `dsize`, `esize` to generate higher dimensions and add more
-    /// bands. The extra dimensions are placed down the vertical axis. Use
-    /// vips_grid() to change the layout.
-    ///
-    /// See also: vips_grey(), vips_grid(), vips_identity().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make an image where pixel values are coordinates
     ///
     /// - Parameters:
     ///   - width: Image width in pixels

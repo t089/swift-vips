@@ -62,67 +62,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `height`: %gint, target height in pixels
-    /// * `size`: `VipsSize`, upsize, downsize, both or force
-    /// * `no_rotate`: %gboolean, don't rotate upright using orientation tag
-    /// * `crop`: `VipsInteresting`, shrink and crop to fill target
-    /// * `linear`: %gboolean, perform shrink in linear light
-    /// * `import_profile`: %gchararray, fallback import ICC profile
-    /// * `export_profile`: %gchararray, export ICC profile
-    /// * `intent`: `VipsIntent`, rendering intent
-    /// * `fail_on`: `VipsFailOn`, load error types to fail on
-    ///
-    /// Make a thumbnail from a file. Shrinking is done in three stages: using any
-    /// shrink-on-load features available in the file import library, using a block
-    /// shrink, and using a lanczos3 shrink. At least the final 200% is done with
-    /// lanczos3. The output should be high quality, and the operation should be
-    /// quick.
-    ///
-    /// See vips_thumbnail_buffer() to thumbnail from a memory source.
-    ///
-    /// The output image will fit within a square of size `width` x `width`. You can
-    /// specify a separate height with the `height` option.
-    ///
-    /// If you set `crop`, then the output image will fill the whole of the `width` x
-    /// `height` rectangle, with any excess cropped away. See vips_smartcrop() for
-    /// details on the cropping strategy.
-    ///
-    /// Normally the operation will upsize or downsize as required to fit the image
-    /// inside or outside the target size. If `size` is set
-    /// to `VIPS_SIZE_UP`, the operation will only upsize and will just
-    /// copy if asked to downsize.
-    /// If `size` is set
-    /// to `VIPS_SIZE_DOWN`, the operation will only downsize and will just
-    /// copy if asked to upsize.
-    /// If `size` is `VIPS_SIZE_FORCE`, the image aspect ratio will be broken and the
-    /// image will be forced to fit the target.
-    ///
-    /// Normally any orientation tags on the input image (such as EXIF tags) are
-    /// interpreted to rotate the image upright. If you set `no_rotate` to `TRUE`,
-    /// these tags will not be interpreted.
-    ///
-    /// Shrinking is normally done in sRGB colourspace. Set `linear` to shrink in
-    /// linear light colourspace instead. This can give better results, but can
-    /// also be far slower, since tricks like JPEG shrink-on-load cannot be used in
-    /// linear space.
-    ///
-    /// If you set `export_profile` to the filename of an ICC profile, the image
-    /// will be transformed to the target colourspace before writing to the
-    /// output. You can also give an `import_profile` which will be used if the
-    /// input image has no ICC profile, or if the profile embedded in the
-    /// input image is broken.
-    ///
-    /// Use `intent` to set the rendering intent for any ICC transform. The default
-    /// is `VIPS_INTENT_RELATIVE`.
-    ///
-    /// Use `fail_on` to control the types of error that will cause loading to fail.
-    /// The default is `VIPS_FAIL_ON_NONE`, ie. thumbnail is permissive.
-    ///
-    /// See also: vips_thumbnail_buffer().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Generate thumbnail from file
     ///
     /// - Parameters:
     ///   - filename: Filename to read from
@@ -175,26 +115,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `height`: %gint, target height in pixels
-    /// * `size`: `VipsSize`, upsize, downsize, both or force
-    /// * `no_rotate`: %gboolean, don't rotate upright using orientation tag
-    /// * `crop`: `VipsInteresting`, shrink and crop to fill target
-    /// * `linear`: %gboolean, perform shrink in linear light
-    /// * `import_profile`: %gchararray, fallback import ICC profile
-    /// * `export_profile`: %gchararray, export ICC profile
-    /// * `intent`: `VipsIntent`, rendering intent
-    /// * `fail_on`: `VipsFailOn`, load error types to fail on
-    /// * `option_string`: %gchararray, extra loader options
-    ///
-    /// Exactly as vips_thumbnail(), but read from a memory buffer. One extra
-    /// optional argument, `option_string`, lets you pass options to the underlying
-    /// loader.
-    ///
-    /// See also: vips_thumbnail().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Generate thumbnail from buffer
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -314,26 +235,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `height`: %gint, target height in pixels
-    /// * `size`: `VipsSize`, upsize, downsize, both or force
-    /// * `no_rotate`: %gboolean, don't rotate upright using orientation tag
-    /// * `crop`: `VipsInteresting`, shrink and crop to fill target
-    /// * `linear`: %gboolean, perform shrink in linear light
-    /// * `import_profile`: %gchararray, fallback import ICC profile
-    /// * `export_profile`: %gchararray, export ICC profile
-    /// * `intent`: `VipsIntent`, rendering intent
-    /// * `fail_on`: `VipsFailOn`, load error types to fail on
-    /// * `option_string`: %gchararray, extra loader options
-    ///
-    /// Exactly as vips_thumbnail(), but read from a source. One extra
-    /// optional argument, `option_string`, lets you pass options to the underlying
-    /// loader.
-    ///
-    /// See also: vips_thumbnail().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Generate thumbnail from source
     ///
     /// - Parameters:
     ///   - source: Source to load from

@@ -10,30 +10,7 @@ import CvipsShim
 
 extension VIPSImage {
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, page (frame) to read
-    /// * `n`: %gint, load this many pages
-    /// * `scale`: %gdouble, scale by this much on load
-    ///
-    /// Read a WebP file into a VIPS image.
-    ///
-    /// Use `page` to select a page to render, numbering from zero.
-    ///
-    /// Use `n` to select the number of pages to render. The default is 1. Pages are
-    /// rendered in a vertical column, with each individual page aligned to the
-    /// left. Set to -1 to mean "until the end of the document". Use vips_grid()
-    /// to change page layout.
-    ///
-    /// Use `scale` to specify a scale-on-load factor. For example, 2.0 to double
-    /// the size on load. Animated webp images don't support shrink-on-load, so a
-    /// further resize may be necessary.
-    ///
-    /// The loader supports ICC, EXIF and XMP metadata.
-    ///
-    /// See also: vips_image_new_from_file().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load webp from file
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -76,21 +53,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, page (frame) to read
-    /// * `n`: %gint, load this many pages
-    /// * `scale`: %gdouble, scale by this much on load
-    ///
-    /// Read a WebP-formatted memory block into a VIPS image. Exactly as
-    /// vips_webpload(), but read from a memory buffer.
-    ///
-    /// You must not free the buffer while `out` is active. The
-    /// `VipsObject`::postclose signal on `out` is a good place to free.
-    ///
-    /// See also: vips_webpload()
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load webp from buffer
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -144,17 +107,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, page (frame) to read
-    /// * `n`: %gint, load this many pages
-    /// * `scale`: %gdouble, scale by this much on load
-    ///
-    /// Exactly as vips_webpload(), but read from a source.
-    ///
-    /// See also: vips_webpload()
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load webp from source
     ///
     /// - Parameters:
     ///   - source: Source to load from

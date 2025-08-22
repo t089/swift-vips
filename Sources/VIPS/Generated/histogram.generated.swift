@@ -233,12 +233,7 @@ extension VIPSImage {
         }
     }
 
-    /// Convert the two input images to Fourier space, calculate phase-correlation,
-    /// back to real space.
-    ///
-    /// See also: vips_fwfft(), vips_cross_phase(),
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Calculate phase correlation
     ///
     /// - Parameters:
     ///   - in2: Second input image

@@ -212,100 +212,7 @@ def has_buffer_parameter(intro):
                 return True
     return False
 
-def extract_gtk_doc_from_libvips(operation_name, libvips_path):
-    """
-    Extract comprehensive GTK-Doc documentation for an operation from libvips C source files.
-    
-    Returns the full documentation content or None if not found.
-    """
-    if not libvips_path or not os.path.exists(libvips_path):
-        return None
-    
-    # Search through all C files in libvips source
-    pattern = os.path.join(libvips_path, 'libvips', '**', '*.c')
-    c_files = glob.glob(pattern, recursive=True)
-    
-    for filepath in c_files:
-        try:
-            with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
-                content = f.read()
-            
-            # Look for GTK-Doc comment before vips_operation_name function
-            # Pattern matches: /** \n * vips_operation: \n [doc content] */ \n int \n vips_operation(
-            doc_pattern = (
-                r'/\*\*\s*\n'                                   # Opening /**
-                r'\s*\*\s*vips_' + re.escape(operation_name) + r':\s*\n'  # * vips_operation:
-                r'(.*?)'                                        # Capture doc content
-                r'\*/'                                          # Closing */
-                r'\s*\n(?:static\s+)?int\s*\n'                 # int (possibly static int)
-                r'vips_' + re.escape(operation_name) + r'\s*\(' # vips_operation(
-            )
-            
-            match = re.search(doc_pattern, content, re.MULTILINE | re.DOTALL)
-            if match:
-                return process_gtk_doc_content(match.group(1))
-                
-        except (IOError, OSError, UnicodeDecodeError):
-            continue
-    
-    return None
 
-def process_gtk_doc_content(doc_content):
-    """
-    Process GTK-Doc content and convert it to Swift documentation format.
-    
-    Args:
-        doc_content: Raw GTK-Doc content between /** vips_op: and */
-    
-    Returns:
-        Processed documentation suitable for Swift comments
-    """
-    lines = doc_content.split('\n')
-    processed_lines = []
-    in_param_section = True
-    
-    for line in lines:
-        # Remove leading * and whitespace
-        line = re.sub(r'^\s*\*\s?', '', line)
-        
-        # Skip empty lines at the start
-        if not line.strip() and not processed_lines:
-            continue
-            
-        # Skip parameter documentation lines (starting with @param:)
-        if line.strip().startswith('@') and ':' in line:
-            in_param_section = True
-            continue
-            
-        # Skip the @...: %NULL-terminated list line
-        if '@...:' in line and '%NULL' in line:
-            continue
-            
-        # Once we hit the main description, stop skipping
-        if line.strip() and not line.startswith('@') and in_param_section:
-            in_param_section = False
-            
-        if not in_param_section:
-            # Convert some common GTK-Doc patterns
-            line = re.sub(r'@(\w+)', r'`\1`', line)  # @param -> `param`
-            line = re.sub(r'%([A-Z_]+)', r'`\1`', line)  # %NULL -> `NULL`
-            line = re.sub(r'#(\w+)', r'`\1`', line)  # #VipsImage -> `VipsImage`
-            
-            # Remove HTML-style links but keep the text
-            line = re.sub(r'<link[^>]*>(.*?)</link>', r'\1', line)
-            
-            # Clean up any remaining HTML-like tags
-            line = re.sub(r'<[^>]+>', '', line)
-            
-            processed_lines.append(line.rstrip())
-    
-    # Join lines and clean up
-    result = '\n'.join(processed_lines).strip()
-    
-    # Remove excessive blank lines
-    result = re.sub(r'\n\s*\n\s*\n', '\n\n', result)
-    
-    return result if result else None
 
 def generate_simple_const_overloads(base_operation_name, const_operation_name):
     """Generate simple const overloads for common operations."""
@@ -536,20 +443,7 @@ def generate_swift_operation(operation_name):
     result = []
     
     # Generate documentation
-    # Try to get rich documentation from libvips C source
-    libvips_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'libvips')
-    rich_doc = extract_gtk_doc_from_libvips(operation_name, libvips_path)
-    
-    if rich_doc:
-        # Use rich documentation from libvips source
-        for line in rich_doc.split('\n'):
-            if line.strip():
-                result.append(f"    /// {line}")
-            else:
-                result.append("    ///")
-    else:
-        # Fallback to basic description
-        result.append(f"    /// {intro.description.capitalize()}")
+    result.append(f"    /// {intro.description.capitalize()}")
     
     # Add parameter documentation if there are any
     all_params = intro.method_args + optional_input

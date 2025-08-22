@@ -9,15 +9,7 @@ import Cvips
 
 extension VIPSImage {
 
-    /// Optional arguments:
-    ///
-    /// * `bands`: output bands
-    ///
-    /// Make a black unsigned char image of a specified size.
-    ///
-    /// See also: vips_xyz(), vips_text(), vips_gaussnoise().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a black image
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -50,20 +42,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `factor`: maximum spatial frequency
-    /// * `uchar`: output a uchar image
-    ///
-    /// Create a test pattern with increasing spatial frequence in X and
-    /// amplitude in Y. `factor` should be between 0 and 1 and determines the
-    /// maximum spatial frequency.
-    ///
-    /// Set `uchar` to output a uchar image.
-    ///
-    /// See also: vips_zone().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make an image showing the eye's spatial response
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -88,12 +67,7 @@ extension VIPSImage {
         }
     }
 
-    /// Generate an image of size `width` by `height` and fractal dimension
-    /// `fractal_dimension`. The dimension should be between 2 and 3.
-    ///
-    /// See also: vips_gaussnoise(), vips_mask_fractal().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a fractal surface
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -112,34 +86,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `separable`: generate a separable gaussian
-    /// * `precision`: `VipsPrecision` for `out`
-    ///
-    /// Creates a circularly symmetric Gaussian image of radius
-    /// `sigma`.  The size of the mask is determined by the variable `min_ampl`;
-    /// if for instance the value .1 is entered this means that the produced mask
-    /// is clipped at values less than 10 percent of the maximum amplitude.
-    ///
-    /// The program uses the following equation:
-    ///
-    ///   H(r) = exp( -(r * r) / (2 * `sigma` * `sigma`) )
-    ///
-    /// The generated image has odd size and its maximum value is normalised to
-    /// 1.0, unless `precision` is `VIPS_PRECISION_INTEGER`.
-    ///
-    /// If `separable` is set, only the centre horizontal is generated. This is
-    /// useful for separable convolutions.
-    ///
-    /// If `precision` is `VIPS_PRECISION_INTEGER`, an integer gaussian is generated.
-    /// This is useful for integer convolutions.
-    ///
-    /// "scale" is set to the sum of all the mask elements.
-    ///
-    /// See also: vips_logmat(), vips_conv().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a gaussian image
     ///
     /// - Parameters:
     ///   - sigma: Sigma of Gaussian
@@ -164,18 +111,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `mean`: mean of generated pixels
-    /// * `sigma`: standard deviation of generated pixels
-    ///
-    /// Make a one band float image of gaussian noise with the specified
-    /// distribution. The noise distribution is created by averaging 12 random
-    /// numbers with the appropriate weights.
-    ///
-    /// See also: vips_black(), vips_xyz(), vips_text().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a gaussnoise image
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -204,19 +140,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `uchar`: output a uchar image
-    ///
-    /// Create a one-band float image with the left-most column zero and the
-    /// right-most 1. Intermediate pixels are a linear ramp.
-    ///
-    /// Set `uchar` to output a uchar image with the leftmost pixel 0 and the
-    /// rightmost 255.
-    ///
-    /// See also: vips_xyz(), vips_identity().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a grey ramp image
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -237,27 +161,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `bands`: number of bands to create
-    /// * `ushort`: `TRUE` for an unsigned short identity
-    /// * `size`: number of LUT elements for a ushort image
-    ///
-    /// Creates an identity lookup table, ie. one which will leave an image
-    /// unchanged when applied with vips_maplut(). Each entry in the table has a
-    /// value equal to its position.
-    ///
-    /// Use the arithmetic operations on these tables to make LUTs representing
-    /// arbitrary functions.
-    ///
-    /// Normally LUTs are 8-bit. Set `ushort` to create a 16-bit table.
-    ///
-    /// Normally 16-bit tables have 65536 entries. You can set this smaller with
-    /// `size`.
-    ///
-    /// See also: vips_xyz(), vips_maplut().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a 1d image where pixel values are indexes
     ///
     /// - Parameters:
     ///   - bands: Number of bands in LUT
@@ -282,41 +186,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `separable`: generate a separable mask
-    /// * `precision`: `VipsPrecision` for `out`
-    ///
-    /// Creates a circularly symmetric Laplacian of Gaussian mask
-    /// of radius
-    /// `sigma`.  The size of the mask is determined by the variable `min_ampl`;
-    /// if for instance the value .1 is entered this means that the produced mask
-    /// is clipped at values within 10 persent of zero, and where the change
-    /// between mask elements is less than 10%.
-    ///
-    /// The program uses the following equation: (from Handbook of Pattern
-    /// Recognition and image processing by Young and Fu, AP 1986 pages 220-221):
-    ///
-    ///  H(r) = (1 / (2 * M_PI * s4)) *
-    /// 	(2 - (r2 / s2)) *
-    /// 	exp(-r2 / (2 * s2))
-    ///
-    /// where s2 = `sigma` * `sigma`, s4 = s2 * s2, r2 = r * r.
-    ///
-    /// The generated mask has odd size and its maximum value is normalised to
-    /// 1.0, unless `precision` is `VIPS_PRECISION_INTEGER`.
-    ///
-    /// If `separable` is set, only the centre horizontal is generated. This is
-    /// useful for separable convolutions.
-    ///
-    /// If `precision` is `VIPS_PRECISION_INTEGER`, an integer mask is generated.
-    /// This is useful for integer convolutions.
-    ///
-    /// "scale" is set to the sum of all the mask elements.
-    ///
-    /// See also: vips_gaussmat(), vips_conv().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a laplacian of gaussian image
     ///
     /// - Parameters:
     ///   - sigma: Radius of Gaussian
@@ -341,23 +211,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `nodc`: don't set the DC pixel
-    /// * `reject`: invert the filter sense
-    /// * `optical`: coordinates in optical space
-    /// * `uchar`: output a uchar image
-    ///
-    /// Make an butterworth high- or low-pass filter, that is, one with a variable,
-    /// smooth transition
-    /// positioned at `frequency_cutoff`, where `frequency_cutoff` is in
-    /// range 0 - 1. The shape of the curve is controlled by
-    /// `order` --- higher values give a sharper transition. See Gonzalez and Wintz,
-    /// Digital Image Processing, 1987.
-    ///
-    /// See also: vips_mask_ideal().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a butterworth filter
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -396,23 +250,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `nodc`: don't set the DC pixel
-    /// * `reject`: invert the filter sense
-    /// * `optical`: coordinates in optical space
-    /// * `uchar`: output a uchar image
-    ///
-    /// Make an butterworth band-pass or band-reject filter, that is, one with a
-    /// variable, smooth transition positioned at `frequency_cutoff_x`,
-    /// `frequency_cutoff_y`, of radius `radius`.
-    /// The shape of the curve is controlled by
-    /// `order` --- higher values give a sharper transition. See Gonzalez and Wintz,
-    /// Digital Image Processing, 1987.
-    ///
-    /// See also: vips_mask_ideal().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a butterworth_band filter
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -455,24 +293,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `nodc`: don't set the DC pixel
-    /// * `reject`: invert the filter sense
-    /// * `optical`: coordinates in optical space
-    /// * `uchar`: output a uchar image
-    ///
-    /// Make a butterworth ring-pass or ring-reject filter, that is, one with a
-    /// variable,
-    /// smooth transition
-    /// positioned at `frequency_cutoff` of width `width`, where `frequency_cutoff` is
-    /// in the range 0 - 1. The shape of the curve is controlled by
-    /// `order` --- higher values give a sharper transition. See Gonzalez and Wintz,
-    /// Digital Image Processing, 1987.
-    ///
-    /// See also: vips_mask_ideal().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a butterworth ring filter
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -513,19 +334,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `nodc`: don't set the DC pixel
-    /// * `reject`: invert the filter sense
-    /// * `optical`: coordinates in optical space
-    /// * `uchar`: output a uchar image
-    ///
-    /// This operation should be used to create fractal images by filtering the
-    /// power spectrum of Gaussian white noise. See vips_gaussnoise().
-    ///
-    /// See also: vips_mask_ideal().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make fractal filter
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -560,19 +369,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `nodc`: don't set the DC pixel
-    /// * `reject`: invert the filter sense
-    /// * `optical`: coordinates in optical space
-    /// * `uchar`: output a uchar image
-    ///
-    /// Make a gaussian high- or low-pass filter, that is, one with a variable,
-    /// smooth transition positioned at `frequency_cutoff`.
-    ///
-    /// See also: vips_mask_ideal().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a gaussian filter
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -609,20 +406,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `nodc`: don't set the DC pixel
-    /// * `reject`: invert the filter sense
-    /// * `optical`: coordinates in optical space
-    /// * `uchar`: output a uchar image
-    ///
-    /// Make a gaussian band-pass or band-reject filter, that is, one with a
-    /// variable, smooth transition positioned at `frequency_cutoff_x`,
-    /// `frequency_cutoff_y`, of radius `radius`.
-    ///
-    /// See also: vips_mask_ideal().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a gaussian filter
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -663,20 +447,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `nodc`: don't set the DC pixel
-    /// * `reject`: invert the filter sense
-    /// * `optical`: coordinates in optical space
-    /// * `uchar`: output a uchar image
-    ///
-    /// Make a gaussian ring-pass or ring-reject filter, that is, one with a
-    /// variable, smooth transition positioned at `frequency_cutoff` of width
-    /// `ringwidth`.
-    ///
-    /// See also: vips_mask_ideal().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a gaussian ring filter
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -715,43 +486,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `nodc`: don't set the DC pixel
-    /// * `reject`: invert the filter sense
-    /// * `optical`: coordinates in optical space
-    /// * `uchar`: output a uchar image
-    ///
-    /// Make an ideal high- or low-pass filter, that is, one with a sharp cutoff
-    /// positioned at `frequency_cutoff`, where `frequency_cutoff` is in
-    /// the range 0 - 1.
-    ///
-    /// This operation creates a one-band float image of the specified size.
-    /// The image has
-    /// values in the range [0, 1] and is typically used for multiplying against
-    /// frequency domain images to filter them.
-    /// Masks are created with the DC component at (0, 0). The DC pixel always
-    /// has the value 1.0.
-    ///
-    /// Set `nodc` to not set the DC pixel.
-    ///
-    /// Set `optical` to position the DC component in the centre of the image. This
-    /// makes the mask suitable for multiplying against optical Fourier transforms.
-    /// See vips_wrap().
-    ///
-    /// Set `reject` to invert the sense of
-    /// the filter. For example, low-pass becomes low-reject.
-    ///
-    /// Set `uchar` to output an 8-bit unsigned char image rather than a
-    /// float image. In this case, pixels are in the range [0 - 255].
-    ///
-    /// See also: vips_mask_ideal(), vips_mask_ideal_ring(),
-    /// vips_mask_ideal_band(), vips_mask_butterworth(),
-    /// vips_mask_butterworth_ring(), vips_mask_butterworth_band(),
-    /// vips_mask_gaussian(), vips_mask_gaussian_ring(),
-    /// vips_mask_gaussian_band().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make an ideal filter
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -786,20 +521,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `nodc`: don't set the DC pixel
-    /// * `reject`: invert the filter sense
-    /// * `optical`: coordinates in optical space
-    /// * `uchar`: output a uchar image
-    ///
-    /// Make an ideal band-pass or band-reject filter, that is, one with a
-    /// sharp cutoff around the point `frequency_cutoff_x`, `frequency_cutoff_y`,
-    /// of size `radius`.
-    ///
-    /// See also: vips_mask_ideal().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make an ideal band filter
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -838,20 +560,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `nodc`: don't set the DC pixel
-    /// * `reject`: invert the filter sense
-    /// * `optical`: coordinates in optical space
-    /// * `uchar`: output a uchar image
-    ///
-    /// Make an ideal ring-pass or ring-reject filter, that is, one with a sharp
-    /// ring positioned at `frequency_cutoff` of width `width`, where
-    /// `frequency_cutoff` and `width` are expressed as the range 0 - 1.
-    ///
-    /// See also: vips_mask_ideal().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make an ideal ring filter
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -888,26 +597,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `cell_size`: %gint, size of Perlin cells
-    /// * `uchar`: output a uchar image
-    ///
-    /// Create a one-band float image of Perlin noise. See:
-    ///
-    /// https://en.wikipedia.org/wiki/Perlin_noise
-    ///
-    /// Use `cell_size` to set the size of the cells from which the image is
-    /// constructed. The default is 256 x 256.
-    ///
-    /// If `width` and `height` are multiples of `cell_size`, the image will tessellate.
-    ///
-    /// Normally, output pixels are `VIPS_FORMAT_FLOAT` in the range [-1, +1]. Set
-    /// `uchar` to output a uchar image with pixels in [0, 255].
-    ///
-    /// See also: vips_worley(), vips_fractsurf(), vips_gaussnoise().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a perlin noise image
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -936,28 +626,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `hfreq`: horizontal frequency
-    /// * `vreq`: vertical frequency
-    /// * `uchar`: output a uchar image
-    ///
-    /// Creates a float one band image of the a sine waveform in two
-    /// dimensions.
-    ///
-    /// The number of horizontal and vertical spatial frequencies are
-    /// determined by the variables `hfreq` and `vfreq` respectively.  The
-    /// function is useful for creating displayable sine waves and
-    /// square waves in two dimensions.
-    ///
-    /// If horfreq and verfreq are integers the resultant image is periodical
-    /// and therfore the Fourier transform does not present spikes
-    ///
-    /// Pixels are normally in [-1, +1], set `uchar` to output [0, 255].
-    ///
-    /// See also: vips_grey(), vips_xyz().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a 2d sine wave
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -986,65 +655,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `font`: %gchararray, font to render with
-    /// * `fontfile`: %gchararray, load this font file
-    /// * `width`: %gint, image should be no wider than this many pixels
-    /// * `height`: %gint, image should be no higher than this many pixels
-    /// * `align`: `VipsAlign`, set justification alignment
-    /// * `justify`: %gboolean, justify lines
-    /// * `dpi`: %gint, render at this resolution
-    /// * `autofit_dpi`: %gint, read out auto-fitted DPI
-    /// * `rgba`: %gboolean, enable RGBA output
-    /// * `spacing`: %gint, space lines by this in points
-    ///
-    /// Draw the string `text` to an image. `out` is normally a one-band 8-bit
-    /// unsigned char image, with 0 for no text and 255 for text. Values between
-    /// are used for anti-aliasing.
-    ///
-    /// Set `rgba` to enable RGBA output. This is useful for colour emoji rendering,
-    /// or support for pango markup features like `<span
-    /// foreground="red">Red!`.
-    ///
-    /// `text` is the text to render as a UTF-8 string. It can contain Pango markup,
-    /// for example `TheGuardian`.
-    ///
-    /// `font` is the font to render with, as a fontconfig name. Examples might be
-    /// `sans 12` or perhaps `bitstream charter bold 10`.
-    ///
-    /// You can specify a font to load with `fontfile`. You'll need to also set the
-    /// name of the font with `font`.
-    ///
-    /// `width` is the number of pixels to word-wrap at. Lines of text wider than
-    /// this will be broken at word boundaries.
-    ///
-    /// Set `justify` to turn on line justification.
-    /// `align` can be used to set the alignment style for multi-line
-    /// text to the low (left) edge centre, or high (right) edge. Note that the
-    /// output image can be wider than `width` if there are no
-    /// word breaks, or narrower if the lines don't break exactly at `width`.
-    ///
-    /// `height` is the maximum number of pixels high the generated text can be. This
-    /// only takes effect when `dpi` is not set, and `width` is set, making a box.
-    /// In this case, vips_text() will search for a `dpi` and set of line breaks
-    /// which will just fit the text into `width` and `height`.
-    ///
-    /// You can use `autofit_dpi` to read out the DPI selected by auto fit.
-    ///
-    /// `dpi` sets the resolution to render at. "sans 12" at 72 dpi draws characters
-    /// approximately 12 pixels high.
-    ///
-    /// `spacing` sets the line spacing, in points. It would typically be something
-    /// like font size times 1.2.
-    ///
-    /// You can read the coordinate of the top edge of the character from `Xoffset`
-    /// / `Yoffset`. This can be helpful if you need to line up the output of
-    /// several vips_text().
-    ///
-    /// See also: vips_bandjoin(), vips_composite().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a text image
     ///
     /// - Parameters:
     ///   - text: Text to render
@@ -1099,31 +710,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `in_max`: input range
-    /// * `out_max`: output range
-    /// * `Lb`: black-point [0-100]
-    /// * `Lw`: white-point [0-100]
-    /// * `Ps`: shadow point (eg. 0.2)
-    /// * `Pm`: mid-tone point (eg. 0.5)
-    /// * `Ph`: highlight point (eg. 0.8)
-    /// * `S`: shadow adjustment (+/- 30)
-    /// * `M`: mid-tone adjustment (+/- 30)
-    /// * `H`: highlight adjustment (+/- 30)
-    ///
-    /// vips_tonelut() generates a tone curve for the adjustment of image
-    /// levels. It is mostly designed for adjusting the L* part of a LAB image in
-    /// a way suitable for print work, but you can use it for other things too.
-    ///
-    /// The curve is an unsigned 16-bit image with (`in_max` + 1) entries,
-    /// each in the range [0, `out_max`].
-    ///
-    /// `Lb`, `Lw` are expressed as 0-100, as in LAB colour space. You
-    /// specify the scaling for the input and output images with the `in_max` and
-    /// `out_max` parameters.
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Build a look-up table
     ///
     /// - Parameters:
     ///   - inMax: Size of LUT to build
@@ -1176,22 +763,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `cell_size`: %gint, size of Worley cells
-    ///
-    /// Create a one-band float image of Worley noise. See:
-    ///
-    /// https://en.wikipedia.org/wiki/Worley_noise
-    ///
-    /// Use `cell_size` to set the size of the cells from which the image is
-    /// constructed. The default is 256 x 256.
-    ///
-    /// If `width` and `height` are multiples of `cell_size`, the image will tessellate.
-    ///
-    /// See also: vips_perlin(), vips_fractsurf(), vips_gaussnoise().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a worley noise image
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -1216,17 +788,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `uchar`: output a uchar image
-    ///
-    /// Create a one-band image of a zone plate.
-    ///
-    /// Pixels are normally in [-1, +1], set `uchar` to output [0, 255].
-    ///
-    /// See also: vips_eye(), vips_xyz().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Make a zone plate
     ///
     /// - Parameters:
     ///   - width: Image width in pixels

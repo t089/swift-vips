@@ -69,65 +69,7 @@ extension VIPSImage {
         }
     }
 
-    /// This operation calculates `in1` + `in2` and writes the result to `out`.
-    ///
-    /// If the images differ in size, the smaller image is enlarged to match the
-    /// larger by adding zero pixels along the bottom and right.
-    ///
-    /// If the number of bands differs, one of the images
-    /// must have one band. In this case, an n-band image is formed from the
-    /// one-band image by joining n copies of the one-band image together, and then
-    /// the two n-band images are operated upon.
-    ///
-    /// The two input images are cast up to the smallest common format (see table
-    /// Smallest common format in
-    /// arithmetic), then the
-    /// following table is used to determine the output type:
-    ///
-    ///   VipsAdd type promotion
-    ///
-    ///         input type
-    ///         output type
-    ///
-    ///         uchar
-    ///         ushort
-    ///
-    ///         char
-    ///         short
-    ///
-    ///         ushort
-    ///         uint
-    ///
-    ///         short
-    ///         int
-    ///
-    ///         uint
-    ///         uint
-    ///
-    ///         int
-    ///         int
-    ///
-    ///         float
-    ///         float
-    ///
-    ///         double
-    ///         double
-    ///
-    ///         complex
-    ///         complex
-    ///
-    ///         double complex
-    ///         double complex
-    ///
-    /// In other words, the output type is just large enough to hold the whole
-    /// range of possible values.
-    ///
-    /// Operations on integer images are performed using the processor's vector unit,
-    /// if possible. Disable this with --vips-novector or VIPS_NOVECTOR.
-    ///
-    /// See also: vips_subtract(), vips_linear().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Add two images
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
@@ -169,27 +111,7 @@ extension VIPSImage {
         return out
     }
 
-    /// Perform various boolean operations on pairs of images.
-    ///
-    /// The output image is the same format as the upcast input images for integer
-    /// types. Float types are cast to int before processing. Complex types are not
-    /// supported.
-    ///
-    /// If the images differ in size, the smaller image is enlarged to match the
-    /// larger by adding zero pixels along the bottom and right.
-    ///
-    /// If the number of bands differs, one of the images
-    /// must have one band. In this case, an n-band image is formed from the
-    /// one-band image by joining n copies of the one-band image together, and then
-    /// the two n-band images are operated upon.
-    ///
-    /// The two input images are cast up to the smallest common format (see table
-    /// Smallest common format in
-    /// arithmetic).
-    ///
-    /// See also: vips_boolean_const().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Boolean operation on two images
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
@@ -241,12 +163,7 @@ extension VIPSImage {
         }
     }
 
-    /// Perform various binary operations on complex images.
-    ///
-    /// Angles are expressed in degrees. The output type is complex unless the
-    /// input is double or dpcomplex, in which case the output is dpcomplex.
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Complex binary operations on two images
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
@@ -264,19 +181,7 @@ extension VIPSImage {
         }
     }
 
-    /// Compose two real images to make a complex image. If either `left` or `right`
-    /// are `VIPS_FORMAT_DOUBLE`, `out` is `VIPS_FORMAT_DPCOMPLEX`. Otherwise `out`
-    /// is `VIPS_FORMAT_COMPLEX`. `left` becomes the real component of `out` and
-    /// `right` the imaginary.
-    ///
-    /// If the number of bands differs, one of the images
-    /// must have one band. In this case, an n-band image is formed from the
-    /// one-band image by joining n copies of the one-band image together, and then
-    /// the two n-band images are operated upon.
-    ///
-    /// See also: vips_complexget().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Form a complex image from two real images
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
@@ -322,63 +227,7 @@ extension VIPSImage {
         return out
     }
 
-    /// This operation calculates `in1` / `in2` and writes the result to `out`. If any
-    /// pixels in `in2` are zero, the corresponding pixel in `out` is also zero.
-    ///
-    /// If the images differ in size, the smaller image is enlarged to match the
-    /// larger by adding zero pixels along the bottom and right.
-    ///
-    /// If the number of bands differs, one of the images
-    /// must have one band. In this case, an n-band image is formed from the
-    /// one-band image by joining n copies of the one-band image together, and then
-    /// the two n-band images are operated upon.
-    ///
-    /// The two input images are cast up to the smallest common format (see table
-    /// Smallest common format in
-    /// arithmetic), then the
-    /// following table is used to determine the output type:
-    ///
-    ///   vips_divide() type promotion
-    ///
-    ///         input type
-    ///         output type
-    ///
-    ///         uchar
-    ///         float
-    ///
-    ///         char
-    ///         float
-    ///
-    ///         ushort
-    ///         float
-    ///
-    ///         short
-    ///         float
-    ///
-    ///         uint
-    ///         float
-    ///
-    ///         int
-    ///         float
-    ///
-    ///         float
-    ///         float
-    ///
-    ///         double
-    ///         double
-    ///
-    ///         complex
-    ///         complex
-    ///
-    ///         double complex
-    ///         double complex
-    ///
-    /// In other words, the output type is just large enough to hold the whole
-    /// range of possible values.
-    ///
-    /// See also: vips_multiply(), vips_linear(), vips_pow().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Divide two images
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
@@ -440,30 +289,7 @@ extension VIPSImage {
         }
     }
 
-    /// This operation calculates a 2-ary maths operation on a pair of images
-    /// and writes the result to `out`. The images may have any
-    /// non-complex format. `out` is float except in the case that either of `left`
-    /// or `right` are double, in which case `out` is also double.
-    ///
-    /// It detects division by zero, setting those pixels to zero in the output.
-    /// Beware: it does this silently!
-    ///
-    /// If the images differ in size, the smaller image is enlarged to match the
-    /// larger by adding zero pixels along the bottom and right.
-    ///
-    /// If the number of bands differs, one of the images
-    /// must have one band. In this case, an n-band image is formed from the
-    /// one-band image by joining n copies of the one-band image together, and then
-    /// the two n-band images are operated upon.
-    ///
-    /// The two input images are cast up to the smallest common format (see table
-    /// Smallest common format in
-    /// arithmetic), and that format is the
-    /// result type.
-    ///
-    /// See also: vips_math2_const().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Binary math operations
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
@@ -583,62 +409,7 @@ extension VIPSImage {
         }
     }
 
-    /// This operation calculates `left` * `right` and writes the result to `out`.
-    ///
-    /// If the images differ in size, the smaller image is enlarged to match the
-    /// larger by adding zero pixels along the bottom and right.
-    ///
-    /// If the number of bands differs, one of the images
-    /// must have one band. In this case, an n-band image is formed from the
-    /// one-band image by joining n copies of the one-band image together, and then
-    /// the two n-band images are operated upon.
-    ///
-    /// The two input images are cast up to the smallest common format (see table
-    /// Smallest common format in
-    /// arithmetic), then the
-    /// following table is used to determine the output type:
-    ///
-    ///   VipsMultiply type promotion
-    ///
-    ///         input type
-    ///         output type
-    ///
-    ///         uchar
-    ///         ushort
-    ///
-    ///         char
-    ///         short
-    ///
-    ///         ushort
-    ///         uint
-    ///
-    ///         short
-    ///         int
-    ///
-    ///         uint
-    ///         uint
-    ///
-    ///         int
-    ///         int
-    ///
-    ///         float
-    ///         float
-    ///
-    ///         double
-    ///         double
-    ///
-    ///         complex
-    ///         complex
-    ///
-    ///         double complex
-    ///         double complex
-    ///
-    /// In other words, the output type is just large enough to hold the whole
-    /// range of possible values.
-    ///
-    /// See also: vips_add(), vips_linear().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Multiply two images
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
@@ -672,31 +443,7 @@ extension VIPSImage {
         }
     }
 
-    /// Perform various relational operations on pairs of images.
-    ///
-    /// The output type is always uchar, with 0 for FALSE and 255 for TRUE.
-    ///
-    /// Less-than and greater-than for complex images compare the modulus.
-    ///
-    /// If the images differ in size, the smaller image is enlarged to match the
-    /// larger by adding zero pixels along the bottom and right.
-    ///
-    /// If the number of bands differs, one of the images
-    /// must have one band. In this case, an n-band image is formed from the
-    /// one-band image by joining n copies of the one-band image together, and then
-    /// the two n-band images are operated upon.
-    ///
-    /// The two input images are cast up to the smallest common format (see table
-    /// Smallest common format in
-    /// arithmetic).
-    ///
-    /// To decide if pixels match exactly, that is have the same value in every
-    /// band, use vips_bandbool() after this operation to AND or OR image bands
-    /// together.
-    ///
-    /// See also: vips_boolean(), vips_bandbool(), vips_relational_const().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Relational operation on two images
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
@@ -732,27 +479,7 @@ extension VIPSImage {
         }
     }
 
-    /// This operation calculates `left` % `right` (remainder after integer division)
-    /// and writes the result to `out`. The images may have any
-    /// non-complex format. For float formats, vips_remainder() calculates `in1` -
-    /// `in2` * floor (`in1` / `in2`).
-    ///
-    /// If the images differ in size, the smaller image is enlarged to match the
-    /// larger by adding zero pixels along the bottom and right.
-    ///
-    /// If the number of bands differs, one of the images
-    /// must have one band. In this case, an n-band image is formed from the
-    /// one-band image by joining n copies of the one-band image together, and then
-    /// the two n-band images are operated upon.
-    ///
-    /// The two input images are cast up to the smallest common format (see table
-    /// Smallest common format in
-    /// arithmetic), and that format is the
-    /// result type.
-    ///
-    /// See also: vips_remainder_const(), vips_divide(), vips_round().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Remainder after integer division of two images
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
@@ -840,62 +567,7 @@ extension VIPSImage {
         }
     }
 
-    /// This operation calculates `in1` - `in2` and writes the result to `out`.
-    ///
-    /// If the images differ in size, the smaller image is enlarged to match the
-    /// larger by adding zero pixels along the bottom and right.
-    ///
-    /// If the number of bands differs, one of the images
-    /// must have one band. In this case, an n-band image is formed from the
-    /// one-band image by joining n copies of the one-band image together, and then
-    /// the two n-band images are operated upon.
-    ///
-    /// The two input images are cast up to the smallest common format (see table
-    /// Smallest common format in
-    /// arithmetic), then the
-    /// following table is used to determine the output type:
-    ///
-    ///   VipsSubtract type promotion
-    ///
-    ///         input type
-    ///         output type
-    ///
-    ///         uchar
-    ///         short
-    ///
-    ///         char
-    ///         short
-    ///
-    ///         ushort
-    ///         int
-    ///
-    ///         short
-    ///         int
-    ///
-    ///         uint
-    ///         int
-    ///
-    ///         int
-    ///         int
-    ///
-    ///         float
-    ///         float
-    ///
-    ///         double
-    ///         double
-    ///
-    ///         complex
-    ///         complex
-    ///
-    ///         double complex
-    ///         double complex
-    ///
-    /// In other words, the output type is just large enough to hold the whole
-    /// range of possible values.
-    ///
-    /// See also: vips_add(), vips_linear().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Subtract two images
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
@@ -911,62 +583,7 @@ extension VIPSImage {
         }
     }
 
-    /// This operation sums all images in `in` and writes the result to `out`.
-    ///
-    /// If the images differ in size, the smaller images are enlarged to match the
-    /// largest by adding zero pixels along the bottom and right.
-    ///
-    /// If the number of bands differs, all but one of the images
-    /// must have one band. In this case, n-band images are formed from the
-    /// one-band images by joining n copies of the one-band images together, and then
-    /// the n-band images are operated upon.
-    ///
-    /// The input images are cast up to the smallest common format (see table
-    /// Smallest common format in
-    /// arithmetic), then the
-    /// following table is used to determine the output type:
-    ///
-    ///   VipsSum type promotion
-    ///
-    ///         input type
-    ///         output type
-    ///
-    ///         uchar
-    ///         uint
-    ///
-    ///         char
-    ///         int
-    ///
-    ///         ushort
-    ///         uint
-    ///
-    ///         short
-    ///         int
-    ///
-    ///         uint
-    ///         uint
-    ///
-    ///         int
-    ///         int
-    ///
-    ///         float
-    ///         float
-    ///
-    ///         double
-    ///         double
-    ///
-    ///         complex
-    ///         complex
-    ///
-    ///         double complex
-    ///         double complex
-    ///
-    /// In other words, the output type is just large enough to hold the whole
-    /// range of possible values.
-    ///
-    /// See also: vips_add().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Sum an array of images
     ///
     /// - Parameters:
     ///   - `in`: Array of input images

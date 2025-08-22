@@ -61,48 +61,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `across`: %gint, number of images per row
-    /// * `shim`: %gint, space between images, in pixels
-    /// * `background`: `VipsArrayDouble`, background ink colour
-    /// * `halign`: `VipsAlign`, low, centre or high alignment
-    /// * `valign`: `VipsAlign`, low, centre or high alignment
-    /// * `hspacing`: %gint, horizontal distance between images
-    /// * `vspacing`: %gint, vertical distance between images
-    ///
-    /// Lay out the images in `in` in a grid. The grid is `across` images across and
-    /// however high is necessary to use up all of `in`. Images are set down
-    /// left-to-right and top-to-bottom. `across` defaults to `n`.
-    ///
-    /// Each input image is placed with a box of size `hspacing` by `vspacing`
-    /// pixels and cropped. These default to the largest width and largest height
-    /// of the input images.
-    ///
-    /// Space between images is filled with `background`. This defaults to 0
-    /// (black).
-    ///
-    /// Images are positioned within their `hspacing` by `vspacing` box at low,
-    /// centre or high coordinate values, controlled by `halign` and `valign`. These
-    /// default to left-top.
-    ///
-    /// Boxes are joined and separated by `shim` pixels. This defaults to 0.
-    ///
-    /// If the number of bands in the input images differs, all but one of the
-    /// images must have one band. In this case, an n-band image is formed from the
-    /// one-band image by joining n copies of the one-band image together, and then
-    /// the n-band images are operated upon.
-    ///
-    /// The input images are cast up to the smallest common type (see table
-    /// Smallest common format in
-    /// arithmetic).
-    ///
-    /// vips_colourspace() can be useful for moving the images to a common
-    /// colourspace for compositing.
-    ///
-    /// See also: vips_join(), vips_insert(), vips_colourspace().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Join an array of images
     ///
     /// - Parameters:
     ///   - `in`: Array of input images
@@ -157,23 +116,7 @@ extension VIPSImage {
         }
     }
 
-    /// Join a set of images together, bandwise.
-    ///
-    /// If the images
-    /// have n and m bands, then the output image will have n + m
-    /// bands, with the first n coming from the first image and the last m
-    /// from the second.
-    ///
-    /// If the images differ in size, the smaller images are enlarged to match the
-    /// larger by adding zero pixels along the bottom and right.
-    ///
-    /// The input images are cast up to the smallest common type (see table
-    /// Smallest common format in
-    /// arithmetic).
-    ///
-    /// See also: vips_insert().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Bandwise join a set of images
     ///
     /// - Parameters:
     ///   - `in`: Array of input images
@@ -204,30 +147,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `index`: pick this index from list of sorted values
-    ///
-    /// Sorts the images `in` band-element-wise, then outputs an
-    /// image in which each band element is selected from the sorted list by the
-    /// `index` parameter. For example, if `index`
-    /// is zero, then each output band element will be the minimum of all the
-    /// corresponding input band elements.
-    ///
-    /// By default, `index` is -1, meaning pick the median value.
-    ///
-    /// It works for any uncoded, non-complex image type. Images are cast up to the
-    /// smallest common-format.
-    ///
-    /// Any image can have either 1 band or n bands, where n is the same for all
-    /// the non-1-band images. Single band images are then effectively copied to
-    /// make n-band images.
-    ///
-    /// Smaller input images are expanded by adding black pixels.
-    ///
-    /// See also: vips_rank().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Band-wise rank of a set of images
     ///
     /// - Parameters:
     ///   - `in`: Array of input images
@@ -545,43 +465,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `expand`: `TRUE` to expand the output image to hold all of the input pixels
-    /// * `shim`: space between images, in pixels
-    /// * `background`: background ink colour
-    /// * `align`: low, centre or high alignment
-    ///
-    /// Join `in1` and `in2` together, left-right or up-down depending on the value
-    /// of `direction`.
-    ///
-    /// If one is taller or wider than the
-    /// other, `out` will be has high as the smaller. If `expand` is `TRUE`, then
-    /// the output will be expanded to contain all of the input pixels.
-    ///
-    /// Use `align` to set the edge that the images align on. By default, they align
-    /// on the edge with the lower value coordinate.
-    ///
-    /// Use `background` to set the colour of any pixels in `out` which are not
-    /// present in either `in1` or `in2`.
-    ///
-    /// Use `shim` to set the spacing between the images. By default this is 0.
-    ///
-    /// If the number of bands differs, one of the images
-    /// must have one band. In this case, an n-band image is formed from the
-    /// one-band image by joining n copies of the one-band image together, and then
-    /// the two n-band images are operated upon.
-    ///
-    /// The two input images are cast up to the smallest common type (see table
-    /// Smallest common format in
-    /// arithmetic).
-    ///
-    /// If you are going to be joining many thousands of images in a regular
-    /// grid, vips_arrayjoin() is a better choice.
-    ///
-    /// See also: vips_arrayjoin(), vips_insert().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Join a pair of images
     ///
     /// - Parameters:
     ///   - in2: Second input image

@@ -163,9 +163,7 @@ extension VIPSImage {
         }
     }
 
-    /// Calculate dE 00.
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Calculate de00
     ///
     /// - Parameters:
     ///   - `right`: Right-hand input image
@@ -181,9 +179,7 @@ extension VIPSImage {
         }
     }
 
-    /// Calculate dE 76.
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Calculate de76
     ///
     /// - Parameters:
     ///   - `right`: Right-hand input image
@@ -199,16 +195,7 @@ extension VIPSImage {
         }
     }
 
-    /// Calculate dE CMC. The input images are transformed to CMC colour space and
-    /// the euclidean distance between corresponding pixels calculated.
-    ///
-    /// To calculate a colour difference with values for (l:c) other than (1:1),
-    /// transform the two source images to CMC yourself, scale the channels
-    /// appropriately, and call this function.
-    ///
-    /// See also: vips_colourspace()
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Calculate decmc
     ///
     /// - Parameters:
     ///   - `right`: Right-hand input image
@@ -378,20 +365,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `extend`: `VipsExtend` to generate the edge pixels (default: black)
-    /// * `background`: `VipsArrayDouble` colour for edge pixels
-    ///
-    /// The opposite of vips_extract_area(): place `in` within an image of size
-    /// `width` by `height` at a certain gravity.
-    ///
-    /// `extend`
-    /// controls what appears in the new pels, see `VipsExtend`.
-    ///
-    /// See also: vips_extract_area(), vips_insert().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Place an image within a larger image with a certain gravity
     ///
     /// - Parameters:
     ///   - direction: Direction to place image within width/height
@@ -419,32 +393,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `blend`: blend smoothly between `in1` and `in2`
-    ///
-    /// This operation scans the condition image `cond`
-    /// and uses it to select pixels from either the then image `in1` or the else
-    /// image `in2`. Non-zero means `in1`, 0 means `in2`.
-    ///
-    /// Any image can have either 1 band or n bands, where n is the same for all
-    /// the non-1-band images. Single band images are then effectively copied to
-    /// make n-band images.
-    ///
-    /// Images `in1` and `in2` are cast up to the smallest common format. `cond` is
-    /// cast to uchar.
-    ///
-    /// If the images differ in size, the smaller images are enlarged to match the
-    /// largest by adding zero pixels along the bottom and right.
-    ///
-    /// If `blend` is `TRUE`, then values in `out` are smoothly blended between `in1`
-    /// and `in2` using the formula:
-    ///
-    ///   `out` = (`cond` / 255) * `in1` + (1 - `cond` / 255) * `in2`
-    ///
-    /// See also: vips_equal().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Ifthenelse an image
     ///
     /// - Parameters:
     ///   - in1: Source for TRUE pixels
@@ -516,22 +465,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `search`: search to improve tie-points
-    /// * `hwindow`: half window size
-    /// * `harea`: half search size
-    /// * `interpolate`: interpolate pixels with this
-    ///
-    /// Scale, rotate and translate `sec` so that the tie-points line up.
-    ///
-    /// If `search` is `TRUE`, before performing the transformation, the tie-points
-    /// are improved by searching an area of `sec` of size `harea` for a
-    /// match of size `hwindow` to `ref`.
-    ///
-    /// This function will only work well for small rotates and scales.
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// First-order match of two images
     ///
     /// - Parameters:
     ///   - sec: Secondary image
@@ -613,37 +547,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `mblend`: %gint, maximum blend size
-    ///
-    /// This operation joins two images left-right (with `ref` on the left) or
-    /// up-down (with `ref` above) with a smooth seam.
-    ///
-    /// If the number of bands differs, one of the images
-    /// must have one band. In this case, an n-band image is formed from the
-    /// one-band image by joining n copies of the one-band image together, and then
-    /// the two n-band images are operated upon.
-    ///
-    /// The two input images are cast up to the smallest common type (see table
-    /// Smallest common format in
-    /// arithmetic).
-    ///
-    /// `dx` and `dy` give the displacement of `sec` relative to `ref`, in other words,
-    /// the vector to get from the origin of `sec` to the origin of `ref`, in other
-    /// words, `dx` will generally be a negative number.
-    ///
-    /// `mblend` limits  the  maximum width of the
-    /// blend area.  A value of "-1" means "unlimited". The two images are blended
-    /// with a raised cosine.
-    ///
-    /// Pixels with all bands equal to zero are "transparent", that
-    /// is, zero pixels in the overlap area do not  contribute  to  the  merge.
-    /// This makes it possible to join non-rectangular images.
-    ///
-    /// See also: vips_mosaic(), vips_insert().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Merge two images
     ///
     /// - Parameters:
     ///   - sec: Secondary image
@@ -669,41 +573,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `bandno`: %gint, band to search for features
-    /// * `hwindow`: %gint, half window size
-    /// * `harea`: %gint, half search size
-    /// * `mblend`: %gint, maximum blend size
-    /// * `dx0`: %gint, output, detected displacement
-    /// * `dy0`: %gint, output, detected displacement
-    /// * `scale1`: %gdouble, output, detected first order scale
-    /// * `angle1`: %gdouble, output, detected first order rotation
-    /// * `dx1`: %gdouble, output, detected first order displacement
-    /// * `dy1`: %gdouble, output, detected first order displacement
-    ///
-    /// This operation joins two images left-right (with `ref` on the left) or
-    /// top-bottom (with `ref` above) given an approximate overlap.
-    ///
-    /// `sec` is positioned so that the pixel (`xsec`, `ysec`) in `sec` lies on top of
-    /// the pixel (`xref`, `yref`) in `ref`. The overlap area is divided into three
-    /// sections, 20 high-contrast points in band `bandno` of image `ref` are found
-    /// in each, and a window of pixels of size `hwindow` around each high-contrast
-    /// point is searched for in `sec` over an area of `harea`.
-    ///
-    /// A linear model is fitted to the 60 tie-points, points a long way from the
-    /// fit are discarded, and the model refitted until either too few points
-    /// remain or the model reaches good agreement.
-    ///
-    /// The detected displacement is used with vips_merge() to join the two images
-    /// together.
-    ///
-    /// You can read out the detected transform with `dx0`, `dy0`, `scale1`, `angle1`,
-    /// `dx1`, `dy1`.
-    ///
-    /// See also: vips_merge(), vips_insert().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Mosaic two images
     ///
     /// - Parameters:
     ///   - sec: Secondary image
@@ -745,43 +615,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `search`: search to improve tie-points
-    /// * `hwindow`: half window size
-    /// * `harea`: half search size
-    /// * `interpolate`: interpolate pixels with this
-    /// * `mblend`: maximum blend size
-    ///
-    /// This operation joins two images top-bottom (with `sec` on the right)
-    /// or left-right (with `sec` at the bottom)
-    /// given an approximate pair of tie-points. `sec` is scaled and rotated as
-    /// necessary before the join.
-    ///
-    /// If `search` is `TRUE`, before performing the transformation, the tie-points
-    /// are improved by searching an area of `sec` of size `harea` for a
-    /// object of size `hwindow` in `ref`.
-    ///
-    /// `mblend` limits  the  maximum size of the
-    /// blend area.  A value of "-1" means "unlimited". The two images are blended
-    /// with a raised cosine.
-    ///
-    /// Pixels with all bands equal to zero are "transparent", that
-    /// is, zero pixels in the overlap area do not  contribute  to  the  merge.
-    /// This makes it possible to join non-rectangular images.
-    ///
-    /// If the number of bands differs, one of the images
-    /// must have one band. In this case, an n-band image is formed from the
-    /// one-band image by joining n copies of the one-band image together, and then
-    /// the two n-band images are operated upon.
-    ///
-    /// The two input images are cast up to the smallest common type (see table
-    /// Smallest common format in
-    /// arithmetic).
-    ///
-    /// See also: vips_merge(), vips_insert(), vips_globalbalance().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// First-order mosaic of two images
     ///
     /// - Parameters:
     ///   - sec: Secondary image
@@ -1050,19 +884,7 @@ extension VIPSImage {
         }
     }
 
-    /// The `tests` images are evaluated and at each point the index of the first
-    /// non-zero value is written to `out`. If all `tests` are false, the value
-    /// (`n` + 1) is written.
-    ///
-    /// Images in `tests` must have one band. They are expanded to the
-    /// bounding box of the set of images in `tests`, and that size is used for
-    /// `out`. `tests` can have up to 255 elements.
-    ///
-    /// Combine with vips_case() to make an efficient multi-way vips_ifthenelse().
-    ///
-    /// See also: vips_maplut(), vips_case(), vips_ifthenelse().
-    ///
-    /// Returns: 0 on success, -1 on error
+    /// Find the index of the first non-zero pixel in tests
     ///
     /// - Parameters:
     ///   - tests: Table of images to test

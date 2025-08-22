@@ -10,55 +10,7 @@ import CvipsShim
 
 extension VIPSImage {
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, load this page
-    /// * `n`: %gint, load this many pages
-    /// * `autorotate`: %gboolean, use orientation tag to rotate the image
-    ///   during load
-    /// * `subifd`: %gint, select this subifd index
-    ///
-    /// Read a TIFF file into a VIPS image. It is a full baseline TIFF 6 reader,
-    /// with extensions for tiled images, multipage images, XYZ and LAB colour
-    /// space, pyramidal images and JPEG compression, including CMYK and YCbCr.
-    ///
-    /// `page` means load this page from the file. By default the first page (page
-    /// 0) is read.
-    ///
-    /// `n` means load this many pages. By default a single page is read. All the
-    /// pages must have the same dimensions, and they are loaded as a tall, thin
-    /// "toilet roll" image. The `VIPS_META_PAGE_HEIGHT` metadata
-    /// tag gives the height in pixels of each page. Use -1 to load all pages.
-    ///
-    /// Setting `autorotate` to `TRUE` will make the loader interpret the
-    /// orientation tag and automatically rotate the image appropriately during
-    /// load.
-    ///
-    /// If `autorotate` is `FALSE`, the metadata field `VIPS_META_ORIENTATION` is set
-    /// to the value of the orientation tag. Applications may read and interpret
-    /// this field
-    /// as they wish later in processing. See vips_autorot(). Save
-    /// operations will use `VIPS_META_ORIENTATION`, if present, to set the
-    /// orientation of output images.
-    ///
-    /// If `autorotate` is TRUE, the image will be rotated upright during load and
-    /// no metadata attached. This can be very slow.
-    ///
-    /// If `subifd` is -1 (the default), the main image is selected for each page.
-    /// If it is 0 or greater and there is a SUBIFD tag, the indexed SUBIFD is
-    /// selected. This can be used to read lower resolution layers from
-    /// bioformats-style image pyramids.
-    ///
-    /// Any ICC profile is read and attached to the VIPS image as
-    /// `VIPS_META_ICC_NAME`. Any XMP metadata is read and attached to the image
-    /// as `VIPS_META_XMP_NAME`. Any IPTC is attached as `VIPS_META_IPTC_NAME`. The
-    /// image description is
-    /// attached as `VIPS_META_IMAGEDESCRIPTION`. Data in the photoshop tag is
-    /// attached as `VIPS_META_PHOTOSHOP_NAME`.
-    ///
-    /// See also: vips_image_new_from_file(), vips_autorot().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load tiff from file
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -105,23 +57,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, load this page
-    /// * `n`: %gint, load this many pages
-    /// * `autorotate`: %gboolean, use orientation tag to rotate the image
-    ///   during load
-    /// * `subifd`: %gint, select this subifd index
-    ///
-    /// Read a TIFF-formatted memory block into a VIPS image. Exactly as
-    /// vips_tiffload(), but read from a memory source.
-    ///
-    /// You must not free the buffer while `out` is active. The
-    /// `VipsObject`::postclose signal on `out` is a good place to free.
-    ///
-    /// See also: vips_tiffload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load tiff from buffer
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -179,19 +115,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `page`: %gint, load this page
-    /// * `n`: %gint, load this many pages
-    /// * `autorotate`: %gboolean, use orientation tag to rotate the image
-    ///   during load
-    /// * `subifd`: %gint, select this subifd index
-    ///
-    /// Exactly as vips_tiffload(), but read from a source.
-    ///
-    /// See also: vips_tiffload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load tiff from source
     ///
     /// - Parameters:
     ///   - source: Source to load from

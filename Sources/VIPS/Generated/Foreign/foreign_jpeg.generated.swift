@@ -10,66 +10,7 @@ import CvipsShim
 
 extension VIPSImage {
 
-    /// Optional arguments:
-    ///
-    /// * `shrink`: %gint, shrink by this much on load
-    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
-    /// * `autorotate`: %gboolean, rotate image upright during load
-    ///
-    /// Read a JPEG file into a VIPS image. It can read most 8-bit JPEG images,
-    /// including CMYK and YCbCr.
-    ///
-    /// `shrink` means shrink by this integer factor during load.  Possible values
-    /// are 1, 2, 4 and 8. Shrinking during read is very much faster than
-    /// decompressing the whole image and then shrinking later.
-    ///
-    /// Use `fail_on` to set the type of error that will cause load to fail. By
-    /// default, loaders are permissive, that is, `VIPS_FAIL_ON_NONE`.
-    ///
-    /// Setting `autorotate` to `TRUE` will make the loader interpret the
-    /// orientation tag and automatically rotate the image appropriately during
-    /// load.
-    ///
-    /// If `autorotate` is `FALSE`, the metadata field `VIPS_META_ORIENTATION` is set
-    /// to the value of the orientation tag. Applications may read and interpret
-    /// this field
-    /// as they wish later in processing. See vips_autorot(). Save
-    /// operations will use `VIPS_META_ORIENTATION`, if present, to set the
-    /// orientation of output images.
-    ///
-    /// Example:
-    ///
-    /// |[
-    /// vips_jpegload( "fred.jpg", &amp;out,
-    /// 	"shrink", 8,
-    /// 	"fail_on", VIPS_FAIL_ON_TRUNCATED,
-    /// 	NULL );
-    /// ]|
-    ///
-    /// Any embedded ICC profiles are ignored: you always just get the RGB from
-    /// the file. Instead, the embedded profile will be attached to the image as
-    /// `VIPS_META_ICC_NAME`. You need to use something like
-    /// vips_icc_import() to get CIE values from the file.
-    ///
-    /// EXIF metadata is attached as `VIPS_META_EXIF_NAME`, IPTC as
-    /// `VIPS_META_IPTC_NAME`, and XMP as `VIPS_META_XMP_NAME`.
-    ///
-    /// The int metadata item "jpeg-multiscan" is set to the result of
-    /// jpeg_has_multiple_scans(). Interlaced jpeg images need a large amount of
-    /// memory to load, so this field gives callers a chance to handle these
-    /// images differently.
-    ///
-    /// The string-valued field "jpeg-chroma-subsample" gives the chroma subsample
-    /// in standard notation. 4:4:4 means no subsample, 4:2:0 means YCbCr with
-    /// Cb and Cr subsampled horizontally and vertically, 4:4:4:4 means a CMYK
-    /// image with no subsampling.
-    ///
-    /// The EXIF thumbnail, if present, is attached to the image as
-    /// "jpeg-thumbnail-data". See vips_image_get_blob().
-    ///
-    /// See also: vips_jpegload_buffer(), vips_image_new_from_file(), vips_autorot().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load jpeg from file
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -112,22 +53,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `shrink`: %gint, shrink by this much on load
-    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
-    /// * `autorotate`: %gboolean, use exif Orientation tag to rotate the image
-    ///   during load
-    ///
-    /// Read a JPEG-formatted memory block into a VIPS image. Exactly as
-    /// vips_jpegload(), but read from a memory buffer.
-    ///
-    /// You must not free the buffer while `out` is active. The
-    /// `VipsObject`::postclose signal on `out` is a good place to free.
-    ///
-    /// See also: vips_jpegload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load jpeg from buffer
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -181,19 +107,7 @@ extension VIPSImage {
         }
     }
 
-    /// Optional arguments:
-    ///
-    /// * `shrink`: %gint, shrink by this much on load
-    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
-    /// * `autorotate`: %gboolean, use exif Orientation tag to rotate the image
-    ///   during load
-    ///
-    /// Read a JPEG-formatted memory block into a VIPS image. Exactly as
-    /// vips_jpegload(), but read from a source.
-    ///
-    /// See also: vips_jpegload().
-    ///
-    /// Returns: 0 on success, -1 on error.
+    /// Load image from jpeg source
     ///
     /// - Parameters:
     ///   - source: Source to load from
