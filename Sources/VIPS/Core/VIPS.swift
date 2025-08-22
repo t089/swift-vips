@@ -143,6 +143,10 @@ public struct VIPSOption {
         g_value_set_object(&pair.value, value)
         self.pairs.append(pair)
     }
+
+    public mutating func set(_ name: String, value: VIPSImage) {
+        set(name, value: value.image)
+    }
     
     // input
     public mutating func set(_ name: String, value: UnsafeMutablePointer<VipsTarget>!) {
