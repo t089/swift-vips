@@ -781,6 +781,12 @@ extension VIPSImage {
     public subscript(band: Int) -> VIPSImage? {
         return try? self.extractBand(band)
     }
+    
+    public subscript(x: Int, y: Int) -> [Double] {
+        get throws {
+            return try getpoint(x: x, y: y)
+        }
+    }
 }
 
 
