@@ -103,10 +103,10 @@ extension VIPSImage {
 
         var out: Double = 0.0
 
-            opt.set("in", value: self.image)
-            opt.set("out", value: &out)
+        opt.set("in", value: self.image)
+        opt.set("out", value: &out)
 
-            try VIPSImage.call("avg", options: &opt)
+        try VIPSImage.call("avg", options: &opt)
 
         return out
     }
@@ -219,10 +219,10 @@ extension VIPSImage {
 
         var out: Double = 0.0
 
-            opt.set("in", value: self.image)
-            opt.set("out", value: &out)
+        opt.set("in", value: self.image)
+        opt.set("out", value: &out)
 
-            try VIPSImage.call("deviate", options: &opt)
+        try VIPSImage.call("deviate", options: &opt)
 
         return out
     }
@@ -346,13 +346,13 @@ extension VIPSImage {
 
         var out: Double = 0.0
 
-            opt.set("in", value: self.image)
-            if let size = size {
-                opt.set("size", value: size)
-            }
-            opt.set("out", value: &out)
+        opt.set("in", value: self.image)
+        if let size = size {
+            opt.set("size", value: size)
+        }
+        opt.set("out", value: &out)
 
-            try VIPSImage.call("max", options: &opt)
+        try VIPSImage.call("max", options: &opt)
 
         return out
     }
@@ -382,13 +382,13 @@ extension VIPSImage {
 
         var out: Double = 0.0
 
-            opt.set("in", value: self.image)
-            if let size = size {
-                opt.set("size", value: size)
-            }
-            opt.set("out", value: &out)
+        opt.set("in", value: self.image)
+        if let size = size {
+            opt.set("size", value: size)
+        }
+        opt.set("out", value: &out)
 
-            try VIPSImage.call("min", options: &opt)
+        try VIPSImage.call("min", options: &opt)
 
         return out
     }
@@ -448,7 +448,9 @@ extension VIPSImage {
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     ///   - relational: Relational to perform
-    public func relational(_ rhs: VIPSImage, relational: VipsOperationRelational) throws -> VIPSImage {
+    public func relational(_ rhs: VIPSImage, relational: VipsOperationRelational) throws
+        -> VIPSImage
+    {
         return try VIPSImage([self, rhs]) { out in
             var opt = VIPSOption()
 
@@ -466,7 +468,9 @@ extension VIPSImage {
     /// - Parameters:
     ///   - relational: Relational to perform
     ///   - c: Array of constants
-    public func relationalConst(relational: VipsOperationRelational, c: [Double]) throws -> VIPSImage {
+    public func relationalConst(relational: VipsOperationRelational, c: [Double]) throws
+        -> VIPSImage
+    {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -755,6 +759,5 @@ extension VIPSImage {
     public func rshift(_ amount: Int) throws -> VIPSImage {
         return try booleanConst(boolean: .rshift, c: [Double(amount)])
     }
-
 
 }

@@ -20,7 +20,15 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func gifload(filename: String, n: Int? = nil, page: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func gifload(
+        filename: String,
+        n: Int? = nil,
+        page: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -60,7 +68,15 @@ extension VIPSImage {
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
-    public static func gifload(buffer: some Collection<UInt8>, n: Int? = nil, page: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func gifload(
+        buffer: some Collection<UInt8>,
+        n: Int? = nil,
+        page: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
             return try VIPSImage(nil) { out in
                 var opt = VIPSOption()
@@ -95,7 +111,15 @@ extension VIPSImage {
         if let maybeImage {
             return maybeImage
         } else {
-            return try gifload(buffer: Array(buffer), n: n, page: page, memory: memory, access: access, failOn: failOn, revalidate: revalidate)
+            return try gifload(
+                buffer: Array(buffer),
+                n: n,
+                page: page,
+                memory: memory,
+                access: access,
+                failOn: failOn,
+                revalidate: revalidate
+            )
         }
     }
 
@@ -109,7 +133,15 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func gifload(source: VIPSSource, n: Int? = nil, page: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func gifload(
+        source: VIPSSource,
+        n: Int? = nil,
+        page: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
@@ -153,46 +185,59 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func gifsave(filename: String, dither: Double? = nil, effort: Int? = nil, bitdepth: Int? = nil, interframeMaxerror: Double? = nil, reuse: Bool? = nil, interpaletteMaxerror: Double? = nil, interlace: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func gifsave(
+        filename: String,
+        dither: Double? = nil,
+        effort: Int? = nil,
+        bitdepth: Int? = nil,
+        interframeMaxerror: Double? = nil,
+        reuse: Bool? = nil,
+        interpaletteMaxerror: Double? = nil,
+        interlace: Bool? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("filename", value: filename)
-            if let dither = dither {
-                opt.set("dither", value: dither)
-            }
-            if let effort = effort {
-                opt.set("effort", value: effort)
-            }
-            if let bitdepth = bitdepth {
-                opt.set("bitdepth", value: bitdepth)
-            }
-            if let interframeMaxerror = interframeMaxerror {
-                opt.set("interframe_maxerror", value: interframeMaxerror)
-            }
-            if let reuse = reuse {
-                opt.set("reuse", value: reuse)
-            }
-            if let interpaletteMaxerror = interpaletteMaxerror {
-                opt.set("interpalette_maxerror", value: interpaletteMaxerror)
-            }
-            if let interlace = interlace {
-                opt.set("interlace", value: interlace)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("filename", value: filename)
+        if let dither = dither {
+            opt.set("dither", value: dither)
+        }
+        if let effort = effort {
+            opt.set("effort", value: effort)
+        }
+        if let bitdepth = bitdepth {
+            opt.set("bitdepth", value: bitdepth)
+        }
+        if let interframeMaxerror = interframeMaxerror {
+            opt.set("interframe_maxerror", value: interframeMaxerror)
+        }
+        if let reuse = reuse {
+            opt.set("reuse", value: reuse)
+        }
+        if let interpaletteMaxerror = interpaletteMaxerror {
+            opt.set("interpalette_maxerror", value: interpaletteMaxerror)
+        }
+        if let interlace = interlace {
+            opt.set("interlace", value: interlace)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("gifsave", options: &opt)
+        try VIPSImage.call("gifsave", options: &opt)
     }
 
     /// Save as gif
@@ -209,48 +254,60 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func gifsave(dither: Double? = nil, effort: Int? = nil, bitdepth: Int? = nil, interframeMaxerror: Double? = nil, reuse: Bool? = nil, interpaletteMaxerror: Double? = nil, interlace: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
+    public func gifsave(
+        dither: Double? = nil,
+        effort: Int? = nil,
+        bitdepth: Int? = nil,
+        interframeMaxerror: Double? = nil,
+        reuse: Bool? = nil,
+        interpaletteMaxerror: Double? = nil,
+        interlace: Bool? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
         var out: UnsafeMutablePointer<VipsBlob>! = nil
 
-            opt.set("in", value: self.image)
-            if let dither = dither {
-                opt.set("dither", value: dither)
-            }
-            if let effort = effort {
-                opt.set("effort", value: effort)
-            }
-            if let bitdepth = bitdepth {
-                opt.set("bitdepth", value: bitdepth)
-            }
-            if let interframeMaxerror = interframeMaxerror {
-                opt.set("interframe_maxerror", value: interframeMaxerror)
-            }
-            if let reuse = reuse {
-                opt.set("reuse", value: reuse)
-            }
-            if let interpaletteMaxerror = interpaletteMaxerror {
-                opt.set("interpalette_maxerror", value: interpaletteMaxerror)
-            }
-            if let interlace = interlace {
-                opt.set("interlace", value: interlace)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
-            opt.set("buffer", value: &out)
+        opt.set("in", value: self.image)
+        if let dither = dither {
+            opt.set("dither", value: dither)
+        }
+        if let effort = effort {
+            opt.set("effort", value: effort)
+        }
+        if let bitdepth = bitdepth {
+            opt.set("bitdepth", value: bitdepth)
+        }
+        if let interframeMaxerror = interframeMaxerror {
+            opt.set("interframe_maxerror", value: interframeMaxerror)
+        }
+        if let reuse = reuse {
+            opt.set("reuse", value: reuse)
+        }
+        if let interpaletteMaxerror = interpaletteMaxerror {
+            opt.set("interpalette_maxerror", value: interpaletteMaxerror)
+        }
+        if let interlace = interlace {
+            opt.set("interlace", value: interlace)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
+        opt.set("buffer", value: &out)
 
-            try VIPSImage.call("gifsave_buffer", options: &opt)
+        try VIPSImage.call("gifsave_buffer", options: &opt)
 
         guard let vipsBlob = out else {
             throw VIPSError("Failed to get buffer from gifsave_buffer")
@@ -274,46 +331,59 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func gifsave(target: VIPSTarget, dither: Double? = nil, effort: Int? = nil, bitdepth: Int? = nil, interframeMaxerror: Double? = nil, reuse: Bool? = nil, interpaletteMaxerror: Double? = nil, interlace: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func gifsave(
+        target: VIPSTarget,
+        dither: Double? = nil,
+        effort: Int? = nil,
+        bitdepth: Int? = nil,
+        interframeMaxerror: Double? = nil,
+        reuse: Bool? = nil,
+        interpaletteMaxerror: Double? = nil,
+        interlace: Bool? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("target", value: target)
-            if let dither = dither {
-                opt.set("dither", value: dither)
-            }
-            if let effort = effort {
-                opt.set("effort", value: effort)
-            }
-            if let bitdepth = bitdepth {
-                opt.set("bitdepth", value: bitdepth)
-            }
-            if let interframeMaxerror = interframeMaxerror {
-                opt.set("interframe_maxerror", value: interframeMaxerror)
-            }
-            if let reuse = reuse {
-                opt.set("reuse", value: reuse)
-            }
-            if let interpaletteMaxerror = interpaletteMaxerror {
-                opt.set("interpalette_maxerror", value: interpaletteMaxerror)
-            }
-            if let interlace = interlace {
-                opt.set("interlace", value: interlace)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("target", value: target)
+        if let dither = dither {
+            opt.set("dither", value: dither)
+        }
+        if let effort = effort {
+            opt.set("effort", value: effort)
+        }
+        if let bitdepth = bitdepth {
+            opt.set("bitdepth", value: bitdepth)
+        }
+        if let interframeMaxerror = interframeMaxerror {
+            opt.set("interframe_maxerror", value: interframeMaxerror)
+        }
+        if let reuse = reuse {
+            opt.set("reuse", value: reuse)
+        }
+        if let interpaletteMaxerror = interpaletteMaxerror {
+            opt.set("interpalette_maxerror", value: interpaletteMaxerror)
+        }
+        if let interlace = interlace {
+            opt.set("interlace", value: interlace)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("gifsave_target", options: &opt)
+        try VIPSImage.call("gifsave_target", options: &opt)
     }
 
 }

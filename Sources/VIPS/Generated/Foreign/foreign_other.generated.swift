@@ -18,7 +18,13 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func analyzeload(filename: String, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func analyzeload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -53,7 +59,17 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func csvload(filename: String, skip: Int? = nil, lines: Int? = nil, whitespace: String? = nil, separator: String? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func csvload(
+        filename: String,
+        skip: Int? = nil,
+        lines: Int? = nil,
+        whitespace: String? = nil,
+        separator: String? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -100,7 +116,17 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func csvload(source: VIPSSource, skip: Int? = nil, lines: Int? = nil, whitespace: String? = nil, separator: String? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func csvload(
+        source: VIPSSource,
+        skip: Int? = nil,
+        lines: Int? = nil,
+        whitespace: String? = nil,
+        separator: String? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
@@ -144,28 +170,35 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func csvsave(filename: String, separator: String? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func csvsave(
+        filename: String,
+        separator: String? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("filename", value: filename)
-            if let separator = separator {
-                opt.set("separator", value: separator)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("filename", value: filename)
+        if let separator = separator {
+            opt.set("separator", value: separator)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("csvsave", options: &opt)
+        try VIPSImage.call("csvsave", options: &opt)
     }
 
     /// Save image to csv
@@ -177,28 +210,35 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func csvsave(target: VIPSTarget, separator: String? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func csvsave(
+        target: VIPSTarget,
+        separator: String? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("target", value: target)
-            if let separator = separator {
-                opt.set("separator", value: separator)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("target", value: target)
+        if let separator = separator {
+            opt.set("separator", value: separator)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("csvsave_target", options: &opt)
+        try VIPSImage.call("csvsave_target", options: &opt)
     }
 
     /// Save image to deepzoom file
@@ -223,67 +263,87 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func dzsave(filename: String, imagename: String? = nil, layout: VipsForeignDzLayout? = nil, suffix: String? = nil, overlap: Int? = nil, tileSize: Int? = nil, centre: Bool? = nil, depth: VipsForeignDzDepth? = nil, angle: VipsAngle? = nil, container: VipsForeignDzContainer? = nil, compression: Int? = nil, regionShrink: VipsRegionShrink? = nil, skipBlanks: Int? = nil, id: String? = nil, Q: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func dzsave(
+        filename: String,
+        imagename: String? = nil,
+        layout: VipsForeignDzLayout? = nil,
+        suffix: String? = nil,
+        overlap: Int? = nil,
+        tileSize: Int? = nil,
+        centre: Bool? = nil,
+        depth: VipsForeignDzDepth? = nil,
+        angle: VipsAngle? = nil,
+        container: VipsForeignDzContainer? = nil,
+        compression: Int? = nil,
+        regionShrink: VipsRegionShrink? = nil,
+        skipBlanks: Int? = nil,
+        id: String? = nil,
+        Q: Int? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("filename", value: filename)
-            if let imagename = imagename {
-                opt.set("imagename", value: imagename)
-            }
-            if let layout = layout {
-                opt.set("layout", value: layout)
-            }
-            if let suffix = suffix {
-                opt.set("suffix", value: suffix)
-            }
-            if let overlap = overlap {
-                opt.set("overlap", value: overlap)
-            }
-            if let tileSize = tileSize {
-                opt.set("tile_size", value: tileSize)
-            }
-            if let centre = centre {
-                opt.set("centre", value: centre)
-            }
-            if let depth = depth {
-                opt.set("depth", value: depth)
-            }
-            if let angle = angle {
-                opt.set("angle", value: angle)
-            }
-            if let container = container {
-                opt.set("container", value: container)
-            }
-            if let compression = compression {
-                opt.set("compression", value: compression)
-            }
-            if let regionShrink = regionShrink {
-                opt.set("region_shrink", value: regionShrink)
-            }
-            if let skipBlanks = skipBlanks {
-                opt.set("skip_blanks", value: skipBlanks)
-            }
-            if let id = id {
-                opt.set("id", value: id)
-            }
-            if let Q = Q {
-                opt.set("Q", value: Q)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("filename", value: filename)
+        if let imagename = imagename {
+            opt.set("imagename", value: imagename)
+        }
+        if let layout = layout {
+            opt.set("layout", value: layout)
+        }
+        if let suffix = suffix {
+            opt.set("suffix", value: suffix)
+        }
+        if let overlap = overlap {
+            opt.set("overlap", value: overlap)
+        }
+        if let tileSize = tileSize {
+            opt.set("tile_size", value: tileSize)
+        }
+        if let centre = centre {
+            opt.set("centre", value: centre)
+        }
+        if let depth = depth {
+            opt.set("depth", value: depth)
+        }
+        if let angle = angle {
+            opt.set("angle", value: angle)
+        }
+        if let container = container {
+            opt.set("container", value: container)
+        }
+        if let compression = compression {
+            opt.set("compression", value: compression)
+        }
+        if let regionShrink = regionShrink {
+            opt.set("region_shrink", value: regionShrink)
+        }
+        if let skipBlanks = skipBlanks {
+            opt.set("skip_blanks", value: skipBlanks)
+        }
+        if let id = id {
+            opt.set("id", value: id)
+        }
+        if let Q = Q {
+            opt.set("Q", value: Q)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("dzsave", options: &opt)
+        try VIPSImage.call("dzsave", options: &opt)
     }
 
     /// Save image to dz buffer
@@ -307,69 +367,88 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func dzsave(imagename: String? = nil, layout: VipsForeignDzLayout? = nil, suffix: String? = nil, overlap: Int? = nil, tileSize: Int? = nil, centre: Bool? = nil, depth: VipsForeignDzDepth? = nil, angle: VipsAngle? = nil, container: VipsForeignDzContainer? = nil, compression: Int? = nil, regionShrink: VipsRegionShrink? = nil, skipBlanks: Int? = nil, id: String? = nil, Q: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
+    public func dzsave(
+        imagename: String? = nil,
+        layout: VipsForeignDzLayout? = nil,
+        suffix: String? = nil,
+        overlap: Int? = nil,
+        tileSize: Int? = nil,
+        centre: Bool? = nil,
+        depth: VipsForeignDzDepth? = nil,
+        angle: VipsAngle? = nil,
+        container: VipsForeignDzContainer? = nil,
+        compression: Int? = nil,
+        regionShrink: VipsRegionShrink? = nil,
+        skipBlanks: Int? = nil,
+        id: String? = nil,
+        Q: Int? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
         var out: UnsafeMutablePointer<VipsBlob>! = nil
 
-            opt.set("in", value: self.image)
-            if let imagename = imagename {
-                opt.set("imagename", value: imagename)
-            }
-            if let layout = layout {
-                opt.set("layout", value: layout)
-            }
-            if let suffix = suffix {
-                opt.set("suffix", value: suffix)
-            }
-            if let overlap = overlap {
-                opt.set("overlap", value: overlap)
-            }
-            if let tileSize = tileSize {
-                opt.set("tile_size", value: tileSize)
-            }
-            if let centre = centre {
-                opt.set("centre", value: centre)
-            }
-            if let depth = depth {
-                opt.set("depth", value: depth)
-            }
-            if let angle = angle {
-                opt.set("angle", value: angle)
-            }
-            if let container = container {
-                opt.set("container", value: container)
-            }
-            if let compression = compression {
-                opt.set("compression", value: compression)
-            }
-            if let regionShrink = regionShrink {
-                opt.set("region_shrink", value: regionShrink)
-            }
-            if let skipBlanks = skipBlanks {
-                opt.set("skip_blanks", value: skipBlanks)
-            }
-            if let id = id {
-                opt.set("id", value: id)
-            }
-            if let Q = Q {
-                opt.set("Q", value: Q)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
-            opt.set("buffer", value: &out)
+        opt.set("in", value: self.image)
+        if let imagename = imagename {
+            opt.set("imagename", value: imagename)
+        }
+        if let layout = layout {
+            opt.set("layout", value: layout)
+        }
+        if let suffix = suffix {
+            opt.set("suffix", value: suffix)
+        }
+        if let overlap = overlap {
+            opt.set("overlap", value: overlap)
+        }
+        if let tileSize = tileSize {
+            opt.set("tile_size", value: tileSize)
+        }
+        if let centre = centre {
+            opt.set("centre", value: centre)
+        }
+        if let depth = depth {
+            opt.set("depth", value: depth)
+        }
+        if let angle = angle {
+            opt.set("angle", value: angle)
+        }
+        if let container = container {
+            opt.set("container", value: container)
+        }
+        if let compression = compression {
+            opt.set("compression", value: compression)
+        }
+        if let regionShrink = regionShrink {
+            opt.set("region_shrink", value: regionShrink)
+        }
+        if let skipBlanks = skipBlanks {
+            opt.set("skip_blanks", value: skipBlanks)
+        }
+        if let id = id {
+            opt.set("id", value: id)
+        }
+        if let Q = Q {
+            opt.set("Q", value: Q)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
+        opt.set("buffer", value: &out)
 
-            try VIPSImage.call("dzsave_buffer", options: &opt)
+        try VIPSImage.call("dzsave_buffer", options: &opt)
 
         guard let vipsBlob = out else {
             throw VIPSError("Failed to get buffer from dzsave_buffer")
@@ -400,67 +479,87 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func dzsave(target: VIPSTarget, imagename: String? = nil, layout: VipsForeignDzLayout? = nil, suffix: String? = nil, overlap: Int? = nil, tileSize: Int? = nil, centre: Bool? = nil, depth: VipsForeignDzDepth? = nil, angle: VipsAngle? = nil, container: VipsForeignDzContainer? = nil, compression: Int? = nil, regionShrink: VipsRegionShrink? = nil, skipBlanks: Int? = nil, id: String? = nil, Q: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func dzsave(
+        target: VIPSTarget,
+        imagename: String? = nil,
+        layout: VipsForeignDzLayout? = nil,
+        suffix: String? = nil,
+        overlap: Int? = nil,
+        tileSize: Int? = nil,
+        centre: Bool? = nil,
+        depth: VipsForeignDzDepth? = nil,
+        angle: VipsAngle? = nil,
+        container: VipsForeignDzContainer? = nil,
+        compression: Int? = nil,
+        regionShrink: VipsRegionShrink? = nil,
+        skipBlanks: Int? = nil,
+        id: String? = nil,
+        Q: Int? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("target", value: target)
-            if let imagename = imagename {
-                opt.set("imagename", value: imagename)
-            }
-            if let layout = layout {
-                opt.set("layout", value: layout)
-            }
-            if let suffix = suffix {
-                opt.set("suffix", value: suffix)
-            }
-            if let overlap = overlap {
-                opt.set("overlap", value: overlap)
-            }
-            if let tileSize = tileSize {
-                opt.set("tile_size", value: tileSize)
-            }
-            if let centre = centre {
-                opt.set("centre", value: centre)
-            }
-            if let depth = depth {
-                opt.set("depth", value: depth)
-            }
-            if let angle = angle {
-                opt.set("angle", value: angle)
-            }
-            if let container = container {
-                opt.set("container", value: container)
-            }
-            if let compression = compression {
-                opt.set("compression", value: compression)
-            }
-            if let regionShrink = regionShrink {
-                opt.set("region_shrink", value: regionShrink)
-            }
-            if let skipBlanks = skipBlanks {
-                opt.set("skip_blanks", value: skipBlanks)
-            }
-            if let id = id {
-                opt.set("id", value: id)
-            }
-            if let Q = Q {
-                opt.set("Q", value: Q)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("target", value: target)
+        if let imagename = imagename {
+            opt.set("imagename", value: imagename)
+        }
+        if let layout = layout {
+            opt.set("layout", value: layout)
+        }
+        if let suffix = suffix {
+            opt.set("suffix", value: suffix)
+        }
+        if let overlap = overlap {
+            opt.set("overlap", value: overlap)
+        }
+        if let tileSize = tileSize {
+            opt.set("tile_size", value: tileSize)
+        }
+        if let centre = centre {
+            opt.set("centre", value: centre)
+        }
+        if let depth = depth {
+            opt.set("depth", value: depth)
+        }
+        if let angle = angle {
+            opt.set("angle", value: angle)
+        }
+        if let container = container {
+            opt.set("container", value: container)
+        }
+        if let compression = compression {
+            opt.set("compression", value: compression)
+        }
+        if let regionShrink = regionShrink {
+            opt.set("region_shrink", value: regionShrink)
+        }
+        if let skipBlanks = skipBlanks {
+            opt.set("skip_blanks", value: skipBlanks)
+        }
+        if let id = id {
+            opt.set("id", value: id)
+        }
+        if let Q = Q {
+            opt.set("Q", value: Q)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("dzsave_target", options: &opt)
+        try VIPSImage.call("dzsave_target", options: &opt)
     }
 
     /// Load a fits image
@@ -471,7 +570,13 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func fitsload(filename: String, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func fitsload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -502,7 +607,13 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func fitsload(source: VIPSSource, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func fitsload(
+        source: VIPSSource,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
@@ -533,25 +644,31 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func fitssave(filename: String, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func fitssave(
+        filename: String,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("filename", value: filename)
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("filename", value: filename)
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("fitssave", options: &opt)
+        try VIPSImage.call("fitssave", options: &opt)
     }
 
     /// Load jpeg2000 image
@@ -563,7 +680,14 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func jp2kload(filename: String, page: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func jp2kload(
+        filename: String,
+        page: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -599,7 +723,14 @@ extension VIPSImage {
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
-    public static func jp2kload(buffer: some Collection<UInt8>, page: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func jp2kload(
+        buffer: some Collection<UInt8>,
+        page: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
             return try VIPSImage(nil) { out in
                 var opt = VIPSOption()
@@ -631,7 +762,14 @@ extension VIPSImage {
         if let maybeImage {
             return maybeImage
         } else {
-            return try jp2kload(buffer: Array(buffer), page: page, memory: memory, access: access, failOn: failOn, revalidate: revalidate)
+            return try jp2kload(
+                buffer: Array(buffer),
+                page: page,
+                memory: memory,
+                access: access,
+                failOn: failOn,
+                revalidate: revalidate
+            )
         }
     }
 
@@ -644,7 +782,14 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func jp2kload(source: VIPSSource, page: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func jp2kload(
+        source: VIPSSource,
+        page: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
@@ -683,40 +828,51 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func jp2ksave(filename: String, tileWidth: Int? = nil, tileHeight: Int? = nil, lossless: Bool? = nil, Q: Int? = nil, subsampleMode: VipsForeignSubsample? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func jp2ksave(
+        filename: String,
+        tileWidth: Int? = nil,
+        tileHeight: Int? = nil,
+        lossless: Bool? = nil,
+        Q: Int? = nil,
+        subsampleMode: VipsForeignSubsample? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("filename", value: filename)
-            if let tileWidth = tileWidth {
-                opt.set("tile_width", value: tileWidth)
-            }
-            if let tileHeight = tileHeight {
-                opt.set("tile_height", value: tileHeight)
-            }
-            if let lossless = lossless {
-                opt.set("lossless", value: lossless)
-            }
-            if let Q = Q {
-                opt.set("Q", value: Q)
-            }
-            if let subsampleMode = subsampleMode {
-                opt.set("subsample_mode", value: subsampleMode)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("filename", value: filename)
+        if let tileWidth = tileWidth {
+            opt.set("tile_width", value: tileWidth)
+        }
+        if let tileHeight = tileHeight {
+            opt.set("tile_height", value: tileHeight)
+        }
+        if let lossless = lossless {
+            opt.set("lossless", value: lossless)
+        }
+        if let Q = Q {
+            opt.set("Q", value: Q)
+        }
+        if let subsampleMode = subsampleMode {
+            opt.set("subsample_mode", value: subsampleMode)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("jp2ksave", options: &opt)
+        try VIPSImage.call("jp2ksave", options: &opt)
     }
 
     /// Save image in jpeg2000 format
@@ -731,42 +887,52 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func jp2ksave(tileWidth: Int? = nil, tileHeight: Int? = nil, lossless: Bool? = nil, Q: Int? = nil, subsampleMode: VipsForeignSubsample? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
+    public func jp2ksave(
+        tileWidth: Int? = nil,
+        tileHeight: Int? = nil,
+        lossless: Bool? = nil,
+        Q: Int? = nil,
+        subsampleMode: VipsForeignSubsample? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
         var out: UnsafeMutablePointer<VipsBlob>! = nil
 
-            opt.set("in", value: self.image)
-            if let tileWidth = tileWidth {
-                opt.set("tile_width", value: tileWidth)
-            }
-            if let tileHeight = tileHeight {
-                opt.set("tile_height", value: tileHeight)
-            }
-            if let lossless = lossless {
-                opt.set("lossless", value: lossless)
-            }
-            if let Q = Q {
-                opt.set("Q", value: Q)
-            }
-            if let subsampleMode = subsampleMode {
-                opt.set("subsample_mode", value: subsampleMode)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
-            opt.set("buffer", value: &out)
+        opt.set("in", value: self.image)
+        if let tileWidth = tileWidth {
+            opt.set("tile_width", value: tileWidth)
+        }
+        if let tileHeight = tileHeight {
+            opt.set("tile_height", value: tileHeight)
+        }
+        if let lossless = lossless {
+            opt.set("lossless", value: lossless)
+        }
+        if let Q = Q {
+            opt.set("Q", value: Q)
+        }
+        if let subsampleMode = subsampleMode {
+            opt.set("subsample_mode", value: subsampleMode)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
+        opt.set("buffer", value: &out)
 
-            try VIPSImage.call("jp2ksave_buffer", options: &opt)
+        try VIPSImage.call("jp2ksave_buffer", options: &opt)
 
         guard let vipsBlob = out else {
             throw VIPSError("Failed to get buffer from jp2ksave_buffer")
@@ -788,40 +954,51 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func jp2ksave(target: VIPSTarget, tileWidth: Int? = nil, tileHeight: Int? = nil, lossless: Bool? = nil, Q: Int? = nil, subsampleMode: VipsForeignSubsample? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func jp2ksave(
+        target: VIPSTarget,
+        tileWidth: Int? = nil,
+        tileHeight: Int? = nil,
+        lossless: Bool? = nil,
+        Q: Int? = nil,
+        subsampleMode: VipsForeignSubsample? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("target", value: target)
-            if let tileWidth = tileWidth {
-                opt.set("tile_width", value: tileWidth)
-            }
-            if let tileHeight = tileHeight {
-                opt.set("tile_height", value: tileHeight)
-            }
-            if let lossless = lossless {
-                opt.set("lossless", value: lossless)
-            }
-            if let Q = Q {
-                opt.set("Q", value: Q)
-            }
-            if let subsampleMode = subsampleMode {
-                opt.set("subsample_mode", value: subsampleMode)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("target", value: target)
+        if let tileWidth = tileWidth {
+            opt.set("tile_width", value: tileWidth)
+        }
+        if let tileHeight = tileHeight {
+            opt.set("tile_height", value: tileHeight)
+        }
+        if let lossless = lossless {
+            opt.set("lossless", value: lossless)
+        }
+        if let Q = Q {
+            opt.set("Q", value: Q)
+        }
+        if let subsampleMode = subsampleMode {
+            opt.set("subsample_mode", value: subsampleMode)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("jp2ksave_target", options: &opt)
+        try VIPSImage.call("jp2ksave_target", options: &opt)
     }
 
     /// Load jpeg-xl image
@@ -834,7 +1011,15 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func jxlload(filename: String, page: Int? = nil, n: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func jxlload(
+        filename: String,
+        page: Int? = nil,
+        n: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -874,7 +1059,15 @@ extension VIPSImage {
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
-    public static func jxlload(buffer: some Collection<UInt8>, page: Int? = nil, n: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func jxlload(
+        buffer: some Collection<UInt8>,
+        page: Int? = nil,
+        n: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
             return try VIPSImage(nil) { out in
                 var opt = VIPSOption()
@@ -909,7 +1102,15 @@ extension VIPSImage {
         if let maybeImage {
             return maybeImage
         } else {
-            return try jxlload(buffer: Array(buffer), page: page, n: n, memory: memory, access: access, failOn: failOn, revalidate: revalidate)
+            return try jxlload(
+                buffer: Array(buffer),
+                page: page,
+                n: n,
+                memory: memory,
+                access: access,
+                failOn: failOn,
+                revalidate: revalidate
+            )
         }
     }
 
@@ -923,7 +1124,15 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func jxlload(source: VIPSSource, page: Int? = nil, n: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func jxlload(
+        source: VIPSSource,
+        page: Int? = nil,
+        n: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
@@ -965,40 +1174,51 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func jxlsave(filename: String, tier: Int? = nil, distance: Double? = nil, effort: Int? = nil, lossless: Bool? = nil, Q: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func jxlsave(
+        filename: String,
+        tier: Int? = nil,
+        distance: Double? = nil,
+        effort: Int? = nil,
+        lossless: Bool? = nil,
+        Q: Int? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("filename", value: filename)
-            if let tier = tier {
-                opt.set("tier", value: tier)
-            }
-            if let distance = distance {
-                opt.set("distance", value: distance)
-            }
-            if let effort = effort {
-                opt.set("effort", value: effort)
-            }
-            if let lossless = lossless {
-                opt.set("lossless", value: lossless)
-            }
-            if let Q = Q {
-                opt.set("Q", value: Q)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("filename", value: filename)
+        if let tier = tier {
+            opt.set("tier", value: tier)
+        }
+        if let distance = distance {
+            opt.set("distance", value: distance)
+        }
+        if let effort = effort {
+            opt.set("effort", value: effort)
+        }
+        if let lossless = lossless {
+            opt.set("lossless", value: lossless)
+        }
+        if let Q = Q {
+            opt.set("Q", value: Q)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("jxlsave", options: &opt)
+        try VIPSImage.call("jxlsave", options: &opt)
     }
 
     /// Save image in jpeg-xl format
@@ -1013,42 +1233,52 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func jxlsave(tier: Int? = nil, distance: Double? = nil, effort: Int? = nil, lossless: Bool? = nil, Q: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
+    public func jxlsave(
+        tier: Int? = nil,
+        distance: Double? = nil,
+        effort: Int? = nil,
+        lossless: Bool? = nil,
+        Q: Int? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
         var out: UnsafeMutablePointer<VipsBlob>! = nil
 
-            opt.set("in", value: self.image)
-            if let tier = tier {
-                opt.set("tier", value: tier)
-            }
-            if let distance = distance {
-                opt.set("distance", value: distance)
-            }
-            if let effort = effort {
-                opt.set("effort", value: effort)
-            }
-            if let lossless = lossless {
-                opt.set("lossless", value: lossless)
-            }
-            if let Q = Q {
-                opt.set("Q", value: Q)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
-            opt.set("buffer", value: &out)
+        opt.set("in", value: self.image)
+        if let tier = tier {
+            opt.set("tier", value: tier)
+        }
+        if let distance = distance {
+            opt.set("distance", value: distance)
+        }
+        if let effort = effort {
+            opt.set("effort", value: effort)
+        }
+        if let lossless = lossless {
+            opt.set("lossless", value: lossless)
+        }
+        if let Q = Q {
+            opt.set("Q", value: Q)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
+        opt.set("buffer", value: &out)
 
-            try VIPSImage.call("jxlsave_buffer", options: &opt)
+        try VIPSImage.call("jxlsave_buffer", options: &opt)
 
         guard let vipsBlob = out else {
             throw VIPSError("Failed to get buffer from jxlsave_buffer")
@@ -1070,40 +1300,51 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func jxlsave(target: VIPSTarget, tier: Int? = nil, distance: Double? = nil, effort: Int? = nil, lossless: Bool? = nil, Q: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func jxlsave(
+        target: VIPSTarget,
+        tier: Int? = nil,
+        distance: Double? = nil,
+        effort: Int? = nil,
+        lossless: Bool? = nil,
+        Q: Int? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("target", value: target)
-            if let tier = tier {
-                opt.set("tier", value: tier)
-            }
-            if let distance = distance {
-                opt.set("distance", value: distance)
-            }
-            if let effort = effort {
-                opt.set("effort", value: effort)
-            }
-            if let lossless = lossless {
-                opt.set("lossless", value: lossless)
-            }
-            if let Q = Q {
-                opt.set("Q", value: Q)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("target", value: target)
+        if let tier = tier {
+            opt.set("tier", value: tier)
+        }
+        if let distance = distance {
+            opt.set("distance", value: distance)
+        }
+        if let effort = effort {
+            opt.set("effort", value: effort)
+        }
+        if let lossless = lossless {
+            opt.set("lossless", value: lossless)
+        }
+        if let Q = Q {
+            opt.set("Q", value: Q)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("jxlsave_target", options: &opt)
+        try VIPSImage.call("jxlsave_target", options: &opt)
     }
 
     /// Load file with imagemagick7
@@ -1117,7 +1358,16 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func magickload(filename: String, density: String? = nil, page: Int? = nil, n: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func magickload(
+        filename: String,
+        density: String? = nil,
+        page: Int? = nil,
+        n: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -1161,7 +1411,16 @@ extension VIPSImage {
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
-    public static func magickload(buffer: some Collection<UInt8>, density: String? = nil, page: Int? = nil, n: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func magickload(
+        buffer: some Collection<UInt8>,
+        density: String? = nil,
+        page: Int? = nil,
+        n: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
             return try VIPSImage(nil) { out in
                 var opt = VIPSOption()
@@ -1199,7 +1458,16 @@ extension VIPSImage {
         if let maybeImage {
             return maybeImage
         } else {
-            return try magickload(buffer: Array(buffer), density: density, page: page, n: n, memory: memory, access: access, failOn: failOn, revalidate: revalidate)
+            return try magickload(
+                buffer: Array(buffer),
+                density: density,
+                page: page,
+                n: n,
+                memory: memory,
+                access: access,
+                failOn: failOn,
+                revalidate: revalidate
+            )
         }
     }
 
@@ -1216,40 +1484,51 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func magicksave(filename: String, format: String? = nil, quality: Int? = nil, optimizeGifFrames: Bool? = nil, optimizeGifTransparency: Bool? = nil, bitdepth: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func magicksave(
+        filename: String,
+        format: String? = nil,
+        quality: Int? = nil,
+        optimizeGifFrames: Bool? = nil,
+        optimizeGifTransparency: Bool? = nil,
+        bitdepth: Int? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("filename", value: filename)
-            if let format = format {
-                opt.set("format", value: format)
-            }
-            if let quality = quality {
-                opt.set("quality", value: quality)
-            }
-            if let optimizeGifFrames = optimizeGifFrames {
-                opt.set("optimize_gif_frames", value: optimizeGifFrames)
-            }
-            if let optimizeGifTransparency = optimizeGifTransparency {
-                opt.set("optimize_gif_transparency", value: optimizeGifTransparency)
-            }
-            if let bitdepth = bitdepth {
-                opt.set("bitdepth", value: bitdepth)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("filename", value: filename)
+        if let format = format {
+            opt.set("format", value: format)
+        }
+        if let quality = quality {
+            opt.set("quality", value: quality)
+        }
+        if let optimizeGifFrames = optimizeGifFrames {
+            opt.set("optimize_gif_frames", value: optimizeGifFrames)
+        }
+        if let optimizeGifTransparency = optimizeGifTransparency {
+            opt.set("optimize_gif_transparency", value: optimizeGifTransparency)
+        }
+        if let bitdepth = bitdepth {
+            opt.set("bitdepth", value: bitdepth)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("magicksave", options: &opt)
+        try VIPSImage.call("magicksave", options: &opt)
     }
 
     /// Save image to magick buffer
@@ -1264,42 +1543,52 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func magicksave(format: String? = nil, quality: Int? = nil, optimizeGifFrames: Bool? = nil, optimizeGifTransparency: Bool? = nil, bitdepth: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
+    public func magicksave(
+        format: String? = nil,
+        quality: Int? = nil,
+        optimizeGifFrames: Bool? = nil,
+        optimizeGifTransparency: Bool? = nil,
+        bitdepth: Int? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
         var out: UnsafeMutablePointer<VipsBlob>! = nil
 
-            opt.set("in", value: self.image)
-            if let format = format {
-                opt.set("format", value: format)
-            }
-            if let quality = quality {
-                opt.set("quality", value: quality)
-            }
-            if let optimizeGifFrames = optimizeGifFrames {
-                opt.set("optimize_gif_frames", value: optimizeGifFrames)
-            }
-            if let optimizeGifTransparency = optimizeGifTransparency {
-                opt.set("optimize_gif_transparency", value: optimizeGifTransparency)
-            }
-            if let bitdepth = bitdepth {
-                opt.set("bitdepth", value: bitdepth)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
-            opt.set("buffer", value: &out)
+        opt.set("in", value: self.image)
+        if let format = format {
+            opt.set("format", value: format)
+        }
+        if let quality = quality {
+            opt.set("quality", value: quality)
+        }
+        if let optimizeGifFrames = optimizeGifFrames {
+            opt.set("optimize_gif_frames", value: optimizeGifFrames)
+        }
+        if let optimizeGifTransparency = optimizeGifTransparency {
+            opt.set("optimize_gif_transparency", value: optimizeGifTransparency)
+        }
+        if let bitdepth = bitdepth {
+            opt.set("bitdepth", value: bitdepth)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
+        opt.set("buffer", value: &out)
 
-            try VIPSImage.call("magicksave_buffer", options: &opt)
+        try VIPSImage.call("magicksave_buffer", options: &opt)
 
         guard let vipsBlob = out else {
             throw VIPSError("Failed to get buffer from magicksave_buffer")
@@ -1316,7 +1605,13 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func matload(filename: String, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func matload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -1347,7 +1642,13 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func matrixload(filename: String, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func matrixload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -1378,7 +1679,13 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func matrixload(source: VIPSSource, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func matrixload(
+        source: VIPSSource,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
@@ -1409,25 +1716,31 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func matrixsave(filename: String, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func matrixsave(
+        filename: String,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("filename", value: filename)
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("filename", value: filename)
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("matrixsave", options: &opt)
+        try VIPSImage.call("matrixsave", options: &opt)
     }
 
     /// Save image to matrix
@@ -1438,25 +1751,31 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func matrixsave(target: VIPSTarget, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func matrixsave(
+        target: VIPSTarget,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("target", value: target)
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("target", value: target)
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("matrixsave_target", options: &opt)
+        try VIPSImage.call("matrixsave_target", options: &opt)
     }
 
     /// Load an openexr image
@@ -1467,7 +1786,13 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func openexrload(filename: String, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func openexrload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -1503,7 +1828,18 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func openslideload(filename: String, level: Int? = nil, autocrop: Bool? = nil, associated: String? = nil, attachAssociated: Bool? = nil, rgb: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func openslideload(
+        filename: String,
+        level: Int? = nil,
+        autocrop: Bool? = nil,
+        associated: String? = nil,
+        attachAssociated: Bool? = nil,
+        rgb: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -1554,7 +1890,18 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func openslideload(source: VIPSSource, level: Int? = nil, autocrop: Bool? = nil, associated: String? = nil, attachAssociated: Bool? = nil, rgb: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func openslideload(
+        source: VIPSSource,
+        level: Int? = nil,
+        autocrop: Bool? = nil,
+        associated: String? = nil,
+        attachAssociated: Bool? = nil,
+        rgb: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
@@ -1600,7 +1947,13 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func ppmload(filename: String, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func ppmload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -1631,7 +1984,13 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func ppmload(source: VIPSSource, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func ppmload(
+        source: VIPSSource,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
@@ -1665,34 +2024,43 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func ppmsave(filename: String, format: VipsForeignPpmFormat? = nil, ascii: Bool? = nil, bitdepth: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func ppmsave(
+        filename: String,
+        format: VipsForeignPpmFormat? = nil,
+        ascii: Bool? = nil,
+        bitdepth: Int? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("filename", value: filename)
-            if let format = format {
-                opt.set("format", value: format)
-            }
-            if let ascii = ascii {
-                opt.set("ascii", value: ascii)
-            }
-            if let bitdepth = bitdepth {
-                opt.set("bitdepth", value: bitdepth)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("filename", value: filename)
+        if let format = format {
+            opt.set("format", value: format)
+        }
+        if let ascii = ascii {
+            opt.set("ascii", value: ascii)
+        }
+        if let bitdepth = bitdepth {
+            opt.set("bitdepth", value: bitdepth)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("ppmsave", options: &opt)
+        try VIPSImage.call("ppmsave", options: &opt)
     }
 
     /// Save to ppm
@@ -1706,34 +2074,43 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func ppmsave(target: VIPSTarget, format: VipsForeignPpmFormat? = nil, ascii: Bool? = nil, bitdepth: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func ppmsave(
+        target: VIPSTarget,
+        format: VipsForeignPpmFormat? = nil,
+        ascii: Bool? = nil,
+        bitdepth: Int? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("target", value: target)
-            if let format = format {
-                opt.set("format", value: format)
-            }
-            if let ascii = ascii {
-                opt.set("ascii", value: ascii)
-            }
-            if let bitdepth = bitdepth {
-                opt.set("bitdepth", value: bitdepth)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("target", value: target)
+        if let format = format {
+            opt.set("format", value: format)
+        }
+        if let ascii = ascii {
+            opt.set("ascii", value: ascii)
+        }
+        if let bitdepth = bitdepth {
+            opt.set("bitdepth", value: bitdepth)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("ppmsave_target", options: &opt)
+        try VIPSImage.call("ppmsave_target", options: &opt)
     }
 
     /// Load named icc profile
@@ -1745,10 +2122,10 @@ extension VIPSImage {
 
         var out: UnsafeMutablePointer<VipsBlob>! = nil
 
-            opt.set("name", value: name)
-            opt.set("profile", value: &out)
+        opt.set("name", value: name)
+        opt.set("profile", value: &out)
 
-            try VIPSImage.call("profile_load", options: &opt)
+        try VIPSImage.call("profile_load", options: &opt)
 
         guard let vipsBlob = out else {
             throw VIPSError("Failed to get buffer from profile_load")
@@ -1765,7 +2142,13 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func radload(filename: String, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func radload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -1797,7 +2180,13 @@ extension VIPSImage {
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
-    public static func radload(buffer: some Collection<UInt8>, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func radload(
+        buffer: some Collection<UInt8>,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
             return try VIPSImage(nil) { out in
                 var opt = VIPSOption()
@@ -1826,7 +2215,13 @@ extension VIPSImage {
         if let maybeImage {
             return maybeImage
         } else {
-            return try radload(buffer: Array(buffer), memory: memory, access: access, failOn: failOn, revalidate: revalidate)
+            return try radload(
+                buffer: Array(buffer),
+                memory: memory,
+                access: access,
+                failOn: failOn,
+                revalidate: revalidate
+            )
         }
     }
 
@@ -1838,7 +2233,13 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func radload(source: VIPSSource, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func radload(
+        source: VIPSSource,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
@@ -1869,25 +2270,31 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func radsave(filename: String, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func radsave(
+        filename: String,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("filename", value: filename)
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("filename", value: filename)
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("radsave", options: &opt)
+        try VIPSImage.call("radsave", options: &opt)
     }
 
     /// Save image to radiance buffer
@@ -1897,27 +2304,32 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func radsave(keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
+    public func radsave(
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
         var out: UnsafeMutablePointer<VipsBlob>! = nil
 
-            opt.set("in", value: self.image)
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
-            opt.set("buffer", value: &out)
+        opt.set("in", value: self.image)
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
+        opt.set("buffer", value: &out)
 
-            try VIPSImage.call("radsave_buffer", options: &opt)
+        try VIPSImage.call("radsave_buffer", options: &opt)
 
         guard let vipsBlob = out else {
             throw VIPSError("Failed to get buffer from radsave_buffer")
@@ -1934,25 +2346,31 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func radsave(target: VIPSTarget, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func radsave(
+        target: VIPSTarget,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("target", value: target)
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("target", value: target)
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("radsave_target", options: &opt)
+        try VIPSImage.call("radsave_target", options: &opt)
     }
 
     /// Load raw data from a file
@@ -1969,7 +2387,19 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func rawload(filename: String, width: Int, height: Int, bands: Int, offset: UInt64? = nil, format: VipsBandFormat? = nil, interpretation: VipsInterpretation? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func rawload(
+        filename: String,
+        width: Int,
+        height: Int,
+        bands: Int,
+        offset: UInt64? = nil,
+        format: VipsBandFormat? = nil,
+        interpretation: VipsInterpretation? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -2012,25 +2442,31 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func rawsave(filename: String, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func rawsave(
+        filename: String,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("filename", value: filename)
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("filename", value: filename)
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("rawsave", options: &opt)
+        try VIPSImage.call("rawsave", options: &opt)
     }
 
     /// Write raw image to buffer
@@ -2040,27 +2476,32 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func rawsave(keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
+    public func rawsave(
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
         var out: UnsafeMutablePointer<VipsBlob>! = nil
 
-            opt.set("in", value: self.image)
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
-            opt.set("buffer", value: &out)
+        opt.set("in", value: self.image)
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
+        opt.set("buffer", value: &out)
 
-            try VIPSImage.call("rawsave_buffer", options: &opt)
+        try VIPSImage.call("rawsave_buffer", options: &opt)
 
         guard let vipsBlob = out else {
             throw VIPSError("Failed to get buffer from rawsave_buffer")
@@ -2077,25 +2518,31 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func rawsave(target: VIPSTarget, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func rawsave(
+        target: VIPSTarget,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("target", value: target)
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("target", value: target)
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("rawsave_target", options: &opt)
+        try VIPSImage.call("rawsave_target", options: &opt)
     }
 
     /// Load vips from file
@@ -2106,7 +2553,13 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func vipsload(filename: String, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func vipsload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -2137,7 +2590,13 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func vipsload(source: VIPSSource, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func vipsload(
+        source: VIPSSource,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
@@ -2168,25 +2627,31 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func vipssave(filename: String, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func vipssave(
+        filename: String,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("filename", value: filename)
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("filename", value: filename)
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("vipssave", options: &opt)
+        try VIPSImage.call("vipssave", options: &opt)
     }
 
     /// Save image to target in vips format
@@ -2197,25 +2662,31 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func vipssave(target: VIPSTarget, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func vipssave(
+        target: VIPSTarget,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("target", value: target)
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("target", value: target)
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("vipssave_target", options: &opt)
+        try VIPSImage.call("vipssave_target", options: &opt)
     }
 
 }

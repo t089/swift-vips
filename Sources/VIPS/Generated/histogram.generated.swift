@@ -27,10 +27,10 @@ extension VIPSImage {
 
         var out: Double = 0.0
 
-            opt.set("in", value: self.image)
-            opt.set("out", value: &out)
+        opt.set("in", value: self.image)
+        opt.set("out", value: &out)
 
-            try VIPSImage.call("hist_entropy", options: &opt)
+        try VIPSImage.call("hist_entropy", options: &opt)
 
         return out
     }
@@ -115,10 +115,10 @@ extension VIPSImage {
 
         var out: Bool = false
 
-            opt.set("in", value: self.image)
-            opt.set("monotonic", value: &out)
+        opt.set("in", value: self.image)
+        opt.set("monotonic", value: &out)
 
-            try VIPSImage.call("hist_ismonotonic", options: &opt)
+        try VIPSImage.call("hist_ismonotonic", options: &opt)
 
         return out
     }
@@ -191,7 +191,9 @@ extension VIPSImage {
     ///   - scale: Scale down dimensions by this factor
     ///   - minRadius: Smallest radius to search for
     ///   - maxRadius: Largest radius to search for
-    public func houghCircle(scale: Int? = nil, minRadius: Int? = nil, maxRadius: Int? = nil) throws -> VIPSImage {
+    public func houghCircle(scale: Int? = nil, minRadius: Int? = nil, maxRadius: Int? = nil) throws
+        -> VIPSImage
+    {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 

@@ -21,7 +21,16 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func svgload(filename: String, dpi: Double? = nil, scale: Double? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func svgload(
+        filename: String,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -65,7 +74,16 @@ extension VIPSImage {
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
-    public static func svgload(buffer: some Collection<UInt8>, dpi: Double? = nil, scale: Double? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func svgload(
+        buffer: some Collection<UInt8>,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
             return try VIPSImage(nil) { out in
                 var opt = VIPSOption()
@@ -103,7 +121,16 @@ extension VIPSImage {
         if let maybeImage {
             return maybeImage
         } else {
-            return try svgload(buffer: Array(buffer), dpi: dpi, scale: scale, unlimited: unlimited, memory: memory, access: access, failOn: failOn, revalidate: revalidate)
+            return try svgload(
+                buffer: Array(buffer),
+                dpi: dpi,
+                scale: scale,
+                unlimited: unlimited,
+                memory: memory,
+                access: access,
+                failOn: failOn,
+                revalidate: revalidate
+            )
         }
     }
 
@@ -118,7 +145,16 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func svgload(source: VIPSSource, dpi: Double? = nil, scale: Double? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func svgload(
+        source: VIPSSource,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 

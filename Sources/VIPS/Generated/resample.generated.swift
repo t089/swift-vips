@@ -18,7 +18,13 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - premultiplied: Images have premultiplied alpha
     ///   - extend: How to generate the extra pixels
-    public func mapim(index: VIPSImage, interpolate: VIPSInterpolate? = nil, background: [Double]? = nil, premultiplied: Bool? = nil, extend: VipsExtend? = nil) throws -> VIPSImage {
+    public func mapim(
+        index: VIPSImage,
+        interpolate: VIPSInterpolate? = nil,
+        background: [Double]? = nil,
+        premultiplied: Bool? = nil,
+        extend: VipsExtend? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([self, index, interpolate as Any]) { out in
             var opt = VIPSOption()
 
@@ -47,7 +53,8 @@ extension VIPSImage {
     /// - Parameters:
     ///   - coeff: Coefficient matrix
     ///   - interpolate: Interpolate values with this
-    public func quadratic(coeff: VIPSImage, interpolate: VIPSInterpolate? = nil) throws -> VIPSImage {
+    public func quadratic(coeff: VIPSImage, interpolate: VIPSInterpolate? = nil) throws -> VIPSImage
+    {
         return try VIPSImage([self, coeff, interpolate as Any]) { out in
             var opt = VIPSOption()
 
@@ -76,7 +83,19 @@ extension VIPSImage {
     ///   - exportProfile: Fallback export profile
     ///   - intent: Rendering intent
     ///   - failOn: Error level to fail on
-    public static func thumbnail(filename: String, width: Int, height: Int? = nil, size: VipsSize? = nil, noRotate: Bool? = nil, crop: VipsInteresting? = nil, linear: Bool? = nil, importProfile: String? = nil, exportProfile: String? = nil, intent: VipsIntent? = nil, failOn: VipsFailOn? = nil) throws -> VIPSImage {
+    public static func thumbnail(
+        filename: String,
+        width: Int,
+        height: Int? = nil,
+        size: VipsSize? = nil,
+        noRotate: Bool? = nil,
+        crop: VipsInteresting? = nil,
+        linear: Bool? = nil,
+        importProfile: String? = nil,
+        exportProfile: String? = nil,
+        intent: VipsIntent? = nil,
+        failOn: VipsFailOn? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -131,7 +150,20 @@ extension VIPSImage {
     ///   - intent: Rendering intent
     ///   - failOn: Error level to fail on
     @inlinable
-    public static func thumbnail(buffer: some Collection<UInt8>, width: Int, optionString: String? = nil, height: Int? = nil, size: VipsSize? = nil, noRotate: Bool? = nil, crop: VipsInteresting? = nil, linear: Bool? = nil, importProfile: String? = nil, exportProfile: String? = nil, intent: VipsIntent? = nil, failOn: VipsFailOn? = nil) throws -> VIPSImage {
+    public static func thumbnail(
+        buffer: some Collection<UInt8>,
+        width: Int,
+        optionString: String? = nil,
+        height: Int? = nil,
+        size: VipsSize? = nil,
+        noRotate: Bool? = nil,
+        crop: VipsInteresting? = nil,
+        linear: Bool? = nil,
+        importProfile: String? = nil,
+        exportProfile: String? = nil,
+        intent: VipsIntent? = nil,
+        failOn: VipsFailOn? = nil
+    ) throws -> VIPSImage {
         let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
             return try VIPSImage(nil) { out in
                 var opt = VIPSOption()
@@ -179,7 +211,20 @@ extension VIPSImage {
         if let maybeImage {
             return maybeImage
         } else {
-            return try thumbnail(buffer: Array(buffer), width: width, optionString: optionString, height: height, size: size, noRotate: noRotate, crop: crop, linear: linear, importProfile: importProfile, exportProfile: exportProfile, intent: intent, failOn: failOn)
+            return try thumbnail(
+                buffer: Array(buffer),
+                width: width,
+                optionString: optionString,
+                height: height,
+                size: size,
+                noRotate: noRotate,
+                crop: crop,
+                linear: linear,
+                importProfile: importProfile,
+                exportProfile: exportProfile,
+                intent: intent,
+                failOn: failOn
+            )
         }
     }
 
@@ -196,7 +241,18 @@ extension VIPSImage {
     ///   - exportProfile: Fallback export profile
     ///   - intent: Rendering intent
     ///   - failOn: Error level to fail on
-    public func thumbnailImage(width: Int, height: Int? = nil, size: VipsSize? = nil, noRotate: Bool? = nil, crop: VipsInteresting? = nil, linear: Bool? = nil, importProfile: String? = nil, exportProfile: String? = nil, intent: VipsIntent? = nil, failOn: VipsFailOn? = nil) throws -> VIPSImage {
+    public func thumbnailImage(
+        width: Int,
+        height: Int? = nil,
+        size: VipsSize? = nil,
+        noRotate: Bool? = nil,
+        crop: VipsInteresting? = nil,
+        linear: Bool? = nil,
+        importProfile: String? = nil,
+        exportProfile: String? = nil,
+        intent: VipsIntent? = nil,
+        failOn: VipsFailOn? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -250,7 +306,20 @@ extension VIPSImage {
     ///   - exportProfile: Fallback export profile
     ///   - intent: Rendering intent
     ///   - failOn: Error level to fail on
-    public static func thumbnail(source: VIPSSource, width: Int, optionString: String? = nil, height: Int? = nil, size: VipsSize? = nil, noRotate: Bool? = nil, crop: VipsInteresting? = nil, linear: Bool? = nil, importProfile: String? = nil, exportProfile: String? = nil, intent: VipsIntent? = nil, failOn: VipsFailOn? = nil) throws -> VIPSImage {
+    public static func thumbnail(
+        source: VIPSSource,
+        width: Int,
+        optionString: String? = nil,
+        height: Int? = nil,
+        size: VipsSize? = nil,
+        noRotate: Bool? = nil,
+        crop: VipsInteresting? = nil,
+        linear: Bool? = nil,
+        importProfile: String? = nil,
+        exportProfile: String? = nil,
+        intent: VipsIntent? = nil,
+        failOn: VipsFailOn? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 

@@ -18,11 +18,11 @@ extension VIPSImage {
 
         var out: Double = 0.0
 
-            opt.set("in", value: self.image)
-            opt.set("direction", value: direction)
-            opt.set("nolines", value: &out)
+        opt.set("in", value: self.image)
+        opt.set("direction", value: direction)
+        opt.set("nolines", value: &out)
 
-            try VIPSImage.call("countlines", options: &opt)
+        try VIPSImage.call("countlines", options: &opt)
 
         return out
     }

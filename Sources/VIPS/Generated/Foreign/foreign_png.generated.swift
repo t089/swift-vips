@@ -19,7 +19,14 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func pngload(filename: String, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func pngload(
+        filename: String,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -55,7 +62,14 @@ extension VIPSImage {
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
-    public static func pngload(buffer: some Collection<UInt8>, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func pngload(
+        buffer: some Collection<UInt8>,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
             return try VIPSImage(nil) { out in
                 var opt = VIPSOption()
@@ -87,7 +101,14 @@ extension VIPSImage {
         if let maybeImage {
             return maybeImage
         } else {
-            return try pngload(buffer: Array(buffer), unlimited: unlimited, memory: memory, access: access, failOn: failOn, revalidate: revalidate)
+            return try pngload(
+                buffer: Array(buffer),
+                unlimited: unlimited,
+                memory: memory,
+                access: access,
+                failOn: failOn,
+                revalidate: revalidate
+            )
         }
     }
 
@@ -100,7 +121,14 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func pngload(source: VIPSSource, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func pngload(
+        source: VIPSSource,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
@@ -142,49 +170,63 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func pngsave(filename: String, compression: Int? = nil, interlace: Bool? = nil, filter: VipsForeignPngFilter? = nil, palette: Bool? = nil, Q: Int? = nil, dither: Double? = nil, bitdepth: Int? = nil, effort: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func pngsave(
+        filename: String,
+        compression: Int? = nil,
+        interlace: Bool? = nil,
+        filter: VipsForeignPngFilter? = nil,
+        palette: Bool? = nil,
+        Q: Int? = nil,
+        dither: Double? = nil,
+        bitdepth: Int? = nil,
+        effort: Int? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("filename", value: filename)
-            if let compression = compression {
-                opt.set("compression", value: compression)
-            }
-            if let interlace = interlace {
-                opt.set("interlace", value: interlace)
-            }
-            if let filter = filter {
-                opt.set("filter", value: filter)
-            }
-            if let palette = palette {
-                opt.set("palette", value: palette)
-            }
-            if let Q = Q {
-                opt.set("Q", value: Q)
-            }
-            if let dither = dither {
-                opt.set("dither", value: dither)
-            }
-            if let bitdepth = bitdepth {
-                opt.set("bitdepth", value: bitdepth)
-            }
-            if let effort = effort {
-                opt.set("effort", value: effort)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("filename", value: filename)
+        if let compression = compression {
+            opt.set("compression", value: compression)
+        }
+        if let interlace = interlace {
+            opt.set("interlace", value: interlace)
+        }
+        if let filter = filter {
+            opt.set("filter", value: filter)
+        }
+        if let palette = palette {
+            opt.set("palette", value: palette)
+        }
+        if let Q = Q {
+            opt.set("Q", value: Q)
+        }
+        if let dither = dither {
+            opt.set("dither", value: dither)
+        }
+        if let bitdepth = bitdepth {
+            opt.set("bitdepth", value: bitdepth)
+        }
+        if let effort = effort {
+            opt.set("effort", value: effort)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("pngsave", options: &opt)
+        try VIPSImage.call("pngsave", options: &opt)
     }
 
     /// Save image to buffer as png
@@ -202,51 +244,64 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func pngsave(compression: Int? = nil, interlace: Bool? = nil, filter: VipsForeignPngFilter? = nil, palette: Bool? = nil, Q: Int? = nil, dither: Double? = nil, bitdepth: Int? = nil, effort: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
+    public func pngsave(
+        compression: Int? = nil,
+        interlace: Bool? = nil,
+        filter: VipsForeignPngFilter? = nil,
+        palette: Bool? = nil,
+        Q: Int? = nil,
+        dither: Double? = nil,
+        bitdepth: Int? = nil,
+        effort: Int? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
         var out: UnsafeMutablePointer<VipsBlob>! = nil
 
-            opt.set("in", value: self.image)
-            if let compression = compression {
-                opt.set("compression", value: compression)
-            }
-            if let interlace = interlace {
-                opt.set("interlace", value: interlace)
-            }
-            if let filter = filter {
-                opt.set("filter", value: filter)
-            }
-            if let palette = palette {
-                opt.set("palette", value: palette)
-            }
-            if let Q = Q {
-                opt.set("Q", value: Q)
-            }
-            if let dither = dither {
-                opt.set("dither", value: dither)
-            }
-            if let bitdepth = bitdepth {
-                opt.set("bitdepth", value: bitdepth)
-            }
-            if let effort = effort {
-                opt.set("effort", value: effort)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
-            opt.set("buffer", value: &out)
+        opt.set("in", value: self.image)
+        if let compression = compression {
+            opt.set("compression", value: compression)
+        }
+        if let interlace = interlace {
+            opt.set("interlace", value: interlace)
+        }
+        if let filter = filter {
+            opt.set("filter", value: filter)
+        }
+        if let palette = palette {
+            opt.set("palette", value: palette)
+        }
+        if let Q = Q {
+            opt.set("Q", value: Q)
+        }
+        if let dither = dither {
+            opt.set("dither", value: dither)
+        }
+        if let bitdepth = bitdepth {
+            opt.set("bitdepth", value: bitdepth)
+        }
+        if let effort = effort {
+            opt.set("effort", value: effort)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
+        opt.set("buffer", value: &out)
 
-            try VIPSImage.call("pngsave_buffer", options: &opt)
+        try VIPSImage.call("pngsave_buffer", options: &opt)
 
         guard let vipsBlob = out else {
             throw VIPSError("Failed to get buffer from pngsave_buffer")
@@ -271,49 +326,63 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func pngsave(target: VIPSTarget, compression: Int? = nil, interlace: Bool? = nil, filter: VipsForeignPngFilter? = nil, palette: Bool? = nil, Q: Int? = nil, dither: Double? = nil, bitdepth: Int? = nil, effort: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func pngsave(
+        target: VIPSTarget,
+        compression: Int? = nil,
+        interlace: Bool? = nil,
+        filter: VipsForeignPngFilter? = nil,
+        palette: Bool? = nil,
+        Q: Int? = nil,
+        dither: Double? = nil,
+        bitdepth: Int? = nil,
+        effort: Int? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("target", value: target)
-            if let compression = compression {
-                opt.set("compression", value: compression)
-            }
-            if let interlace = interlace {
-                opt.set("interlace", value: interlace)
-            }
-            if let filter = filter {
-                opt.set("filter", value: filter)
-            }
-            if let palette = palette {
-                opt.set("palette", value: palette)
-            }
-            if let Q = Q {
-                opt.set("Q", value: Q)
-            }
-            if let dither = dither {
-                opt.set("dither", value: dither)
-            }
-            if let bitdepth = bitdepth {
-                opt.set("bitdepth", value: bitdepth)
-            }
-            if let effort = effort {
-                opt.set("effort", value: effort)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("target", value: target)
+        if let compression = compression {
+            opt.set("compression", value: compression)
+        }
+        if let interlace = interlace {
+            opt.set("interlace", value: interlace)
+        }
+        if let filter = filter {
+            opt.set("filter", value: filter)
+        }
+        if let palette = palette {
+            opt.set("palette", value: palette)
+        }
+        if let Q = Q {
+            opt.set("Q", value: Q)
+        }
+        if let dither = dither {
+            opt.set("dither", value: dither)
+        }
+        if let bitdepth = bitdepth {
+            opt.set("bitdepth", value: bitdepth)
+        }
+        if let effort = effort {
+            opt.set("effort", value: effort)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("pngsave_target", options: &opt)
+        try VIPSImage.call("pngsave_target", options: &opt)
     }
 
 }

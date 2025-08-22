@@ -133,7 +133,15 @@ extension VIPSImage {
     ///   - precision: Convolve with this precision
     ///   - layers: Use this many layers in approximation
     ///   - cluster: Cluster lines closer than this in approximation
-    public func compass(mask: VIPSImage, times: Int? = nil, angle: VipsAngle45? = nil, combine: VipsCombine? = nil, precision: VipsPrecision? = nil, layers: Int? = nil, cluster: Int? = nil) throws -> VIPSImage {
+    public func compass(
+        mask: VIPSImage,
+        times: Int? = nil,
+        angle: VipsAngle45? = nil,
+        combine: VipsCombine? = nil,
+        precision: VipsPrecision? = nil,
+        layers: Int? = nil,
+        cluster: Int? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([self, mask]) { out in
             var opt = VIPSOption()
 
@@ -245,24 +253,28 @@ extension VIPSImage {
     ///   - threshold: Object threshold
     ///   - background: Color for background pixels
     ///   - lineArt: Enable line art mode
-    public func findTrim(threshold: Double? = nil, background: [Double]? = nil, lineArt: Bool? = nil) throws -> Int {
+    public func findTrim(
+        threshold: Double? = nil,
+        background: [Double]? = nil,
+        lineArt: Bool? = nil
+    ) throws -> Int {
         var opt = VIPSOption()
 
         var out: Int = 0
 
-            opt.set("in", value: self.image)
-            if let threshold = threshold {
-                opt.set("threshold", value: threshold)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let lineArt = lineArt {
-                opt.set("line_art", value: lineArt)
-            }
-            opt.set("left", value: &out)
+        opt.set("in", value: self.image)
+        if let threshold = threshold {
+            opt.set("threshold", value: threshold)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let lineArt = lineArt {
+            opt.set("line_art", value: lineArt)
+        }
+        opt.set("left", value: &out)
 
-            try VIPSImage.call("find_trim", options: &opt)
+        try VIPSImage.call("find_trim", options: &opt)
 
         return out
     }
@@ -330,15 +342,15 @@ extension VIPSImage {
 
         var out: [Double] = []
 
-            opt.set("in", value: self.image)
-            opt.set("x", value: x)
-            opt.set("y", value: y)
-            if let unpackComplex = unpackComplex {
-                opt.set("unpack_complex", value: unpackComplex)
-            }
-            opt.set("out_array", value: &out)
+        opt.set("in", value: self.image)
+        opt.set("x", value: x)
+        opt.set("y", value: y)
+        if let unpackComplex = unpackComplex {
+            opt.set("unpack_complex", value: unpackComplex)
+        }
+        opt.set("out_array", value: &out)
 
-            try VIPSImage.call("getpoint", options: &opt)
+        try VIPSImage.call("getpoint", options: &opt)
 
         return out
     }
@@ -373,7 +385,13 @@ extension VIPSImage {
     ///   - height: Image height in pixels
     ///   - extend: How to generate the extra pixels
     ///   - background: Color for background pixels
-    public func gravity(direction: VipsCompassDirection, width: Int, height: Int, extend: VipsExtend? = nil, background: [Double]? = nil) throws -> VIPSImage {
+    public func gravity(
+        direction: VipsCompassDirection,
+        width: Int,
+        height: Int,
+        extend: VipsExtend? = nil,
+        background: [Double]? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -422,7 +440,12 @@ extension VIPSImage {
     ///   - access: Expected access pattern
     ///   - threaded: Allow threaded access
     ///   - persistent: Keep cache between evaluations
-    public func linecache(tileHeight: Int? = nil, access: VipsAccess? = nil, threaded: Bool? = nil, persistent: Bool? = nil) throws -> VIPSImage {
+    public func linecache(
+        tileHeight: Int? = nil,
+        access: VipsAccess? = nil,
+        threaded: Bool? = nil,
+        persistent: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -481,7 +504,21 @@ extension VIPSImage {
     ///   - harea: Half area size
     ///   - search: Search to improve tie-points
     ///   - interpolate: Interpolate pixels with this
-    public func match(sec: VIPSImage, xr1: Int, yr1: Int, xs1: Int, ys1: Int, xr2: Int, yr2: Int, xs2: Int, ys2: Int, hwindow: Int? = nil, harea: Int? = nil, search: Bool? = nil, interpolate: VIPSInterpolate? = nil) throws -> VIPSImage {
+    public func match(
+        sec: VIPSImage,
+        xr1: Int,
+        yr1: Int,
+        xs1: Int,
+        ys1: Int,
+        xr2: Int,
+        yr2: Int,
+        xs2: Int,
+        ys2: Int,
+        hwindow: Int? = nil,
+        harea: Int? = nil,
+        search: Bool? = nil,
+        interpolate: VIPSInterpolate? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([self, sec, interpolate as Any]) { out in
             var opt = VIPSOption()
 
@@ -522,7 +559,14 @@ extension VIPSImage {
     ///   - top: Top edge of extract area
     ///   - width: Width of extract area
     ///   - height: Height of extract area
-    public func measure(h: Int, v: Int, `left`: Int? = nil, top: Int? = nil, width: Int? = nil, height: Int? = nil) throws -> VIPSImage {
+    public func measure(
+        h: Int,
+        v: Int,
+        `left`: Int? = nil,
+        top: Int? = nil,
+        width: Int? = nil,
+        height: Int? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -555,7 +599,13 @@ extension VIPSImage {
     ///   - dx: Horizontal displacement from sec to ref
     ///   - dy: Vertical displacement from sec to ref
     ///   - mblend: Maximum blend size
-    public func merge(sec: VIPSImage, direction: VipsDirection, dx: Int, dy: Int, mblend: Int? = nil) throws -> VIPSImage {
+    public func merge(
+        sec: VIPSImage,
+        direction: VipsDirection,
+        dx: Int,
+        dy: Int,
+        mblend: Int? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([self, sec]) { out in
             var opt = VIPSOption()
 
@@ -586,7 +636,18 @@ extension VIPSImage {
     ///   - harea: Half area size
     ///   - mblend: Maximum blend size
     ///   - bandno: Band to search for features on
-    public func mosaic(sec: VIPSImage, direction: VipsDirection, xref: Int, yref: Int, xsec: Int, ysec: Int, hwindow: Int? = nil, harea: Int? = nil, mblend: Int? = nil, bandno: Int? = nil) throws -> VIPSImage {
+    public func mosaic(
+        sec: VIPSImage,
+        direction: VipsDirection,
+        xref: Int,
+        yref: Int,
+        xsec: Int,
+        ysec: Int,
+        hwindow: Int? = nil,
+        harea: Int? = nil,
+        mblend: Int? = nil,
+        bandno: Int? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([self, sec]) { out in
             var opt = VIPSOption()
 
@@ -633,7 +694,23 @@ extension VIPSImage {
     ///   - search: Search to improve tie-points
     ///   - interpolate: Interpolate pixels with this
     ///   - mblend: Maximum blend size
-    public func mosaic1(sec: VIPSImage, direction: VipsDirection, xr1: Int, yr1: Int, xs1: Int, ys1: Int, xr2: Int, yr2: Int, xs2: Int, ys2: Int, hwindow: Int? = nil, harea: Int? = nil, search: Bool? = nil, interpolate: VIPSInterpolate? = nil, mblend: Int? = nil) throws -> VIPSImage {
+    public func mosaic1(
+        sec: VIPSImage,
+        direction: VipsDirection,
+        xr1: Int,
+        yr1: Int,
+        xs1: Int,
+        ys1: Int,
+        xr2: Int,
+        yr2: Int,
+        xs2: Int,
+        ys2: Int,
+        hwindow: Int? = nil,
+        harea: Int? = nil,
+        search: Bool? = nil,
+        interpolate: VIPSInterpolate? = nil,
+        mblend: Int? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([self, sec, interpolate as Any]) { out in
             var opt = VIPSOption()
 
@@ -696,11 +773,11 @@ extension VIPSImage {
 
         var out: Int = 0
 
-            opt.set("in", value: self.image)
-            opt.set("percent", value: percent)
-            opt.set("threshold", value: &out)
+        opt.set("in", value: self.image)
+        opt.set("percent", value: percent)
+        opt.set("threshold", value: &out)
 
-            try VIPSImage.call("percent", options: &opt)
+        try VIPSImage.call("percent", options: &opt)
 
         return out
     }
@@ -769,7 +846,15 @@ extension VIPSImage {
     ///   - a: Point a
     ///   - b: Point b
     ///   - corners: Corner radii
-    public static func sdf(width: Int, height: Int, shape: VipsSdfShape, r: Double? = nil, a: [Double]? = nil, b: [Double]? = nil, corners: [Double]? = nil) throws -> VIPSImage {
+    public static func sdf(
+        width: Int,
+        height: Int,
+        shape: VipsSdfShape,
+        r: Double? = nil,
+        a: [Double]? = nil,
+        b: [Double]? = nil,
+        corners: [Double]? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -837,7 +922,14 @@ extension VIPSImage {
     ///   - b: Weight of new deviation
     ///   - m0: New mean
     ///   - a: Weight of new mean
-    public func stdif(width: Int, height: Int, s0: Double? = nil, b: Double? = nil, m0: Double? = nil, a: Double? = nil) throws -> VIPSImage {
+    public func stdif(
+        width: Int,
+        height: Int,
+        s0: Double? = nil,
+        b: Double? = nil,
+        m0: Double? = nil,
+        a: Double? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 

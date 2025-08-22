@@ -206,7 +206,9 @@ extension VIPSImage {
     /// - Parameters:
     ///   - space: Destination color space
     ///   - sourceSpace: Source color space
-    public func colourspace(space: VipsInterpretation, sourceSpace: VipsInterpretation? = nil) throws -> VIPSImage {
+    public func colourspace(space: VipsInterpretation, sourceSpace: VipsInterpretation? = nil)
+        throws -> VIPSImage
+    {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -241,7 +243,13 @@ extension VIPSImage {
     ///   - blackPointCompensation: Enable black point compensation
     ///   - outputProfile: Filename to load output profile from
     ///   - depth: Output device space depth in bits
-    public func iccExport(pcs: VipsPCS? = nil, intent: VipsIntent? = nil, blackPointCompensation: Bool? = nil, outputProfile: String? = nil, depth: Int? = nil) throws -> VIPSImage {
+    public func iccExport(
+        pcs: VipsPCS? = nil,
+        intent: VipsIntent? = nil,
+        blackPointCompensation: Bool? = nil,
+        outputProfile: String? = nil,
+        depth: Int? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -275,7 +283,13 @@ extension VIPSImage {
     ///   - blackPointCompensation: Enable black point compensation
     ///   - embedded: Use embedded input profile, if available
     ///   - inputProfile: Filename to load input profile from
-    public func iccImport(pcs: VipsPCS? = nil, intent: VipsIntent? = nil, blackPointCompensation: Bool? = nil, embedded: Bool? = nil, inputProfile: String? = nil) throws -> VIPSImage {
+    public func iccImport(
+        pcs: VipsPCS? = nil,
+        intent: VipsIntent? = nil,
+        blackPointCompensation: Bool? = nil,
+        embedded: Bool? = nil,
+        inputProfile: String? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -311,7 +325,15 @@ extension VIPSImage {
     ///   - embedded: Use embedded input profile, if available
     ///   - inputProfile: Filename to load input profile from
     ///   - depth: Output device space depth in bits
-    public func iccTransform(outputProfile: String, pcs: VipsPCS? = nil, intent: VipsIntent? = nil, blackPointCompensation: Bool? = nil, embedded: Bool? = nil, inputProfile: String? = nil, depth: Int? = nil) throws -> VIPSImage {
+    public func iccTransform(
+        outputProfile: String,
+        pcs: VipsPCS? = nil,
+        intent: VipsIntent? = nil,
+        blackPointCompensation: Bool? = nil,
+        embedded: Bool? = nil,
+        inputProfile: String? = nil,
+        depth: Int? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -433,7 +455,13 @@ extension VIPSImage {
     ///   - csize: Size of third dimension
     ///   - dsize: Size of fourth dimension
     ///   - esize: Size of fifth dimension
-    public static func xyz(width: Int, height: Int, csize: Int? = nil, dsize: Int? = nil, esize: Int? = nil) throws -> VIPSImage {
+    public static func xyz(
+        width: Int,
+        height: Int,
+        csize: Int? = nil,
+        dsize: Int? = nil,
+        esize: Int? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 

@@ -19,6 +19,7 @@ import argparse
 import locale
 import re
 import glob
+import subprocess
 from collections import defaultdict
 from pathlib import Path
 
@@ -909,6 +910,15 @@ def write_category_file(category, operations, output_dir):
                 f.write("\n\n")
         
         f.write("}\n")
+    
+    # Format the file using swift format
+    try:
+        subprocess.run(['swift', 'format', '--in-place', str(filepath)], 
+                      check=True, capture_output=True, text=True)
+    except subprocess.CalledProcessError as e:
+        print(f"  ⚠️  Warning: Failed to format {filepath}: {e}")
+    except FileNotFoundError:
+        print(f"  ⚠️  Warning: swift format not found, skipping formatting for {filepath}")
     
     return filepath
 

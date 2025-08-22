@@ -24,7 +24,19 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func pdfload(filename: String, page: Int? = nil, n: Int? = nil, dpi: Double? = nil, scale: Double? = nil, background: [Double]? = nil, password: String? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func pdfload(
+        filename: String,
+        page: Int? = nil,
+        n: Int? = nil,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        background: [Double]? = nil,
+        password: String? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -80,7 +92,19 @@ extension VIPSImage {
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
-    public static func pdfload(buffer: some Collection<UInt8>, page: Int? = nil, n: Int? = nil, dpi: Double? = nil, scale: Double? = nil, background: [Double]? = nil, password: String? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func pdfload(
+        buffer: some Collection<UInt8>,
+        page: Int? = nil,
+        n: Int? = nil,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        background: [Double]? = nil,
+        password: String? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
             return try VIPSImage(nil) { out in
                 var opt = VIPSOption()
@@ -127,7 +151,19 @@ extension VIPSImage {
         if let maybeImage {
             return maybeImage
         } else {
-            return try pdfload(buffer: Array(buffer), page: page, n: n, dpi: dpi, scale: scale, background: background, password: password, memory: memory, access: access, failOn: failOn, revalidate: revalidate)
+            return try pdfload(
+                buffer: Array(buffer),
+                page: page,
+                n: n,
+                dpi: dpi,
+                scale: scale,
+                background: background,
+                password: password,
+                memory: memory,
+                access: access,
+                failOn: failOn,
+                revalidate: revalidate
+            )
         }
     }
 
@@ -145,7 +181,19 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func pdfload(source: VIPSSource, page: Int? = nil, n: Int? = nil, dpi: Double? = nil, scale: Double? = nil, background: [Double]? = nil, password: String? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func pdfload(
+        source: VIPSSource,
+        page: Int? = nil,
+        n: Int? = nil,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        background: [Double]? = nil,
+        password: String? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 

@@ -22,7 +22,18 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - premultiplied: Images have premultiplied alpha
     ///   - extend: How to generate the extra pixels
-    public func affine(matrix: [Double], interpolate: VIPSInterpolate? = nil, oarea: [Int]? = nil, odx: Double? = nil, ody: Double? = nil, idx: Double? = nil, idy: Double? = nil, background: [Double]? = nil, premultiplied: Bool? = nil, extend: VipsExtend? = nil) throws -> VIPSImage {
+    public func affine(
+        matrix: [Double],
+        interpolate: VIPSInterpolate? = nil,
+        oarea: [Int]? = nil,
+        odx: Double? = nil,
+        ody: Double? = nil,
+        idx: Double? = nil,
+        idy: Double? = nil,
+        background: [Double]? = nil,
+        premultiplied: Bool? = nil,
+        extend: VipsExtend? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([self, interpolate as Any]) { out in
             var opt = VIPSOption()
 
@@ -72,7 +83,16 @@ extension VIPSImage {
     ///   - valign: Align on the top, centre or bottom
     ///   - hspacing: Horizontal spacing between images
     ///   - vspacing: Vertical spacing between images
-    public static func arrayjoin(_ `in`: [VIPSImage], across: Int? = nil, shim: Int? = nil, background: [Double]? = nil, halign: VipsAlign? = nil, valign: VipsAlign? = nil, hspacing: Int? = nil, vspacing: Int? = nil) throws -> VIPSImage {
+    public static func arrayjoin(
+        _ `in`: [VIPSImage],
+        across: Int? = nil,
+        shim: Int? = nil,
+        background: [Double]? = nil,
+        halign: VipsAlign? = nil,
+        valign: VipsAlign? = nil,
+        hspacing: Int? = nil,
+        vspacing: Int? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([`in`]) { out in
             var opt = VIPSOption()
 
@@ -195,7 +215,14 @@ extension VIPSImage {
     ///   - y: Array of y coordinates to join at
     ///   - compositingSpace: Composite images in this colour space
     ///   - premultiplied: Images have premultiplied alpha
-    public static func composite(_ `in`: [VIPSImage], mode: [Int], x: [Int]? = nil, y: [Int]? = nil, compositingSpace: VipsInterpretation? = nil, premultiplied: Bool? = nil) throws -> VIPSImage {
+    public static func composite(
+        _ `in`: [VIPSImage],
+        mode: [Int],
+        x: [Int]? = nil,
+        y: [Int]? = nil,
+        compositingSpace: VipsInterpretation? = nil,
+        premultiplied: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([`in`]) { out in
             var opt = VIPSOption()
 
@@ -228,7 +255,14 @@ extension VIPSImage {
     ///   - y: y position of overlay
     ///   - compositingSpace: Composite images in this colour space
     ///   - premultiplied: Images have premultiplied alpha
-    public func composite2(overlay: VIPSImage, mode: VipsBlendMode, x: Int? = nil, y: Int? = nil, compositingSpace: VipsInterpretation? = nil, premultiplied: Bool? = nil) throws -> VIPSImage {
+    public func composite2(
+        overlay: VIPSImage,
+        mode: VipsBlendMode,
+        x: Int? = nil,
+        y: Int? = nil,
+        compositingSpace: VipsInterpretation? = nil,
+        premultiplied: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([self, overlay]) { out in
             var opt = VIPSOption()
 
@@ -266,7 +300,18 @@ extension VIPSImage {
     ///   - yres: Vertical resolution in pixels/mm
     ///   - xoffset: Horizontal offset of origin
     ///   - yoffset: Vertical offset of origin
-    public func copy(width: Int? = nil, height: Int? = nil, bands: Int? = nil, format: VipsBandFormat? = nil, coding: VipsCoding? = nil, interpretation: VipsInterpretation? = nil, xres: Double? = nil, yres: Double? = nil, xoffset: Int? = nil, yoffset: Int? = nil) throws -> VIPSImage {
+    public func copy(
+        width: Int? = nil,
+        height: Int? = nil,
+        bands: Int? = nil,
+        format: VipsBandFormat? = nil,
+        coding: VipsCoding? = nil,
+        interpretation: VipsInterpretation? = nil,
+        xres: Double? = nil,
+        yres: Double? = nil,
+        xoffset: Int? = nil,
+        yoffset: Int? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -338,7 +383,14 @@ extension VIPSImage {
     ///   - height: Image height in pixels
     ///   - extend: How to generate the extra pixels
     ///   - background: Color for background pixels
-    public func embed(x: Int, y: Int, width: Int, height: Int, extend: VipsExtend? = nil, background: [Double]? = nil) throws -> VIPSImage {
+    public func embed(
+        x: Int,
+        y: Int,
+        width: Int,
+        height: Int,
+        extend: VipsExtend? = nil,
+        background: [Double]? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -445,7 +497,13 @@ extension VIPSImage {
     ///   - y: Top edge of sub in main
     ///   - expand: Expand output to hold all of both inputs
     ///   - background: Color for new pixels
-    public func insert(sub: VIPSImage, x: Int, y: Int, expand: Bool? = nil, background: [Double]? = nil) throws -> VIPSImage {
+    public func insert(
+        sub: VIPSImage,
+        x: Int,
+        y: Int,
+        expand: Bool? = nil,
+        background: [Double]? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([self, sub]) { out in
             var opt = VIPSOption()
 
@@ -474,7 +532,14 @@ extension VIPSImage {
     ///   - shim: Pixels between images
     ///   - background: Colour for new pixels
     ///   - align: Align on the low, centre or high coordinate edge
-    public func join(in2: VIPSImage, direction: VipsDirection, expand: Bool? = nil, shim: Int? = nil, background: [Double]? = nil, align: VipsAlign? = nil) throws -> VIPSImage {
+    public func join(
+        in2: VIPSImage,
+        direction: VipsDirection,
+        expand: Bool? = nil,
+        shim: Int? = nil,
+        background: [Double]? = nil,
+        align: VipsAlign? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([self, in2]) { out in
             var opt = VIPSOption()
 
@@ -522,7 +587,12 @@ extension VIPSImage {
     ///   - vshrink: Vertical shrink factor
     ///   - kernel: Resampling kernel
     ///   - gap: Reducing gap
-    public func reduce(hshrink: Double, vshrink: Double, kernel: VipsKernel? = nil, gap: Double? = nil) throws -> VIPSImage {
+    public func reduce(
+        hshrink: Double,
+        vshrink: Double,
+        kernel: VipsKernel? = nil,
+        gap: Double? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -547,7 +617,9 @@ extension VIPSImage {
     ///   - hshrink: Horizontal shrink factor
     ///   - kernel: Resampling kernel
     ///   - gap: Reducing gap
-    public func reduceh(hshrink: Double, kernel: VipsKernel? = nil, gap: Double? = nil) throws -> VIPSImage {
+    public func reduceh(hshrink: Double, kernel: VipsKernel? = nil, gap: Double? = nil) throws
+        -> VIPSImage
+    {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -571,7 +643,9 @@ extension VIPSImage {
     ///   - vshrink: Vertical shrink factor
     ///   - kernel: Resampling kernel
     ///   - gap: Reducing gap
-    public func reducev(vshrink: Double, kernel: VipsKernel? = nil, gap: Double? = nil) throws -> VIPSImage {
+    public func reducev(vshrink: Double, kernel: VipsKernel? = nil, gap: Double? = nil) throws
+        -> VIPSImage
+    {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -596,7 +670,12 @@ extension VIPSImage {
     ///   - kernel: Resampling kernel
     ///   - gap: Reducing gap
     ///   - vscale: Vertical scale image by this factor
-    public func resize(scale: Double, kernel: VipsKernel? = nil, gap: Double? = nil, vscale: Double? = nil) throws -> VIPSImage {
+    public func resize(
+        scale: Double,
+        kernel: VipsKernel? = nil,
+        gap: Double? = nil,
+        vscale: Double? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -661,7 +740,15 @@ extension VIPSImage {
     ///   - ody: Vertical output displacement
     ///   - idx: Horizontal input displacement
     ///   - idy: Vertical input displacement
-    public func rotate(angle: Double, interpolate: VIPSInterpolate? = nil, background: [Double]? = nil, odx: Double? = nil, ody: Double? = nil, idx: Double? = nil, idy: Double? = nil) throws -> VIPSImage {
+    public func rotate(
+        angle: Double,
+        interpolate: VIPSInterpolate? = nil,
+        background: [Double]? = nil,
+        odx: Double? = nil,
+        ody: Double? = nil,
+        idx: Double? = nil,
+        idy: Double? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([self, interpolate as Any]) { out in
             var opt = VIPSOption()
 
@@ -786,7 +873,16 @@ extension VIPSImage {
     ///   - ody: Vertical output displacement
     ///   - idx: Horizontal input displacement
     ///   - idy: Vertical input displacement
-    public func similarity(scale: Double? = nil, angle: Double? = nil, interpolate: VIPSInterpolate? = nil, background: [Double]? = nil, odx: Double? = nil, ody: Double? = nil, idx: Double? = nil, idy: Double? = nil) throws -> VIPSImage {
+    public func similarity(
+        scale: Double? = nil,
+        angle: Double? = nil,
+        interpolate: VIPSInterpolate? = nil,
+        background: [Double]? = nil,
+        odx: Double? = nil,
+        ody: Double? = nil,
+        idx: Double? = nil,
+        idy: Double? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([self, interpolate as Any]) { out in
             var opt = VIPSOption()
 
@@ -828,7 +924,12 @@ extension VIPSImage {
     ///   - height: Height of extract area
     ///   - interesting: How to measure interestingness
     ///   - premultiplied: Input image already has premultiplied alpha
-    public func smartcrop(width: Int, height: Int, interesting: VipsInteresting? = nil, premultiplied: Bool? = nil) throws -> VIPSImage {
+    public func smartcrop(
+        width: Int,
+        height: Int,
+        interesting: VipsInteresting? = nil,
+        premultiplied: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -856,7 +957,14 @@ extension VIPSImage {
     ///   - access: Expected access pattern
     ///   - threaded: Allow threaded access
     ///   - persistent: Keep cache between evaluations
-    public func tilecache(tileWidth: Int? = nil, tileHeight: Int? = nil, maxTiles: Int? = nil, access: VipsAccess? = nil, threaded: Bool? = nil, persistent: Bool? = nil) throws -> VIPSImage {
+    public func tilecache(
+        tileWidth: Int? = nil,
+        tileHeight: Int? = nil,
+        maxTiles: Int? = nil,
+        access: VipsAccess? = nil,
+        threaded: Bool? = nil,
+        persistent: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 

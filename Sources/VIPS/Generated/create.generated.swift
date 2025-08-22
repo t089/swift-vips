@@ -49,7 +49,9 @@ extension VIPSImage {
     ///   - height: Image height in pixels
     ///   - uchar: Output an unsigned char image
     ///   - factor: Maximum spatial frequency
-    public static func eye(width: Int, height: Int, uchar: Bool? = nil, factor: Double? = nil) throws -> VIPSImage {
+    public static func eye(width: Int, height: Int, uchar: Bool? = nil, factor: Double? = nil)
+        throws -> VIPSImage
+    {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -73,7 +75,9 @@ extension VIPSImage {
     ///   - width: Image width in pixels
     ///   - height: Image height in pixels
     ///   - fractalDimension: Fractal dimension
-    public static func fractsurf(width: Int, height: Int, fractalDimension: Double) throws -> VIPSImage {
+    public static func fractsurf(width: Int, height: Int, fractalDimension: Double) throws
+        -> VIPSImage
+    {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -93,7 +97,12 @@ extension VIPSImage {
     ///   - minAmpl: Minimum amplitude of Gaussian
     ///   - separable: Generate separable Gaussian
     ///   - precision: Generate with this precision
-    public static func gaussmat(sigma: Double, minAmpl: Double, separable: Bool? = nil, precision: VipsPrecision? = nil) throws -> VIPSImage {
+    public static func gaussmat(
+        sigma: Double,
+        minAmpl: Double,
+        separable: Bool? = nil,
+        precision: VipsPrecision? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -119,7 +128,13 @@ extension VIPSImage {
     ///   - sigma: Standard deviation of pixels in generated image
     ///   - mean: Mean of pixels in generated image
     ///   - seed: Random number seed
-    public static func gaussnoise(width: Int, height: Int, sigma: Double? = nil, mean: Double? = nil, seed: Int? = nil) throws -> VIPSImage {
+    public static func gaussnoise(
+        width: Int,
+        height: Int,
+        sigma: Double? = nil,
+        mean: Double? = nil,
+        seed: Int? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -167,7 +182,9 @@ extension VIPSImage {
     ///   - bands: Number of bands in LUT
     ///   - ushort: Create a 16-bit LUT
     ///   - size: Size of 16-bit LUT
-    public static func identity(bands: Int? = nil, ushort: Bool? = nil, size: Int? = nil) throws -> VIPSImage {
+    public static func identity(bands: Int? = nil, ushort: Bool? = nil, size: Int? = nil) throws
+        -> VIPSImage
+    {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -193,7 +210,12 @@ extension VIPSImage {
     ///   - minAmpl: Minimum amplitude of Gaussian
     ///   - separable: Generate separable Gaussian
     ///   - precision: Generate with this precision
-    public static func logmat(sigma: Double, minAmpl: Double, separable: Bool? = nil, precision: VipsPrecision? = nil) throws -> VIPSImage {
+    public static func logmat(
+        sigma: Double,
+        minAmpl: Double,
+        separable: Bool? = nil,
+        precision: VipsPrecision? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -223,7 +245,17 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskButterworth(width: Int, height: Int, order: Double, frequencyCutoff: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
+    public static func maskButterworth(
+        width: Int,
+        height: Int,
+        order: Double,
+        frequencyCutoff: Double,
+        amplitudeCutoff: Double,
+        uchar: Bool? = nil,
+        nodc: Bool? = nil,
+        reject: Bool? = nil,
+        optical: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -264,7 +296,19 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskButterworthBand(width: Int, height: Int, order: Double, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
+    public static func maskButterworthBand(
+        width: Int,
+        height: Int,
+        order: Double,
+        frequencyCutoffX: Double,
+        frequencyCutoffY: Double,
+        radius: Double,
+        amplitudeCutoff: Double,
+        uchar: Bool? = nil,
+        nodc: Bool? = nil,
+        reject: Bool? = nil,
+        optical: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -306,7 +350,18 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskButterworthRing(width: Int, height: Int, order: Double, frequencyCutoff: Double, amplitudeCutoff: Double, ringwidth: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
+    public static func maskButterworthRing(
+        width: Int,
+        height: Int,
+        order: Double,
+        frequencyCutoff: Double,
+        amplitudeCutoff: Double,
+        ringwidth: Double,
+        uchar: Bool? = nil,
+        nodc: Bool? = nil,
+        reject: Bool? = nil,
+        optical: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -344,7 +399,15 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskFractal(width: Int, height: Int, fractalDimension: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
+    public static func maskFractal(
+        width: Int,
+        height: Int,
+        fractalDimension: Double,
+        uchar: Bool? = nil,
+        nodc: Bool? = nil,
+        reject: Bool? = nil,
+        optical: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -380,7 +443,16 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskGaussian(width: Int, height: Int, frequencyCutoff: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
+    public static func maskGaussian(
+        width: Int,
+        height: Int,
+        frequencyCutoff: Double,
+        amplitudeCutoff: Double,
+        uchar: Bool? = nil,
+        nodc: Bool? = nil,
+        reject: Bool? = nil,
+        optical: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -419,7 +491,18 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskGaussianBand(width: Int, height: Int, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
+    public static func maskGaussianBand(
+        width: Int,
+        height: Int,
+        frequencyCutoffX: Double,
+        frequencyCutoffY: Double,
+        radius: Double,
+        amplitudeCutoff: Double,
+        uchar: Bool? = nil,
+        nodc: Bool? = nil,
+        reject: Bool? = nil,
+        optical: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -459,7 +542,17 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskGaussianRing(width: Int, height: Int, frequencyCutoff: Double, amplitudeCutoff: Double, ringwidth: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
+    public static func maskGaussianRing(
+        width: Int,
+        height: Int,
+        frequencyCutoff: Double,
+        amplitudeCutoff: Double,
+        ringwidth: Double,
+        uchar: Bool? = nil,
+        nodc: Bool? = nil,
+        reject: Bool? = nil,
+        optical: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -496,7 +589,15 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskIdeal(width: Int, height: Int, frequencyCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
+    public static func maskIdeal(
+        width: Int,
+        height: Int,
+        frequencyCutoff: Double,
+        uchar: Bool? = nil,
+        nodc: Bool? = nil,
+        reject: Bool? = nil,
+        optical: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -533,7 +634,17 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskIdealBand(width: Int, height: Int, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
+    public static func maskIdealBand(
+        width: Int,
+        height: Int,
+        frequencyCutoffX: Double,
+        frequencyCutoffY: Double,
+        radius: Double,
+        uchar: Bool? = nil,
+        nodc: Bool? = nil,
+        reject: Bool? = nil,
+        optical: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -571,7 +682,16 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskIdealRing(width: Int, height: Int, frequencyCutoff: Double, ringwidth: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
+    public static func maskIdealRing(
+        width: Int,
+        height: Int,
+        frequencyCutoff: Double,
+        ringwidth: Double,
+        uchar: Bool? = nil,
+        nodc: Bool? = nil,
+        reject: Bool? = nil,
+        optical: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -605,7 +725,13 @@ extension VIPSImage {
     ///   - cellSize: Size of Perlin cells
     ///   - uchar: Output an unsigned char image
     ///   - seed: Random number seed
-    public static func perlin(width: Int, height: Int, cellSize: Int? = nil, uchar: Bool? = nil, seed: Int? = nil) throws -> VIPSImage {
+    public static func perlin(
+        width: Int,
+        height: Int,
+        cellSize: Int? = nil,
+        uchar: Bool? = nil,
+        seed: Int? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -634,7 +760,13 @@ extension VIPSImage {
     ///   - uchar: Output an unsigned char image
     ///   - hfreq: Horizontal spatial frequency
     ///   - vfreq: Vertical spatial frequency
-    public static func sines(width: Int, height: Int, uchar: Bool? = nil, hfreq: Double? = nil, vfreq: Double? = nil) throws -> VIPSImage {
+    public static func sines(
+        width: Int,
+        height: Int,
+        uchar: Bool? = nil,
+        hfreq: Double? = nil,
+        vfreq: Double? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -669,7 +801,19 @@ extension VIPSImage {
     ///   - fontfile: Load this font file
     ///   - rgba: Enable RGBA output
     ///   - wrap: Wrap lines on word or character boundaries
-    public static func text(_ text: String, font: String? = nil, width: Int? = nil, height: Int? = nil, align: VipsAlign? = nil, justify: Bool? = nil, dpi: Int? = nil, spacing: Int? = nil, fontfile: String? = nil, rgba: Bool? = nil, wrap: VipsTextWrap? = nil) throws -> VIPSImage {
+    public static func text(
+        _ text: String,
+        font: String? = nil,
+        width: Int? = nil,
+        height: Int? = nil,
+        align: VipsAlign? = nil,
+        justify: Bool? = nil,
+        dpi: Int? = nil,
+        spacing: Int? = nil,
+        fontfile: String? = nil,
+        rgba: Bool? = nil,
+        wrap: VipsTextWrap? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -723,7 +867,18 @@ extension VIPSImage {
     ///   - S: Adjust shadows by this much
     ///   - M: Adjust mid-tones by this much
     ///   - H: Adjust highlights by this much
-    public static func tonelut(inMax: Int? = nil, outMax: Int? = nil, Lb: Double? = nil, Lw: Double? = nil, Ps: Double? = nil, Pm: Double? = nil, Ph: Double? = nil, S: Double? = nil, M: Double? = nil, H: Double? = nil) throws -> VIPSImage {
+    public static func tonelut(
+        inMax: Int? = nil,
+        outMax: Int? = nil,
+        Lb: Double? = nil,
+        Lw: Double? = nil,
+        Ps: Double? = nil,
+        Pm: Double? = nil,
+        Ph: Double? = nil,
+        S: Double? = nil,
+        M: Double? = nil,
+        H: Double? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -770,7 +925,9 @@ extension VIPSImage {
     ///   - height: Image height in pixels
     ///   - cellSize: Size of Worley cells
     ///   - seed: Random number seed
-    public static func worley(width: Int, height: Int, cellSize: Int? = nil, seed: Int? = nil) throws -> VIPSImage {
+    public static func worley(width: Int, height: Int, cellSize: Int? = nil, seed: Int? = nil)
+        throws -> VIPSImage
+    {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 

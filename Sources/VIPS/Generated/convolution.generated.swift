@@ -38,7 +38,12 @@ extension VIPSImage {
     ///   - precision: Convolve with this precision
     ///   - layers: Use this many layers in approximation
     ///   - cluster: Cluster lines closer than this in approximation
-    public func conv(mask: VIPSImage, precision: VipsPrecision? = nil, layers: Int? = nil, cluster: Int? = nil) throws -> VIPSImage {
+    public func conv(
+        mask: VIPSImage,
+        precision: VipsPrecision? = nil,
+        layers: Int? = nil,
+        cluster: Int? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([self, mask]) { out in
             var opt = VIPSOption()
 
@@ -65,7 +70,8 @@ extension VIPSImage {
     ///   - mask: Input matrix image
     ///   - layers: Use this many layers in approximation
     ///   - cluster: Cluster lines closer than this in approximation
-    public func conva(mask: VIPSImage, layers: Int? = nil, cluster: Int? = nil) throws -> VIPSImage {
+    public func conva(mask: VIPSImage, layers: Int? = nil, cluster: Int? = nil) throws -> VIPSImage
+    {
         return try VIPSImage([self, mask]) { out in
             var opt = VIPSOption()
 
@@ -142,7 +148,12 @@ extension VIPSImage {
     ///   - precision: Convolve with this precision
     ///   - layers: Use this many layers in approximation
     ///   - cluster: Cluster lines closer than this in approximation
-    public func convsep(mask: VIPSImage, precision: VipsPrecision? = nil, layers: Int? = nil, cluster: Int? = nil) throws -> VIPSImage {
+    public func convsep(
+        mask: VIPSImage,
+        precision: VipsPrecision? = nil,
+        layers: Int? = nil,
+        cluster: Int? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([self, mask]) { out in
             var opt = VIPSOption()
 
@@ -169,7 +180,9 @@ extension VIPSImage {
     ///   - sigma: Sigma of Gaussian
     ///   - minAmpl: Minimum amplitude of Gaussian
     ///   - precision: Convolve with this precision
-    public func gaussblur(sigma: Double, minAmpl: Double? = nil, precision: VipsPrecision? = nil) throws -> VIPSImage {
+    public func gaussblur(sigma: Double, minAmpl: Double? = nil, precision: VipsPrecision? = nil)
+        throws -> VIPSImage
+    {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -196,7 +209,14 @@ extension VIPSImage {
     ///   - y3: Maximum darkening
     ///   - m1: Slope for flat areas
     ///   - m2: Slope for jaggy areas
-    public func sharpen(sigma: Double? = nil, x1: Double? = nil, y2: Double? = nil, y3: Double? = nil, m1: Double? = nil, m2: Double? = nil) throws -> VIPSImage {
+    public func sharpen(
+        sigma: Double? = nil,
+        x1: Double? = nil,
+        y2: Double? = nil,
+        y3: Double? = nil,
+        m1: Double? = nil,
+        m2: Double? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 

@@ -22,7 +22,17 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func tiffload(filename: String, page: Int? = nil, subifd: Int? = nil, n: Int? = nil, autorotate: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func tiffload(
+        filename: String,
+        page: Int? = nil,
+        subifd: Int? = nil,
+        n: Int? = nil,
+        autorotate: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -70,7 +80,17 @@ extension VIPSImage {
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
-    public static func tiffload(buffer: some Collection<UInt8>, page: Int? = nil, subifd: Int? = nil, n: Int? = nil, autorotate: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func tiffload(
+        buffer: some Collection<UInt8>,
+        page: Int? = nil,
+        subifd: Int? = nil,
+        n: Int? = nil,
+        autorotate: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
             return try VIPSImage(nil) { out in
                 var opt = VIPSOption()
@@ -111,7 +131,17 @@ extension VIPSImage {
         if let maybeImage {
             return maybeImage
         } else {
-            return try tiffload(buffer: Array(buffer), page: page, subifd: subifd, n: n, autorotate: autorotate, memory: memory, access: access, failOn: failOn, revalidate: revalidate)
+            return try tiffload(
+                buffer: Array(buffer),
+                page: page,
+                subifd: subifd,
+                n: n,
+                autorotate: autorotate,
+                memory: memory,
+                access: access,
+                failOn: failOn,
+                revalidate: revalidate
+            )
         }
     }
 
@@ -127,7 +157,17 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func tiffload(source: VIPSSource, page: Int? = nil, subifd: Int? = nil, n: Int? = nil, autorotate: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+    public static func tiffload(
+        source: VIPSSource,
+        page: Int? = nil,
+        subifd: Int? = nil,
+        n: Int? = nil,
+        autorotate: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
         return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
@@ -190,85 +230,111 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func tiffsave(filename: String, compression: VipsForeignTiffCompression? = nil, Q: Int? = nil, predictor: VipsForeignTiffPredictor? = nil, tile: Bool? = nil, tileWidth: Int? = nil, tileHeight: Int? = nil, pyramid: Bool? = nil, miniswhite: Bool? = nil, bitdepth: Int? = nil, resunit: VipsForeignTiffResunit? = nil, xres: Double? = nil, yres: Double? = nil, bigtiff: Bool? = nil, properties: Bool? = nil, regionShrink: VipsRegionShrink? = nil, level: Int? = nil, lossless: Bool? = nil, depth: VipsForeignDzDepth? = nil, subifd: Bool? = nil, premultiply: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func tiffsave(
+        filename: String,
+        compression: VipsForeignTiffCompression? = nil,
+        Q: Int? = nil,
+        predictor: VipsForeignTiffPredictor? = nil,
+        tile: Bool? = nil,
+        tileWidth: Int? = nil,
+        tileHeight: Int? = nil,
+        pyramid: Bool? = nil,
+        miniswhite: Bool? = nil,
+        bitdepth: Int? = nil,
+        resunit: VipsForeignTiffResunit? = nil,
+        xres: Double? = nil,
+        yres: Double? = nil,
+        bigtiff: Bool? = nil,
+        properties: Bool? = nil,
+        regionShrink: VipsRegionShrink? = nil,
+        level: Int? = nil,
+        lossless: Bool? = nil,
+        depth: VipsForeignDzDepth? = nil,
+        subifd: Bool? = nil,
+        premultiply: Bool? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("filename", value: filename)
-            if let compression = compression {
-                opt.set("compression", value: compression)
-            }
-            if let Q = Q {
-                opt.set("Q", value: Q)
-            }
-            if let predictor = predictor {
-                opt.set("predictor", value: predictor)
-            }
-            if let tile = tile {
-                opt.set("tile", value: tile)
-            }
-            if let tileWidth = tileWidth {
-                opt.set("tile_width", value: tileWidth)
-            }
-            if let tileHeight = tileHeight {
-                opt.set("tile_height", value: tileHeight)
-            }
-            if let pyramid = pyramid {
-                opt.set("pyramid", value: pyramid)
-            }
-            if let miniswhite = miniswhite {
-                opt.set("miniswhite", value: miniswhite)
-            }
-            if let bitdepth = bitdepth {
-                opt.set("bitdepth", value: bitdepth)
-            }
-            if let resunit = resunit {
-                opt.set("resunit", value: resunit)
-            }
-            if let xres = xres {
-                opt.set("xres", value: xres)
-            }
-            if let yres = yres {
-                opt.set("yres", value: yres)
-            }
-            if let bigtiff = bigtiff {
-                opt.set("bigtiff", value: bigtiff)
-            }
-            if let properties = properties {
-                opt.set("properties", value: properties)
-            }
-            if let regionShrink = regionShrink {
-                opt.set("region_shrink", value: regionShrink)
-            }
-            if let level = level {
-                opt.set("level", value: level)
-            }
-            if let lossless = lossless {
-                opt.set("lossless", value: lossless)
-            }
-            if let depth = depth {
-                opt.set("depth", value: depth)
-            }
-            if let subifd = subifd {
-                opt.set("subifd", value: subifd)
-            }
-            if let premultiply = premultiply {
-                opt.set("premultiply", value: premultiply)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("filename", value: filename)
+        if let compression = compression {
+            opt.set("compression", value: compression)
+        }
+        if let Q = Q {
+            opt.set("Q", value: Q)
+        }
+        if let predictor = predictor {
+            opt.set("predictor", value: predictor)
+        }
+        if let tile = tile {
+            opt.set("tile", value: tile)
+        }
+        if let tileWidth = tileWidth {
+            opt.set("tile_width", value: tileWidth)
+        }
+        if let tileHeight = tileHeight {
+            opt.set("tile_height", value: tileHeight)
+        }
+        if let pyramid = pyramid {
+            opt.set("pyramid", value: pyramid)
+        }
+        if let miniswhite = miniswhite {
+            opt.set("miniswhite", value: miniswhite)
+        }
+        if let bitdepth = bitdepth {
+            opt.set("bitdepth", value: bitdepth)
+        }
+        if let resunit = resunit {
+            opt.set("resunit", value: resunit)
+        }
+        if let xres = xres {
+            opt.set("xres", value: xres)
+        }
+        if let yres = yres {
+            opt.set("yres", value: yres)
+        }
+        if let bigtiff = bigtiff {
+            opt.set("bigtiff", value: bigtiff)
+        }
+        if let properties = properties {
+            opt.set("properties", value: properties)
+        }
+        if let regionShrink = regionShrink {
+            opt.set("region_shrink", value: regionShrink)
+        }
+        if let level = level {
+            opt.set("level", value: level)
+        }
+        if let lossless = lossless {
+            opt.set("lossless", value: lossless)
+        }
+        if let depth = depth {
+            opt.set("depth", value: depth)
+        }
+        if let subifd = subifd {
+            opt.set("subifd", value: subifd)
+        }
+        if let premultiply = premultiply {
+            opt.set("premultiply", value: premultiply)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("tiffsave", options: &opt)
+        try VIPSImage.call("tiffsave", options: &opt)
     }
 
     /// Save image to tiff buffer
@@ -298,87 +364,112 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func tiffsave(compression: VipsForeignTiffCompression? = nil, Q: Int? = nil, predictor: VipsForeignTiffPredictor? = nil, tile: Bool? = nil, tileWidth: Int? = nil, tileHeight: Int? = nil, pyramid: Bool? = nil, miniswhite: Bool? = nil, bitdepth: Int? = nil, resunit: VipsForeignTiffResunit? = nil, xres: Double? = nil, yres: Double? = nil, bigtiff: Bool? = nil, properties: Bool? = nil, regionShrink: VipsRegionShrink? = nil, level: Int? = nil, lossless: Bool? = nil, depth: VipsForeignDzDepth? = nil, subifd: Bool? = nil, premultiply: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
+    public func tiffsave(
+        compression: VipsForeignTiffCompression? = nil,
+        Q: Int? = nil,
+        predictor: VipsForeignTiffPredictor? = nil,
+        tile: Bool? = nil,
+        tileWidth: Int? = nil,
+        tileHeight: Int? = nil,
+        pyramid: Bool? = nil,
+        miniswhite: Bool? = nil,
+        bitdepth: Int? = nil,
+        resunit: VipsForeignTiffResunit? = nil,
+        xres: Double? = nil,
+        yres: Double? = nil,
+        bigtiff: Bool? = nil,
+        properties: Bool? = nil,
+        regionShrink: VipsRegionShrink? = nil,
+        level: Int? = nil,
+        lossless: Bool? = nil,
+        depth: VipsForeignDzDepth? = nil,
+        subifd: Bool? = nil,
+        premultiply: Bool? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
         var out: UnsafeMutablePointer<VipsBlob>! = nil
 
-            opt.set("in", value: self.image)
-            if let compression = compression {
-                opt.set("compression", value: compression)
-            }
-            if let Q = Q {
-                opt.set("Q", value: Q)
-            }
-            if let predictor = predictor {
-                opt.set("predictor", value: predictor)
-            }
-            if let tile = tile {
-                opt.set("tile", value: tile)
-            }
-            if let tileWidth = tileWidth {
-                opt.set("tile_width", value: tileWidth)
-            }
-            if let tileHeight = tileHeight {
-                opt.set("tile_height", value: tileHeight)
-            }
-            if let pyramid = pyramid {
-                opt.set("pyramid", value: pyramid)
-            }
-            if let miniswhite = miniswhite {
-                opt.set("miniswhite", value: miniswhite)
-            }
-            if let bitdepth = bitdepth {
-                opt.set("bitdepth", value: bitdepth)
-            }
-            if let resunit = resunit {
-                opt.set("resunit", value: resunit)
-            }
-            if let xres = xres {
-                opt.set("xres", value: xres)
-            }
-            if let yres = yres {
-                opt.set("yres", value: yres)
-            }
-            if let bigtiff = bigtiff {
-                opt.set("bigtiff", value: bigtiff)
-            }
-            if let properties = properties {
-                opt.set("properties", value: properties)
-            }
-            if let regionShrink = regionShrink {
-                opt.set("region_shrink", value: regionShrink)
-            }
-            if let level = level {
-                opt.set("level", value: level)
-            }
-            if let lossless = lossless {
-                opt.set("lossless", value: lossless)
-            }
-            if let depth = depth {
-                opt.set("depth", value: depth)
-            }
-            if let subifd = subifd {
-                opt.set("subifd", value: subifd)
-            }
-            if let premultiply = premultiply {
-                opt.set("premultiply", value: premultiply)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
-            opt.set("buffer", value: &out)
+        opt.set("in", value: self.image)
+        if let compression = compression {
+            opt.set("compression", value: compression)
+        }
+        if let Q = Q {
+            opt.set("Q", value: Q)
+        }
+        if let predictor = predictor {
+            opt.set("predictor", value: predictor)
+        }
+        if let tile = tile {
+            opt.set("tile", value: tile)
+        }
+        if let tileWidth = tileWidth {
+            opt.set("tile_width", value: tileWidth)
+        }
+        if let tileHeight = tileHeight {
+            opt.set("tile_height", value: tileHeight)
+        }
+        if let pyramid = pyramid {
+            opt.set("pyramid", value: pyramid)
+        }
+        if let miniswhite = miniswhite {
+            opt.set("miniswhite", value: miniswhite)
+        }
+        if let bitdepth = bitdepth {
+            opt.set("bitdepth", value: bitdepth)
+        }
+        if let resunit = resunit {
+            opt.set("resunit", value: resunit)
+        }
+        if let xres = xres {
+            opt.set("xres", value: xres)
+        }
+        if let yres = yres {
+            opt.set("yres", value: yres)
+        }
+        if let bigtiff = bigtiff {
+            opt.set("bigtiff", value: bigtiff)
+        }
+        if let properties = properties {
+            opt.set("properties", value: properties)
+        }
+        if let regionShrink = regionShrink {
+            opt.set("region_shrink", value: regionShrink)
+        }
+        if let level = level {
+            opt.set("level", value: level)
+        }
+        if let lossless = lossless {
+            opt.set("lossless", value: lossless)
+        }
+        if let depth = depth {
+            opt.set("depth", value: depth)
+        }
+        if let subifd = subifd {
+            opt.set("subifd", value: subifd)
+        }
+        if let premultiply = premultiply {
+            opt.set("premultiply", value: premultiply)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
+        opt.set("buffer", value: &out)
 
-            try VIPSImage.call("tiffsave_buffer", options: &opt)
+        try VIPSImage.call("tiffsave_buffer", options: &opt)
 
         guard let vipsBlob = out else {
             throw VIPSError("Failed to get buffer from tiffsave_buffer")
@@ -415,85 +506,111 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func tiffsave(target: VIPSTarget, compression: VipsForeignTiffCompression? = nil, Q: Int? = nil, predictor: VipsForeignTiffPredictor? = nil, tile: Bool? = nil, tileWidth: Int? = nil, tileHeight: Int? = nil, pyramid: Bool? = nil, miniswhite: Bool? = nil, bitdepth: Int? = nil, resunit: VipsForeignTiffResunit? = nil, xres: Double? = nil, yres: Double? = nil, bigtiff: Bool? = nil, properties: Bool? = nil, regionShrink: VipsRegionShrink? = nil, level: Int? = nil, lossless: Bool? = nil, depth: VipsForeignDzDepth? = nil, subifd: Bool? = nil, premultiply: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func tiffsave(
+        target: VIPSTarget,
+        compression: VipsForeignTiffCompression? = nil,
+        Q: Int? = nil,
+        predictor: VipsForeignTiffPredictor? = nil,
+        tile: Bool? = nil,
+        tileWidth: Int? = nil,
+        tileHeight: Int? = nil,
+        pyramid: Bool? = nil,
+        miniswhite: Bool? = nil,
+        bitdepth: Int? = nil,
+        resunit: VipsForeignTiffResunit? = nil,
+        xres: Double? = nil,
+        yres: Double? = nil,
+        bigtiff: Bool? = nil,
+        properties: Bool? = nil,
+        regionShrink: VipsRegionShrink? = nil,
+        level: Int? = nil,
+        lossless: Bool? = nil,
+        depth: VipsForeignDzDepth? = nil,
+        subifd: Bool? = nil,
+        premultiply: Bool? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("target", value: target)
-            if let compression = compression {
-                opt.set("compression", value: compression)
-            }
-            if let Q = Q {
-                opt.set("Q", value: Q)
-            }
-            if let predictor = predictor {
-                opt.set("predictor", value: predictor)
-            }
-            if let tile = tile {
-                opt.set("tile", value: tile)
-            }
-            if let tileWidth = tileWidth {
-                opt.set("tile_width", value: tileWidth)
-            }
-            if let tileHeight = tileHeight {
-                opt.set("tile_height", value: tileHeight)
-            }
-            if let pyramid = pyramid {
-                opt.set("pyramid", value: pyramid)
-            }
-            if let miniswhite = miniswhite {
-                opt.set("miniswhite", value: miniswhite)
-            }
-            if let bitdepth = bitdepth {
-                opt.set("bitdepth", value: bitdepth)
-            }
-            if let resunit = resunit {
-                opt.set("resunit", value: resunit)
-            }
-            if let xres = xres {
-                opt.set("xres", value: xres)
-            }
-            if let yres = yres {
-                opt.set("yres", value: yres)
-            }
-            if let bigtiff = bigtiff {
-                opt.set("bigtiff", value: bigtiff)
-            }
-            if let properties = properties {
-                opt.set("properties", value: properties)
-            }
-            if let regionShrink = regionShrink {
-                opt.set("region_shrink", value: regionShrink)
-            }
-            if let level = level {
-                opt.set("level", value: level)
-            }
-            if let lossless = lossless {
-                opt.set("lossless", value: lossless)
-            }
-            if let depth = depth {
-                opt.set("depth", value: depth)
-            }
-            if let subifd = subifd {
-                opt.set("subifd", value: subifd)
-            }
-            if let premultiply = premultiply {
-                opt.set("premultiply", value: premultiply)
-            }
-            if let keep = keep {
-                opt.set("keep", value: keep)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let pageHeight = pageHeight {
-                opt.set("page_height", value: pageHeight)
-            }
-            if let profile = profile {
-                opt.set("profile", value: profile)
-            }
+        opt.set("in", value: self)
+        opt.set("target", value: target)
+        if let compression = compression {
+            opt.set("compression", value: compression)
+        }
+        if let Q = Q {
+            opt.set("Q", value: Q)
+        }
+        if let predictor = predictor {
+            opt.set("predictor", value: predictor)
+        }
+        if let tile = tile {
+            opt.set("tile", value: tile)
+        }
+        if let tileWidth = tileWidth {
+            opt.set("tile_width", value: tileWidth)
+        }
+        if let tileHeight = tileHeight {
+            opt.set("tile_height", value: tileHeight)
+        }
+        if let pyramid = pyramid {
+            opt.set("pyramid", value: pyramid)
+        }
+        if let miniswhite = miniswhite {
+            opt.set("miniswhite", value: miniswhite)
+        }
+        if let bitdepth = bitdepth {
+            opt.set("bitdepth", value: bitdepth)
+        }
+        if let resunit = resunit {
+            opt.set("resunit", value: resunit)
+        }
+        if let xres = xres {
+            opt.set("xres", value: xres)
+        }
+        if let yres = yres {
+            opt.set("yres", value: yres)
+        }
+        if let bigtiff = bigtiff {
+            opt.set("bigtiff", value: bigtiff)
+        }
+        if let properties = properties {
+            opt.set("properties", value: properties)
+        }
+        if let regionShrink = regionShrink {
+            opt.set("region_shrink", value: regionShrink)
+        }
+        if let level = level {
+            opt.set("level", value: level)
+        }
+        if let lossless = lossless {
+            opt.set("lossless", value: lossless)
+        }
+        if let depth = depth {
+            opt.set("depth", value: depth)
+        }
+        if let subifd = subifd {
+            opt.set("subifd", value: subifd)
+        }
+        if let premultiply = premultiply {
+            opt.set("premultiply", value: premultiply)
+        }
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
 
-            try VIPSImage.call("tiffsave_target", options: &opt)
+        try VIPSImage.call("tiffsave_target", options: &opt)
     }
 
 }
