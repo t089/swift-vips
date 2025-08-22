@@ -116,7 +116,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - cases: Array of case images
     public func case(cases: [VIPSImage]) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, cases]) { out in
             var opt = VIPSOption()
 
             opt.set("index", value: self.image)
@@ -138,11 +138,11 @@ extension VIPSImage {
     ///   - layers: Use this many layers in approximation
     ///   - cluster: Cluster lines closer than this in approximation
     public func compass(mask: VIPSImage, times: Int = 0, angle: VipsAngle45? = nil, combine: VipsCombine? = nil, precision: VipsPrecision? = nil, layers: Int = 0, cluster: Int = 0) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, mask]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("mask", value: mask)
+            opt.set("mask", value: mask.image)
             if times != 0 {
                 opt.set("times", value: times)
             }
@@ -172,11 +172,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - `right`: Right-hand input image
     public func dE00(`right`: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, `right`]) { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self.image)
-            opt.set("right", value: `right`)
+            opt.set("right", value: `right`.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("dE00", options: &opt)
@@ -188,11 +188,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - `right`: Right-hand input image
     public func dE76(`right`: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, `right`]) { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self.image)
-            opt.set("right", value: `right`)
+            opt.set("right", value: `right`.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("dE76", options: &opt)
@@ -204,11 +204,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - `right`: Right-hand input image
     public func dECMC(`right`: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, `right`]) { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self.image)
-            opt.set("right", value: `right`)
+            opt.set("right", value: `right`.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("dECMC", options: &opt)
@@ -220,11 +220,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - ref: Input reference image
     public func fastcor(ref: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, ref]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("ref", value: ref)
+            opt.set("ref", value: ref.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("fastcor", options: &opt)
@@ -394,12 +394,12 @@ extension VIPSImage {
     ///   - in2: Source for FALSE pixels
     ///   - blend: Blend smoothly between then and else parts
     public func ifthenelse(in1: VIPSImage, in2: VIPSImage, blend: Bool = false) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, in1, in2]) { out in
             var opt = VIPSOption()
 
             opt.set("cond", value: self.image)
-            opt.set("in1", value: in1)
-            opt.set("in2", value: in2)
+            opt.set("in1", value: in1.image)
+            opt.set("in2", value: in2.image)
             if blend != false {
                 opt.set("blend", value: blend)
             }
@@ -445,11 +445,11 @@ extension VIPSImage {
     ///   - lut: Look-up table image
     ///   - band: Apply one-band lut to this band of in
     public func maplut(lut: VIPSImage, band: Int = 0) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, lut]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("lut", value: lut)
+            opt.set("lut", value: lut.image)
             if band != 0 {
                 opt.set("band", value: band)
             }
@@ -476,11 +476,11 @@ extension VIPSImage {
     ///   - search: Search to improve tie-points
     ///   - interpolate: Interpolate pixels with this
     public func match(sec: VIPSImage, xr1: Int, yr1: Int, xs1: Int, ys1: Int, xr2: Int, yr2: Int, xs2: Int, ys2: Int, hwindow: Int = 0, harea: Int = 0, search: Bool = false, interpolate: VIPSInterpolate? = nil) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, sec]) { out in
             var opt = VIPSOption()
 
             opt.set("ref", value: self.image)
-            opt.set("sec", value: sec)
+            opt.set("sec", value: sec.image)
             opt.set("xr1", value: xr1)
             opt.set("yr1", value: yr1)
             opt.set("xs1", value: xs1)
@@ -550,11 +550,11 @@ extension VIPSImage {
     ///   - dy: Vertical displacement from sec to ref
     ///   - mblend: Maximum blend size
     public func merge(sec: VIPSImage, direction: VipsDirection, dx: Int, dy: Int, mblend: Int = 0) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, sec]) { out in
             var opt = VIPSOption()
 
             opt.set("ref", value: self.image)
-            opt.set("sec", value: sec)
+            opt.set("sec", value: sec.image)
             opt.set("direction", value: direction)
             opt.set("dx", value: dx)
             opt.set("dy", value: dy)
@@ -581,11 +581,11 @@ extension VIPSImage {
     ///   - mblend: Maximum blend size
     ///   - bandno: Band to search for features on
     public func mosaic(sec: VIPSImage, direction: VipsDirection, xref: Int, yref: Int, xsec: Int, ysec: Int, hwindow: Int = 0, harea: Int = 0, mblend: Int = 0, bandno: Int = 0) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, sec]) { out in
             var opt = VIPSOption()
 
             opt.set("ref", value: self.image)
-            opt.set("sec", value: sec)
+            opt.set("sec", value: sec.image)
             opt.set("direction", value: direction)
             opt.set("xref", value: xref)
             opt.set("yref", value: yref)
@@ -628,11 +628,11 @@ extension VIPSImage {
     ///   - interpolate: Interpolate pixels with this
     ///   - mblend: Maximum blend size
     public func mosaic1(sec: VIPSImage, direction: VipsDirection, xr1: Int, yr1: Int, xs1: Int, ys1: Int, xr2: Int, yr2: Int, xs2: Int, ys2: Int, hwindow: Int = 0, harea: Int = 0, search: Bool = false, interpolate: VIPSInterpolate? = nil, mblend: Int = 0) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, sec]) { out in
             var opt = VIPSOption()
 
             opt.set("ref", value: self.image)
-            opt.set("sec", value: sec)
+            opt.set("sec", value: sec.image)
             opt.set("direction", value: direction)
             opt.set("xr1", value: xr1)
             opt.set("yr1", value: yr1)
@@ -773,11 +773,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - ref: Input reference image
     public func spcor(ref: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, ref]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("ref", value: ref)
+            opt.set("ref", value: ref.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("spcor", options: &opt)
@@ -845,7 +845,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - tests: Table of images to test
     public static func switch(tests: [VIPSImage]) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage([tests]) { out in
             var opt = VIPSOption()
 
             opt.set("tests", value: tests)

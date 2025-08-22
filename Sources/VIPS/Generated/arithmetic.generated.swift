@@ -74,11 +74,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     public func add(`right`: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, `right`]) { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self.image)
-            opt.set("right", value: `right`)
+            opt.set("right", value: `right`.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("add", options: &opt)
@@ -102,11 +102,11 @@ extension VIPSImage {
     ///   - `right`: Right-hand image argument
     ///   - boolean: Boolean to perform
     public func boolean(`right`: VIPSImage, boolean: VipsOperationBoolean) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, `right`]) { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self.image)
-            opt.set("right", value: `right`)
+            opt.set("right", value: `right`.image)
             opt.set("boolean", value: boolean)
             opt.set("out", value: &out)
 
@@ -154,11 +154,11 @@ extension VIPSImage {
     ///   - `right`: Right-hand image argument
     ///   - cmplx: Binary complex operation to perform
     public func complex2(`right`: VIPSImage, cmplx: VipsOperationComplex2) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, `right`]) { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self.image)
-            opt.set("right", value: `right`)
+            opt.set("right", value: `right`.image)
             opt.set("cmplx", value: cmplx)
             opt.set("out", value: &out)
 
@@ -171,11 +171,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     public func complexform(`right`: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, `right`]) { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self.image)
-            opt.set("right", value: `right`)
+            opt.set("right", value: `right`.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("complexform", options: &opt)
@@ -214,11 +214,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     public func divide(`right`: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, `right`]) { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self.image)
-            opt.set("right", value: `right`)
+            opt.set("right", value: `right`.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("divide", options: &opt)
@@ -299,11 +299,11 @@ extension VIPSImage {
     ///   - `right`: Right-hand image argument
     ///   - math2: Math to perform
     public func math2(`right`: VIPSImage, math2: VipsOperationMath2) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, `right`]) { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self.image)
-            opt.set("right", value: `right`)
+            opt.set("right", value: `right`.image)
             opt.set("math2", value: math2)
             opt.set("out", value: &out)
 
@@ -380,11 +380,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     public func multiply(`right`: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, `right`]) { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self.image)
-            opt.set("right", value: `right`)
+            opt.set("right", value: `right`.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("multiply", options: &opt)
@@ -415,11 +415,11 @@ extension VIPSImage {
     ///   - `right`: Right-hand image argument
     ///   - relational: Relational to perform
     public func relational(`right`: VIPSImage, relational: VipsOperationRelational) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, `right`]) { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self.image)
-            opt.set("right", value: `right`)
+            opt.set("right", value: `right`.image)
             opt.set("relational", value: relational)
             opt.set("out", value: &out)
 
@@ -450,11 +450,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     public func remainder(`right`: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, `right`]) { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self.image)
-            opt.set("right", value: `right`)
+            opt.set("right", value: `right`.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("remainder", options: &opt)
@@ -522,11 +522,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     public func subtract(`right`: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, `right`]) { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self.image)
-            opt.set("right", value: `right`)
+            opt.set("right", value: `right`.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("subtract", options: &opt)
@@ -538,7 +538,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - `in`: Array of input images
     public static func sum(`in`: [VIPSImage]) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage([`in`]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: `in`)
