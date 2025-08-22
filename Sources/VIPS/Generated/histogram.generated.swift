@@ -74,11 +74,11 @@ extension VIPSImage {
     ///   - index: Index image
     ///   - combine: Combine bins like this
     public func histFindIndexed(index: VIPSImage, combine: VipsCombine? = nil) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, index]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("index", value: index)
+            opt.set("index", value: index.image)
             if let combine = combine {
                 opt.set("combine", value: combine)
             }
@@ -144,11 +144,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - ref: Reference histogram
     public func histMatch(ref: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, ref]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("ref", value: ref)
+            opt.set("ref", value: ref.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("hist_match", options: &opt)
@@ -232,11 +232,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - in2: Second input image
     public func phasecor(in2: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, in2]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("in2", value: in2)
+            opt.set("in2", value: in2.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("phasecor", options: &opt)

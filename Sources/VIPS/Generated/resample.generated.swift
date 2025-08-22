@@ -18,11 +18,11 @@ extension VIPSImage {
     ///   - premultiplied: Images have premultiplied alpha
     ///   - extend: How to generate the extra pixels
     public func mapim(index: VIPSImage, interpolate: VIPSInterpolate? = nil, background: [Double] = [], premultiplied: Bool = false, extend: VipsExtend? = nil) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, index]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("index", value: index)
+            opt.set("index", value: index.image)
             if let interpolate = interpolate {
                 opt.set("interpolate", value: interpolate)
             }
@@ -47,11 +47,11 @@ extension VIPSImage {
     ///   - coeff: Coefficient matrix
     ///   - interpolate: Interpolate values with this
     public func quadratic(coeff: VIPSImage, interpolate: VIPSInterpolate? = nil) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, coeff]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("coeff", value: coeff)
+            opt.set("coeff", value: coeff.image)
             if let interpolate = interpolate {
                 opt.set("interpolate", value: interpolate)
             }

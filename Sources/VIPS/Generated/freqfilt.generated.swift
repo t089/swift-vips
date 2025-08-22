@@ -14,11 +14,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - mask: Input mask image
     public func freqmult(mask: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, mask]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("mask", value: mask)
+            opt.set("mask", value: mask.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("freqmult", options: &opt)

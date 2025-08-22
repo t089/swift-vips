@@ -222,6 +222,18 @@ def generate_swift_operation(operation_name):
     if not has_output and 'save' not in operation_name:
         return None
     
+    # Collect all VIPSImage parameters that need to be kept alive
+    image_params = []
+    all_input_params = intro.method_args + optional_input
+    for name in all_input_params:
+        if name != intro.member_x and name in intro.details:
+            param_type = intro.details[name]['type']
+            if param_type == GValue.image_type:
+                image_params.append(name)
+            elif param_type == GValue.array_image_type:
+                # Array of images also needs to be handled
+                image_params.append(name)
+    
     result = []
     
     # Generate documentation
@@ -304,10 +316,21 @@ def generate_swift_operation(operation_name):
     
     # Generate function body
     if has_image_output:
+        # Build the array of images to keep alive
         if is_instance_method:
-            result.append("        return try VIPSImage(self) { out in")
+            if image_params:
+                # We have additional image parameters to keep alive
+                image_refs = [swiftize_param(name) for name in image_params]
+                result.append(f"        return try VIPSImage([self, {', '.join(image_refs)}]) {{ out in")
+            else:
+                result.append("        return try VIPSImage(self) { out in")
         else:
-            result.append("        return try VIPSImage(nil) { out in")
+            if image_params:
+                # Static method with image parameters
+                image_refs = [swiftize_param(name) for name in image_params]
+                result.append(f"        return try VIPSImage([{', '.join(image_refs)}]) {{ out in")
+            else:
+                result.append("        return try VIPSImage(nil) { out in")
     elif 'save' in operation_name and is_instance_method:
         # Save operations that don't return anything
         pass
@@ -326,7 +349,11 @@ def generate_swift_operation(operation_name):
         if name == intro.member_x:
             continue
         param_name = swiftize_param(name)
-        result.append(f'            opt.set("{name}", value: {param_name})')
+        # For VIPSImage parameters, we need to pass the .image property
+        if name in intro.details and intro.details[name]['type'] == GValue.image_type:
+            result.append(f'            opt.set("{name}", value: {param_name}.image)')
+        else:
+            result.append(f'            opt.set("{name}", value: {param_name})')
     
     # Set optional parameters
     for name in optional_input:
@@ -334,10 +361,16 @@ def generate_swift_operation(operation_name):
         details = intro.details[name]
         swift_type = get_swift_type(details['type'])
         
+        # Check if this is a VIPSImage parameter
+        is_image_param = details['type'] == GValue.image_type
+        
         # Check if parameter needs nil check
         if swift_type not in ['Bool', 'Int', 'Double', 'String'] and not swift_type.startswith('['):
             result.append(f"            if let {param_name} = {param_name} {{")
-            result.append(f'                opt.set("{name}", value: {param_name})')
+            if is_image_param:
+                result.append(f'                opt.set("{name}", value: {param_name}.image)')
+            else:
+                result.append(f'                opt.set("{name}", value: {param_name})')
             result.append("            }")
         else:
             # For non-optional types, we can set them directly (they have defaults)

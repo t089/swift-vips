@@ -39,11 +39,11 @@ extension VIPSImage {
     ///   - layers: Use this many layers in approximation
     ///   - cluster: Cluster lines closer than this in approximation
     public func conv(mask: VIPSImage, precision: VipsPrecision? = nil, layers: Int = 0, cluster: Int = 0) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, mask]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("mask", value: mask)
+            opt.set("mask", value: mask.image)
             if let precision = precision {
                 opt.set("precision", value: precision)
             }
@@ -66,11 +66,11 @@ extension VIPSImage {
     ///   - layers: Use this many layers in approximation
     ///   - cluster: Cluster lines closer than this in approximation
     public func conva(mask: VIPSImage, layers: Int = 0, cluster: Int = 0) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, mask]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("mask", value: mask)
+            opt.set("mask", value: mask.image)
             if layers != 0 {
                 opt.set("layers", value: layers)
             }
@@ -89,11 +89,11 @@ extension VIPSImage {
     ///   - mask: Input matrix image
     ///   - layers: Use this many layers in approximation
     public func convasep(mask: VIPSImage, layers: Int = 0) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, mask]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("mask", value: mask)
+            opt.set("mask", value: mask.image)
             if layers != 0 {
                 opt.set("layers", value: layers)
             }
@@ -108,11 +108,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - mask: Input matrix image
     public func convf(mask: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, mask]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("mask", value: mask)
+            opt.set("mask", value: mask.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("convf", options: &opt)
@@ -124,11 +124,11 @@ extension VIPSImage {
     /// - Parameters:
     ///   - mask: Input matrix image
     public func convi(mask: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, mask]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("mask", value: mask)
+            opt.set("mask", value: mask.image)
             opt.set("out", value: &out)
 
             try VIPSImage.call("convi", options: &opt)
@@ -143,11 +143,11 @@ extension VIPSImage {
     ///   - layers: Use this many layers in approximation
     ///   - cluster: Cluster lines closer than this in approximation
     public func convsep(mask: VIPSImage, precision: VipsPrecision? = nil, layers: Int = 0, cluster: Int = 0) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage([self, mask]) { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self.image)
-            opt.set("mask", value: mask)
+            opt.set("mask", value: mask.image)
             if let precision = precision {
                 opt.set("precision", value: precision)
             }
