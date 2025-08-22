@@ -14,14 +14,17 @@ extension VIPSImage {
     /// - Parameters:
     ///   - direction: Countlines left-right or up-down
     public func countlines(direction: VipsDirection) throws -> Double {
-        try VIPSImage.execute {
-            var opt = VIPSOption()
+        var opt = VIPSOption()
+
+        var out: Double = 0.0
 
             opt.set("in", value: self.image)
             opt.set("direction", value: direction)
+            opt.set("nolines", value: &out)
 
             try VIPSImage.call("countlines", options: &opt)
-        }
+
+        return out
     }
 
     /// Morphology operation
@@ -33,8 +36,8 @@ extension VIPSImage {
         return try VIPSImage([self, mask]) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            opt.set("mask", value: mask.image)
+            opt.set("in", value: self)
+            opt.set("mask", value: mask)
             opt.set("morph", value: morph)
             opt.set("out", value: &out)
 
@@ -52,7 +55,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("width", value: width)
             opt.set("height", value: height)
             opt.set("index", value: index)

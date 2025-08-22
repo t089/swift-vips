@@ -9,19 +9,27 @@ import Cvips
 
 extension VIPSImage {
 
-    /// Make a black image
+    /// Optional arguments:
+    ///
+    /// * `bands`: output bands
+    ///
+    /// Make a black unsigned char image of a specified size.
+    ///
+    /// See also: vips_xyz(), vips_text(), vips_gaussnoise().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
     ///   - height: Image height in pixels
     ///   - bands: Number of bands in image
-    public static func black(width: Int, height: Int, bands: Int = 0) throws -> VIPSImage {
+    public static func black(width: Int, height: Int, bands: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            if bands != 0 {
+            if let bands = bands {
                 opt.set("bands", value: bands)
             }
             opt.set("out", value: &out)
@@ -35,30 +43,43 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("buildlut", options: &opt)
         }
     }
 
-    /// Make an image showing the eye's spatial response
+    /// Optional arguments:
+    ///
+    /// * `factor`: maximum spatial frequency
+    /// * `uchar`: output a uchar image
+    ///
+    /// Create a test pattern with increasing spatial frequence in X and
+    /// amplitude in Y. `factor` should be between 0 and 1 and determines the
+    /// maximum spatial frequency.
+    ///
+    /// Set `uchar` to output a uchar image.
+    ///
+    /// See also: vips_zone().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
     ///   - height: Image height in pixels
     ///   - uchar: Output an unsigned char image
     ///   - factor: Maximum spatial frequency
-    public static func eye(width: Int, height: Int, uchar: Bool = false, factor: Double = 0.0) throws -> VIPSImage {
+    public static func eye(width: Int, height: Int, uchar: Bool? = nil, factor: Double? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            if uchar != false {
+            if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
-            if factor != 0.0 {
+            if let factor = factor {
                 opt.set("factor", value: factor)
             }
             opt.set("out", value: &out)
@@ -67,7 +88,12 @@ extension VIPSImage {
         }
     }
 
-    /// Make a fractal surface
+    /// Generate an image of size `width` by `height` and fractal dimension
+    /// `fractal_dimension`. The dimension should be between 2 and 3.
+    ///
+    /// See also: vips_gaussnoise(), vips_mask_fractal().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -86,20 +112,47 @@ extension VIPSImage {
         }
     }
 
-    /// Make a gaussian image
+    /// Optional arguments:
+    ///
+    /// * `separable`: generate a separable gaussian
+    /// * `precision`: `VipsPrecision` for `out`
+    ///
+    /// Creates a circularly symmetric Gaussian image of radius
+    /// `sigma`.  The size of the mask is determined by the variable `min_ampl`;
+    /// if for instance the value .1 is entered this means that the produced mask
+    /// is clipped at values less than 10 percent of the maximum amplitude.
+    ///
+    /// The program uses the following equation:
+    ///
+    ///   H(r) = exp( -(r * r) / (2 * `sigma` * `sigma`) )
+    ///
+    /// The generated image has odd size and its maximum value is normalised to
+    /// 1.0, unless `precision` is `VIPS_PRECISION_INTEGER`.
+    ///
+    /// If `separable` is set, only the centre horizontal is generated. This is
+    /// useful for separable convolutions.
+    ///
+    /// If `precision` is `VIPS_PRECISION_INTEGER`, an integer gaussian is generated.
+    /// This is useful for integer convolutions.
+    ///
+    /// "scale" is set to the sum of all the mask elements.
+    ///
+    /// See also: vips_logmat(), vips_conv().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - sigma: Sigma of Gaussian
     ///   - minAmpl: Minimum amplitude of Gaussian
     ///   - separable: Generate separable Gaussian
     ///   - precision: Generate with this precision
-    public static func gaussmat(sigma: Double, minAmpl: Double, separable: Bool = false, precision: VipsPrecision? = nil) throws -> VIPSImage {
+    public static func gaussmat(sigma: Double, minAmpl: Double, separable: Bool? = nil, precision: VipsPrecision? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("sigma", value: sigma)
             opt.set("min_ampl", value: minAmpl)
-            if separable != false {
+            if let separable = separable {
                 opt.set("separable", value: separable)
             }
             if let precision = precision {
@@ -111,7 +164,18 @@ extension VIPSImage {
         }
     }
 
-    /// Make a gaussnoise image
+    /// Optional arguments:
+    ///
+    /// * `mean`: mean of generated pixels
+    /// * `sigma`: standard deviation of generated pixels
+    ///
+    /// Make a one band float image of gaussian noise with the specified
+    /// distribution. The noise distribution is created by averaging 12 random
+    /// numbers with the appropriate weights.
+    ///
+    /// See also: vips_black(), vips_xyz(), vips_text().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -119,19 +183,19 @@ extension VIPSImage {
     ///   - sigma: Standard deviation of pixels in generated image
     ///   - mean: Mean of pixels in generated image
     ///   - seed: Random number seed
-    public static func gaussnoise(width: Int, height: Int, sigma: Double = 0.0, mean: Double = 0.0, seed: Int = 0) throws -> VIPSImage {
+    public static func gaussnoise(width: Int, height: Int, sigma: Double? = nil, mean: Double? = nil, seed: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            if sigma != 0.0 {
+            if let sigma = sigma {
                 opt.set("sigma", value: sigma)
             }
-            if mean != 0.0 {
+            if let mean = mean {
                 opt.set("mean", value: mean)
             }
-            if seed != 0 {
+            if let seed = seed {
                 opt.set("seed", value: seed)
             }
             opt.set("out", value: &out)
@@ -140,19 +204,31 @@ extension VIPSImage {
         }
     }
 
-    /// Make a grey ramp image
+    /// Optional arguments:
+    ///
+    /// * `uchar`: output a uchar image
+    ///
+    /// Create a one-band float image with the left-most column zero and the
+    /// right-most 1. Intermediate pixels are a linear ramp.
+    ///
+    /// Set `uchar` to output a uchar image with the leftmost pixel 0 and the
+    /// rightmost 255.
+    ///
+    /// See also: vips_xyz(), vips_identity().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
     ///   - height: Image height in pixels
     ///   - uchar: Output an unsigned char image
-    public static func grey(width: Int, height: Int, uchar: Bool = false) throws -> VIPSImage {
+    public static func grey(width: Int, height: Int, uchar: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            if uchar != false {
+            if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
             opt.set("out", value: &out)
@@ -161,23 +237,43 @@ extension VIPSImage {
         }
     }
 
-    /// Make a 1d image where pixel values are indexes
+    /// Optional arguments:
+    ///
+    /// * `bands`: number of bands to create
+    /// * `ushort`: `TRUE` for an unsigned short identity
+    /// * `size`: number of LUT elements for a ushort image
+    ///
+    /// Creates an identity lookup table, ie. one which will leave an image
+    /// unchanged when applied with vips_maplut(). Each entry in the table has a
+    /// value equal to its position.
+    ///
+    /// Use the arithmetic operations on these tables to make LUTs representing
+    /// arbitrary functions.
+    ///
+    /// Normally LUTs are 8-bit. Set `ushort` to create a 16-bit table.
+    ///
+    /// Normally 16-bit tables have 65536 entries. You can set this smaller with
+    /// `size`.
+    ///
+    /// See also: vips_xyz(), vips_maplut().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - bands: Number of bands in LUT
     ///   - ushort: Create a 16-bit LUT
     ///   - size: Size of 16-bit LUT
-    public static func identity(bands: Int = 0, ushort: Bool = false, size: Int = 0) throws -> VIPSImage {
+    public static func identity(bands: Int? = nil, ushort: Bool? = nil, size: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
-            if bands != 0 {
+            if let bands = bands {
                 opt.set("bands", value: bands)
             }
-            if ushort != false {
+            if let ushort = ushort {
                 opt.set("ushort", value: ushort)
             }
-            if size != 0 {
+            if let size = size {
                 opt.set("size", value: size)
             }
             opt.set("out", value: &out)
@@ -186,20 +282,54 @@ extension VIPSImage {
         }
     }
 
-    /// Make a laplacian of gaussian image
+    /// Optional arguments:
+    ///
+    /// * `separable`: generate a separable mask
+    /// * `precision`: `VipsPrecision` for `out`
+    ///
+    /// Creates a circularly symmetric Laplacian of Gaussian mask
+    /// of radius
+    /// `sigma`.  The size of the mask is determined by the variable `min_ampl`;
+    /// if for instance the value .1 is entered this means that the produced mask
+    /// is clipped at values within 10 persent of zero, and where the change
+    /// between mask elements is less than 10%.
+    ///
+    /// The program uses the following equation: (from Handbook of Pattern
+    /// Recognition and image processing by Young and Fu, AP 1986 pages 220-221):
+    ///
+    ///  H(r) = (1 / (2 * M_PI * s4)) *
+    /// 	(2 - (r2 / s2)) *
+    /// 	exp(-r2 / (2 * s2))
+    ///
+    /// where s2 = `sigma` * `sigma`, s4 = s2 * s2, r2 = r * r.
+    ///
+    /// The generated mask has odd size and its maximum value is normalised to
+    /// 1.0, unless `precision` is `VIPS_PRECISION_INTEGER`.
+    ///
+    /// If `separable` is set, only the centre horizontal is generated. This is
+    /// useful for separable convolutions.
+    ///
+    /// If `precision` is `VIPS_PRECISION_INTEGER`, an integer mask is generated.
+    /// This is useful for integer convolutions.
+    ///
+    /// "scale" is set to the sum of all the mask elements.
+    ///
+    /// See also: vips_gaussmat(), vips_conv().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - sigma: Radius of Gaussian
     ///   - minAmpl: Minimum amplitude of Gaussian
     ///   - separable: Generate separable Gaussian
     ///   - precision: Generate with this precision
-    public static func logmat(sigma: Double, minAmpl: Double, separable: Bool = false, precision: VipsPrecision? = nil) throws -> VIPSImage {
+    public static func logmat(sigma: Double, minAmpl: Double, separable: Bool? = nil, precision: VipsPrecision? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("sigma", value: sigma)
             opt.set("min_ampl", value: minAmpl)
-            if separable != false {
+            if let separable = separable {
                 opt.set("separable", value: separable)
             }
             if let precision = precision {
@@ -211,7 +341,23 @@ extension VIPSImage {
         }
     }
 
-    /// Make a butterworth filter
+    /// Optional arguments:
+    ///
+    /// * `nodc`: don't set the DC pixel
+    /// * `reject`: invert the filter sense
+    /// * `optical`: coordinates in optical space
+    /// * `uchar`: output a uchar image
+    ///
+    /// Make an butterworth high- or low-pass filter, that is, one with a variable,
+    /// smooth transition
+    /// positioned at `frequency_cutoff`, where `frequency_cutoff` is in
+    /// range 0 - 1. The shape of the curve is controlled by
+    /// `order` --- higher values give a sharper transition. See Gonzalez and Wintz,
+    /// Digital Image Processing, 1987.
+    ///
+    /// See also: vips_mask_ideal().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -223,7 +369,7 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskButterworth(width: Int, height: Int, order: Double, frequencyCutoff: Double, amplitudeCutoff: Double, uchar: Bool = false, nodc: Bool = false, reject: Bool = false, optical: Bool = false) throws -> VIPSImage {
+    public static func maskButterworth(width: Int, height: Int, order: Double, frequencyCutoff: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -232,16 +378,16 @@ extension VIPSImage {
             opt.set("order", value: order)
             opt.set("frequency_cutoff", value: frequencyCutoff)
             opt.set("amplitude_cutoff", value: amplitudeCutoff)
-            if uchar != false {
+            if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
-            if nodc != false {
+            if let nodc = nodc {
                 opt.set("nodc", value: nodc)
             }
-            if reject != false {
+            if let reject = reject {
                 opt.set("reject", value: reject)
             }
-            if optical != false {
+            if let optical = optical {
                 opt.set("optical", value: optical)
             }
             opt.set("out", value: &out)
@@ -250,7 +396,23 @@ extension VIPSImage {
         }
     }
 
-    /// Make a butterworth_band filter
+    /// Optional arguments:
+    ///
+    /// * `nodc`: don't set the DC pixel
+    /// * `reject`: invert the filter sense
+    /// * `optical`: coordinates in optical space
+    /// * `uchar`: output a uchar image
+    ///
+    /// Make an butterworth band-pass or band-reject filter, that is, one with a
+    /// variable, smooth transition positioned at `frequency_cutoff_x`,
+    /// `frequency_cutoff_y`, of radius `radius`.
+    /// The shape of the curve is controlled by
+    /// `order` --- higher values give a sharper transition. See Gonzalez and Wintz,
+    /// Digital Image Processing, 1987.
+    ///
+    /// See also: vips_mask_ideal().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -264,7 +426,7 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskButterworthBand(width: Int, height: Int, order: Double, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, amplitudeCutoff: Double, uchar: Bool = false, nodc: Bool = false, reject: Bool = false, optical: Bool = false) throws -> VIPSImage {
+    public static func maskButterworthBand(width: Int, height: Int, order: Double, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -275,16 +437,16 @@ extension VIPSImage {
             opt.set("frequency_cutoff_y", value: frequencyCutoffY)
             opt.set("radius", value: radius)
             opt.set("amplitude_cutoff", value: amplitudeCutoff)
-            if uchar != false {
+            if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
-            if nodc != false {
+            if let nodc = nodc {
                 opt.set("nodc", value: nodc)
             }
-            if reject != false {
+            if let reject = reject {
                 opt.set("reject", value: reject)
             }
-            if optical != false {
+            if let optical = optical {
                 opt.set("optical", value: optical)
             }
             opt.set("out", value: &out)
@@ -293,7 +455,24 @@ extension VIPSImage {
         }
     }
 
-    /// Make a butterworth ring filter
+    /// Optional arguments:
+    ///
+    /// * `nodc`: don't set the DC pixel
+    /// * `reject`: invert the filter sense
+    /// * `optical`: coordinates in optical space
+    /// * `uchar`: output a uchar image
+    ///
+    /// Make a butterworth ring-pass or ring-reject filter, that is, one with a
+    /// variable,
+    /// smooth transition
+    /// positioned at `frequency_cutoff` of width `width`, where `frequency_cutoff` is
+    /// in the range 0 - 1. The shape of the curve is controlled by
+    /// `order` --- higher values give a sharper transition. See Gonzalez and Wintz,
+    /// Digital Image Processing, 1987.
+    ///
+    /// See also: vips_mask_ideal().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -306,7 +485,7 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskButterworthRing(width: Int, height: Int, order: Double, frequencyCutoff: Double, amplitudeCutoff: Double, ringwidth: Double, uchar: Bool = false, nodc: Bool = false, reject: Bool = false, optical: Bool = false) throws -> VIPSImage {
+    public static func maskButterworthRing(width: Int, height: Int, order: Double, frequencyCutoff: Double, amplitudeCutoff: Double, ringwidth: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -316,16 +495,16 @@ extension VIPSImage {
             opt.set("frequency_cutoff", value: frequencyCutoff)
             opt.set("amplitude_cutoff", value: amplitudeCutoff)
             opt.set("ringwidth", value: ringwidth)
-            if uchar != false {
+            if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
-            if nodc != false {
+            if let nodc = nodc {
                 opt.set("nodc", value: nodc)
             }
-            if reject != false {
+            if let reject = reject {
                 opt.set("reject", value: reject)
             }
-            if optical != false {
+            if let optical = optical {
                 opt.set("optical", value: optical)
             }
             opt.set("out", value: &out)
@@ -334,7 +513,19 @@ extension VIPSImage {
         }
     }
 
-    /// Make fractal filter
+    /// Optional arguments:
+    ///
+    /// * `nodc`: don't set the DC pixel
+    /// * `reject`: invert the filter sense
+    /// * `optical`: coordinates in optical space
+    /// * `uchar`: output a uchar image
+    ///
+    /// This operation should be used to create fractal images by filtering the
+    /// power spectrum of Gaussian white noise. See vips_gaussnoise().
+    ///
+    /// See also: vips_mask_ideal().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -344,23 +535,23 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskFractal(width: Int, height: Int, fractalDimension: Double, uchar: Bool = false, nodc: Bool = false, reject: Bool = false, optical: Bool = false) throws -> VIPSImage {
+    public static func maskFractal(width: Int, height: Int, fractalDimension: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
             opt.set("fractal_dimension", value: fractalDimension)
-            if uchar != false {
+            if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
-            if nodc != false {
+            if let nodc = nodc {
                 opt.set("nodc", value: nodc)
             }
-            if reject != false {
+            if let reject = reject {
                 opt.set("reject", value: reject)
             }
-            if optical != false {
+            if let optical = optical {
                 opt.set("optical", value: optical)
             }
             opt.set("out", value: &out)
@@ -369,7 +560,19 @@ extension VIPSImage {
         }
     }
 
-    /// Make a gaussian filter
+    /// Optional arguments:
+    ///
+    /// * `nodc`: don't set the DC pixel
+    /// * `reject`: invert the filter sense
+    /// * `optical`: coordinates in optical space
+    /// * `uchar`: output a uchar image
+    ///
+    /// Make a gaussian high- or low-pass filter, that is, one with a variable,
+    /// smooth transition positioned at `frequency_cutoff`.
+    ///
+    /// See also: vips_mask_ideal().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -380,7 +583,7 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskGaussian(width: Int, height: Int, frequencyCutoff: Double, amplitudeCutoff: Double, uchar: Bool = false, nodc: Bool = false, reject: Bool = false, optical: Bool = false) throws -> VIPSImage {
+    public static func maskGaussian(width: Int, height: Int, frequencyCutoff: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -388,16 +591,16 @@ extension VIPSImage {
             opt.set("height", value: height)
             opt.set("frequency_cutoff", value: frequencyCutoff)
             opt.set("amplitude_cutoff", value: amplitudeCutoff)
-            if uchar != false {
+            if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
-            if nodc != false {
+            if let nodc = nodc {
                 opt.set("nodc", value: nodc)
             }
-            if reject != false {
+            if let reject = reject {
                 opt.set("reject", value: reject)
             }
-            if optical != false {
+            if let optical = optical {
                 opt.set("optical", value: optical)
             }
             opt.set("out", value: &out)
@@ -406,7 +609,20 @@ extension VIPSImage {
         }
     }
 
-    /// Make a gaussian filter
+    /// Optional arguments:
+    ///
+    /// * `nodc`: don't set the DC pixel
+    /// * `reject`: invert the filter sense
+    /// * `optical`: coordinates in optical space
+    /// * `uchar`: output a uchar image
+    ///
+    /// Make a gaussian band-pass or band-reject filter, that is, one with a
+    /// variable, smooth transition positioned at `frequency_cutoff_x`,
+    /// `frequency_cutoff_y`, of radius `radius`.
+    ///
+    /// See also: vips_mask_ideal().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -419,7 +635,7 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskGaussianBand(width: Int, height: Int, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, amplitudeCutoff: Double, uchar: Bool = false, nodc: Bool = false, reject: Bool = false, optical: Bool = false) throws -> VIPSImage {
+    public static func maskGaussianBand(width: Int, height: Int, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -429,16 +645,16 @@ extension VIPSImage {
             opt.set("frequency_cutoff_y", value: frequencyCutoffY)
             opt.set("radius", value: radius)
             opt.set("amplitude_cutoff", value: amplitudeCutoff)
-            if uchar != false {
+            if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
-            if nodc != false {
+            if let nodc = nodc {
                 opt.set("nodc", value: nodc)
             }
-            if reject != false {
+            if let reject = reject {
                 opt.set("reject", value: reject)
             }
-            if optical != false {
+            if let optical = optical {
                 opt.set("optical", value: optical)
             }
             opt.set("out", value: &out)
@@ -447,7 +663,20 @@ extension VIPSImage {
         }
     }
 
-    /// Make a gaussian ring filter
+    /// Optional arguments:
+    ///
+    /// * `nodc`: don't set the DC pixel
+    /// * `reject`: invert the filter sense
+    /// * `optical`: coordinates in optical space
+    /// * `uchar`: output a uchar image
+    ///
+    /// Make a gaussian ring-pass or ring-reject filter, that is, one with a
+    /// variable, smooth transition positioned at `frequency_cutoff` of width
+    /// `ringwidth`.
+    ///
+    /// See also: vips_mask_ideal().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -459,7 +688,7 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskGaussianRing(width: Int, height: Int, frequencyCutoff: Double, amplitudeCutoff: Double, ringwidth: Double, uchar: Bool = false, nodc: Bool = false, reject: Bool = false, optical: Bool = false) throws -> VIPSImage {
+    public static func maskGaussianRing(width: Int, height: Int, frequencyCutoff: Double, amplitudeCutoff: Double, ringwidth: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -468,16 +697,16 @@ extension VIPSImage {
             opt.set("frequency_cutoff", value: frequencyCutoff)
             opt.set("amplitude_cutoff", value: amplitudeCutoff)
             opt.set("ringwidth", value: ringwidth)
-            if uchar != false {
+            if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
-            if nodc != false {
+            if let nodc = nodc {
                 opt.set("nodc", value: nodc)
             }
-            if reject != false {
+            if let reject = reject {
                 opt.set("reject", value: reject)
             }
-            if optical != false {
+            if let optical = optical {
                 opt.set("optical", value: optical)
             }
             opt.set("out", value: &out)
@@ -486,7 +715,43 @@ extension VIPSImage {
         }
     }
 
-    /// Make an ideal filter
+    /// Optional arguments:
+    ///
+    /// * `nodc`: don't set the DC pixel
+    /// * `reject`: invert the filter sense
+    /// * `optical`: coordinates in optical space
+    /// * `uchar`: output a uchar image
+    ///
+    /// Make an ideal high- or low-pass filter, that is, one with a sharp cutoff
+    /// positioned at `frequency_cutoff`, where `frequency_cutoff` is in
+    /// the range 0 - 1.
+    ///
+    /// This operation creates a one-band float image of the specified size.
+    /// The image has
+    /// values in the range [0, 1] and is typically used for multiplying against
+    /// frequency domain images to filter them.
+    /// Masks are created with the DC component at (0, 0). The DC pixel always
+    /// has the value 1.0.
+    ///
+    /// Set `nodc` to not set the DC pixel.
+    ///
+    /// Set `optical` to position the DC component in the centre of the image. This
+    /// makes the mask suitable for multiplying against optical Fourier transforms.
+    /// See vips_wrap().
+    ///
+    /// Set `reject` to invert the sense of
+    /// the filter. For example, low-pass becomes low-reject.
+    ///
+    /// Set `uchar` to output an 8-bit unsigned char image rather than a
+    /// float image. In this case, pixels are in the range [0 - 255].
+    ///
+    /// See also: vips_mask_ideal(), vips_mask_ideal_ring(),
+    /// vips_mask_ideal_band(), vips_mask_butterworth(),
+    /// vips_mask_butterworth_ring(), vips_mask_butterworth_band(),
+    /// vips_mask_gaussian(), vips_mask_gaussian_ring(),
+    /// vips_mask_gaussian_band().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -496,23 +761,23 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskIdeal(width: Int, height: Int, frequencyCutoff: Double, uchar: Bool = false, nodc: Bool = false, reject: Bool = false, optical: Bool = false) throws -> VIPSImage {
+    public static func maskIdeal(width: Int, height: Int, frequencyCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
             opt.set("frequency_cutoff", value: frequencyCutoff)
-            if uchar != false {
+            if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
-            if nodc != false {
+            if let nodc = nodc {
                 opt.set("nodc", value: nodc)
             }
-            if reject != false {
+            if let reject = reject {
                 opt.set("reject", value: reject)
             }
-            if optical != false {
+            if let optical = optical {
                 opt.set("optical", value: optical)
             }
             opt.set("out", value: &out)
@@ -521,7 +786,20 @@ extension VIPSImage {
         }
     }
 
-    /// Make an ideal band filter
+    /// Optional arguments:
+    ///
+    /// * `nodc`: don't set the DC pixel
+    /// * `reject`: invert the filter sense
+    /// * `optical`: coordinates in optical space
+    /// * `uchar`: output a uchar image
+    ///
+    /// Make an ideal band-pass or band-reject filter, that is, one with a
+    /// sharp cutoff around the point `frequency_cutoff_x`, `frequency_cutoff_y`,
+    /// of size `radius`.
+    ///
+    /// See also: vips_mask_ideal().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -533,7 +811,7 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskIdealBand(width: Int, height: Int, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, uchar: Bool = false, nodc: Bool = false, reject: Bool = false, optical: Bool = false) throws -> VIPSImage {
+    public static func maskIdealBand(width: Int, height: Int, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -542,16 +820,16 @@ extension VIPSImage {
             opt.set("frequency_cutoff_x", value: frequencyCutoffX)
             opt.set("frequency_cutoff_y", value: frequencyCutoffY)
             opt.set("radius", value: radius)
-            if uchar != false {
+            if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
-            if nodc != false {
+            if let nodc = nodc {
                 opt.set("nodc", value: nodc)
             }
-            if reject != false {
+            if let reject = reject {
                 opt.set("reject", value: reject)
             }
-            if optical != false {
+            if let optical = optical {
                 opt.set("optical", value: optical)
             }
             opt.set("out", value: &out)
@@ -560,7 +838,20 @@ extension VIPSImage {
         }
     }
 
-    /// Make an ideal ring filter
+    /// Optional arguments:
+    ///
+    /// * `nodc`: don't set the DC pixel
+    /// * `reject`: invert the filter sense
+    /// * `optical`: coordinates in optical space
+    /// * `uchar`: output a uchar image
+    ///
+    /// Make an ideal ring-pass or ring-reject filter, that is, one with a sharp
+    /// ring positioned at `frequency_cutoff` of width `width`, where
+    /// `frequency_cutoff` and `width` are expressed as the range 0 - 1.
+    ///
+    /// See also: vips_mask_ideal().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -571,7 +862,7 @@ extension VIPSImage {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskIdealRing(width: Int, height: Int, frequencyCutoff: Double, ringwidth: Double, uchar: Bool = false, nodc: Bool = false, reject: Bool = false, optical: Bool = false) throws -> VIPSImage {
+    public static func maskIdealRing(width: Int, height: Int, frequencyCutoff: Double, ringwidth: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
@@ -579,16 +870,16 @@ extension VIPSImage {
             opt.set("height", value: height)
             opt.set("frequency_cutoff", value: frequencyCutoff)
             opt.set("ringwidth", value: ringwidth)
-            if uchar != false {
+            if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
-            if nodc != false {
+            if let nodc = nodc {
                 opt.set("nodc", value: nodc)
             }
-            if reject != false {
+            if let reject = reject {
                 opt.set("reject", value: reject)
             }
-            if optical != false {
+            if let optical = optical {
                 opt.set("optical", value: optical)
             }
             opt.set("out", value: &out)
@@ -597,7 +888,26 @@ extension VIPSImage {
         }
     }
 
-    /// Make a perlin noise image
+    /// Optional arguments:
+    ///
+    /// * `cell_size`: %gint, size of Perlin cells
+    /// * `uchar`: output a uchar image
+    ///
+    /// Create a one-band float image of Perlin noise. See:
+    ///
+    /// https://en.wikipedia.org/wiki/Perlin_noise
+    ///
+    /// Use `cell_size` to set the size of the cells from which the image is
+    /// constructed. The default is 256 x 256.
+    ///
+    /// If `width` and `height` are multiples of `cell_size`, the image will tessellate.
+    ///
+    /// Normally, output pixels are `VIPS_FORMAT_FLOAT` in the range [-1, +1]. Set
+    /// `uchar` to output a uchar image with pixels in [0, 255].
+    ///
+    /// See also: vips_worley(), vips_fractsurf(), vips_gaussnoise().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -605,19 +915,19 @@ extension VIPSImage {
     ///   - cellSize: Size of Perlin cells
     ///   - uchar: Output an unsigned char image
     ///   - seed: Random number seed
-    public static func perlin(width: Int, height: Int, cellSize: Int = 0, uchar: Bool = false, seed: Int = 0) throws -> VIPSImage {
+    public static func perlin(width: Int, height: Int, cellSize: Int? = nil, uchar: Bool? = nil, seed: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            if cellSize != 0 {
+            if let cellSize = cellSize {
                 opt.set("cell_size", value: cellSize)
             }
-            if uchar != false {
+            if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
-            if seed != 0 {
+            if let seed = seed {
                 opt.set("seed", value: seed)
             }
             opt.set("out", value: &out)
@@ -626,7 +936,28 @@ extension VIPSImage {
         }
     }
 
-    /// Make a 2d sine wave
+    /// Optional arguments:
+    ///
+    /// * `hfreq`: horizontal frequency
+    /// * `vreq`: vertical frequency
+    /// * `uchar`: output a uchar image
+    ///
+    /// Creates a float one band image of the a sine waveform in two
+    /// dimensions.
+    ///
+    /// The number of horizontal and vertical spatial frequencies are
+    /// determined by the variables `hfreq` and `vfreq` respectively.  The
+    /// function is useful for creating displayable sine waves and
+    /// square waves in two dimensions.
+    ///
+    /// If horfreq and verfreq are integers the resultant image is periodical
+    /// and therfore the Fourier transform does not present spikes
+    ///
+    /// Pixels are normally in [-1, +1], set `uchar` to output [0, 255].
+    ///
+    /// See also: vips_grey(), vips_xyz().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -634,19 +965,19 @@ extension VIPSImage {
     ///   - uchar: Output an unsigned char image
     ///   - hfreq: Horizontal spatial frequency
     ///   - vfreq: Vertical spatial frequency
-    public static func sines(width: Int, height: Int, uchar: Bool = false, hfreq: Double = 0.0, vfreq: Double = 0.0) throws -> VIPSImage {
+    public static func sines(width: Int, height: Int, uchar: Bool? = nil, hfreq: Double? = nil, vfreq: Double? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            if uchar != false {
+            if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
-            if hfreq != 0.0 {
+            if let hfreq = hfreq {
                 opt.set("hfreq", value: hfreq)
             }
-            if vfreq != 0.0 {
+            if let vfreq = vfreq {
                 opt.set("vfreq", value: vfreq)
             }
             opt.set("out", value: &out)
@@ -655,7 +986,65 @@ extension VIPSImage {
         }
     }
 
-    /// Make a text image
+    /// Optional arguments:
+    ///
+    /// * `font`: %gchararray, font to render with
+    /// * `fontfile`: %gchararray, load this font file
+    /// * `width`: %gint, image should be no wider than this many pixels
+    /// * `height`: %gint, image should be no higher than this many pixels
+    /// * `align`: `VipsAlign`, set justification alignment
+    /// * `justify`: %gboolean, justify lines
+    /// * `dpi`: %gint, render at this resolution
+    /// * `autofit_dpi`: %gint, read out auto-fitted DPI
+    /// * `rgba`: %gboolean, enable RGBA output
+    /// * `spacing`: %gint, space lines by this in points
+    ///
+    /// Draw the string `text` to an image. `out` is normally a one-band 8-bit
+    /// unsigned char image, with 0 for no text and 255 for text. Values between
+    /// are used for anti-aliasing.
+    ///
+    /// Set `rgba` to enable RGBA output. This is useful for colour emoji rendering,
+    /// or support for pango markup features like `<span
+    /// foreground="red">Red!`.
+    ///
+    /// `text` is the text to render as a UTF-8 string. It can contain Pango markup,
+    /// for example `TheGuardian`.
+    ///
+    /// `font` is the font to render with, as a fontconfig name. Examples might be
+    /// `sans 12` or perhaps `bitstream charter bold 10`.
+    ///
+    /// You can specify a font to load with `fontfile`. You'll need to also set the
+    /// name of the font with `font`.
+    ///
+    /// `width` is the number of pixels to word-wrap at. Lines of text wider than
+    /// this will be broken at word boundaries.
+    ///
+    /// Set `justify` to turn on line justification.
+    /// `align` can be used to set the alignment style for multi-line
+    /// text to the low (left) edge centre, or high (right) edge. Note that the
+    /// output image can be wider than `width` if there are no
+    /// word breaks, or narrower if the lines don't break exactly at `width`.
+    ///
+    /// `height` is the maximum number of pixels high the generated text can be. This
+    /// only takes effect when `dpi` is not set, and `width` is set, making a box.
+    /// In this case, vips_text() will search for a `dpi` and set of line breaks
+    /// which will just fit the text into `width` and `height`.
+    ///
+    /// You can use `autofit_dpi` to read out the DPI selected by auto fit.
+    ///
+    /// `dpi` sets the resolution to render at. "sans 12" at 72 dpi draws characters
+    /// approximately 12 pixels high.
+    ///
+    /// `spacing` sets the line spacing, in points. It would typically be something
+    /// like font size times 1.2.
+    ///
+    /// You can read the coordinate of the top edge of the character from `Xoffset`
+    /// / `Yoffset`. This can be helpful if you need to line up the output of
+    /// several vips_text().
+    ///
+    /// See also: vips_bandjoin(), vips_composite().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - text: Text to render
@@ -669,36 +1058,36 @@ extension VIPSImage {
     ///   - fontfile: Load this font file
     ///   - rgba: Enable RGBA output
     ///   - wrap: Wrap lines on word or character boundaries
-    public static func text(text: String, font: String = "", width: Int = 0, height: Int = 0, align: VipsAlign? = nil, justify: Bool = false, dpi: Int = 0, spacing: Int = 0, fontfile: String = "", rgba: Bool = false, wrap: VipsTextWrap? = nil) throws -> VIPSImage {
+    public static func text(_ text: String, font: String? = nil, width: Int? = nil, height: Int? = nil, align: VipsAlign? = nil, justify: Bool? = nil, dpi: Int? = nil, spacing: Int? = nil, fontfile: String? = nil, rgba: Bool? = nil, wrap: VipsTextWrap? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("text", value: text)
-            if font != "" {
+            if let font = font {
                 opt.set("font", value: font)
             }
-            if width != 0 {
+            if let width = width {
                 opt.set("width", value: width)
             }
-            if height != 0 {
+            if let height = height {
                 opt.set("height", value: height)
             }
             if let align = align {
                 opt.set("align", value: align)
             }
-            if justify != false {
+            if let justify = justify {
                 opt.set("justify", value: justify)
             }
-            if dpi != 0 {
+            if let dpi = dpi {
                 opt.set("dpi", value: dpi)
             }
-            if spacing != 0 {
+            if let spacing = spacing {
                 opt.set("spacing", value: spacing)
             }
-            if fontfile != "" {
+            if let fontfile = fontfile {
                 opt.set("fontfile", value: fontfile)
             }
-            if rgba != false {
+            if let rgba = rgba {
                 opt.set("rgba", value: rgba)
             }
             if let wrap = wrap {
@@ -710,7 +1099,31 @@ extension VIPSImage {
         }
     }
 
-    /// Build a look-up table
+    /// Optional arguments:
+    ///
+    /// * `in_max`: input range
+    /// * `out_max`: output range
+    /// * `Lb`: black-point [0-100]
+    /// * `Lw`: white-point [0-100]
+    /// * `Ps`: shadow point (eg. 0.2)
+    /// * `Pm`: mid-tone point (eg. 0.5)
+    /// * `Ph`: highlight point (eg. 0.8)
+    /// * `S`: shadow adjustment (+/- 30)
+    /// * `M`: mid-tone adjustment (+/- 30)
+    /// * `H`: highlight adjustment (+/- 30)
+    ///
+    /// vips_tonelut() generates a tone curve for the adjustment of image
+    /// levels. It is mostly designed for adjusting the L* part of a LAB image in
+    /// a way suitable for print work, but you can use it for other things too.
+    ///
+    /// The curve is an unsigned 16-bit image with (`in_max` + 1) entries,
+    /// each in the range [0, `out_max`].
+    ///
+    /// `Lb`, `Lw` are expressed as 0-100, as in LAB colour space. You
+    /// specify the scaling for the input and output images with the `in_max` and
+    /// `out_max` parameters.
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - inMax: Size of LUT to build
@@ -723,38 +1136,38 @@ extension VIPSImage {
     ///   - S: Adjust shadows by this much
     ///   - M: Adjust mid-tones by this much
     ///   - H: Adjust highlights by this much
-    public static func tonelut(inMax: Int = 0, outMax: Int = 0, Lb: Double = 0.0, Lw: Double = 0.0, Ps: Double = 0.0, Pm: Double = 0.0, Ph: Double = 0.0, S: Double = 0.0, M: Double = 0.0, H: Double = 0.0) throws -> VIPSImage {
+    public static func tonelut(inMax: Int? = nil, outMax: Int? = nil, Lb: Double? = nil, Lw: Double? = nil, Ps: Double? = nil, Pm: Double? = nil, Ph: Double? = nil, S: Double? = nil, M: Double? = nil, H: Double? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
-            if inMax != 0 {
+            if let inMax = inMax {
                 opt.set("in_max", value: inMax)
             }
-            if outMax != 0 {
+            if let outMax = outMax {
                 opt.set("out_max", value: outMax)
             }
-            if Lb != 0.0 {
+            if let Lb = Lb {
                 opt.set("Lb", value: Lb)
             }
-            if Lw != 0.0 {
+            if let Lw = Lw {
                 opt.set("Lw", value: Lw)
             }
-            if Ps != 0.0 {
+            if let Ps = Ps {
                 opt.set("Ps", value: Ps)
             }
-            if Pm != 0.0 {
+            if let Pm = Pm {
                 opt.set("Pm", value: Pm)
             }
-            if Ph != 0.0 {
+            if let Ph = Ph {
                 opt.set("Ph", value: Ph)
             }
-            if S != 0.0 {
+            if let S = S {
                 opt.set("S", value: S)
             }
-            if M != 0.0 {
+            if let M = M {
                 opt.set("M", value: M)
             }
-            if H != 0.0 {
+            if let H = H {
                 opt.set("H", value: H)
             }
             opt.set("out", value: &out)
@@ -763,23 +1176,38 @@ extension VIPSImage {
         }
     }
 
-    /// Make a worley noise image
+    /// Optional arguments:
+    ///
+    /// * `cell_size`: %gint, size of Worley cells
+    ///
+    /// Create a one-band float image of Worley noise. See:
+    ///
+    /// https://en.wikipedia.org/wiki/Worley_noise
+    ///
+    /// Use `cell_size` to set the size of the cells from which the image is
+    /// constructed. The default is 256 x 256.
+    ///
+    /// If `width` and `height` are multiples of `cell_size`, the image will tessellate.
+    ///
+    /// See also: vips_perlin(), vips_fractsurf(), vips_gaussnoise().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
     ///   - height: Image height in pixels
     ///   - cellSize: Size of Worley cells
     ///   - seed: Random number seed
-    public static func worley(width: Int, height: Int, cellSize: Int = 0, seed: Int = 0) throws -> VIPSImage {
+    public static func worley(width: Int, height: Int, cellSize: Int? = nil, seed: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            if cellSize != 0 {
+            if let cellSize = cellSize {
                 opt.set("cell_size", value: cellSize)
             }
-            if seed != 0 {
+            if let seed = seed {
                 opt.set("seed", value: seed)
             }
             opt.set("out", value: &out)
@@ -788,19 +1216,29 @@ extension VIPSImage {
         }
     }
 
-    /// Make a zone plate
+    /// Optional arguments:
+    ///
+    /// * `uchar`: output a uchar image
+    ///
+    /// Create a one-band image of a zone plate.
+    ///
+    /// Pixels are normally in [-1, +1], set `uchar` to output [0, 255].
+    ///
+    /// See also: vips_eye(), vips_xyz().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
     ///   - height: Image height in pixels
     ///   - uchar: Output an unsigned char image
-    public static func zone(width: Int, height: Int, uchar: Bool = false) throws -> VIPSImage {
+    public static func zone(width: Int, height: Int, uchar: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            if uchar != false {
+            if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
             opt.set("out", value: &out)

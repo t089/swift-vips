@@ -6,10 +6,31 @@
 //
 
 import Cvips
+import CvipsShim
 
 extension VIPSImage {
 
-    /// Load png from file
+    /// Optional arguments:
+    ///
+    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
+    /// * `unlimited`: %gboolean, remove all denial of service limits
+    ///
+    /// Read a PNG file into a VIPS image. It can read all png images, including 8-
+    /// and 16-bit images, 1 and 3 channel, with and without an alpha channel.
+    ///
+    /// Any ICC profile is read and attached to the VIPS image. It also supports
+    /// XMP metadata.
+    ///
+    /// Use `fail_on` to set the type of error that will cause load to fail. By
+    /// default, loaders are permissive, that is, `VIPS_FAIL_ON_NONE`.
+    ///
+    /// By default, the PNG loader limits the number of text and data chunks to
+    /// block some denial of service attacks. Set `unlimited` to disable these
+    /// limits.
+    ///
+    /// See also: vips_image_new_from_file().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -18,15 +39,15 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func pngload(filename: String, unlimited: Bool = false, memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
+    public static func pngload(filename: String, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
-            if unlimited != false {
+            if let unlimited = unlimited {
                 opt.set("unlimited", value: unlimited)
             }
-            if memory != false {
+            if let memory = memory {
                 opt.set("memory", value: memory)
             }
             if let access = access {
@@ -35,7 +56,7 @@ extension VIPSImage {
             if let failOn = failOn {
                 opt.set("fail_on", value: failOn)
             }
-            if revalidate != false {
+            if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
             }
             opt.set("out", value: &out)
@@ -44,7 +65,19 @@ extension VIPSImage {
         }
     }
 
-    /// Load png from buffer
+    /// Optional arguments:
+    ///
+    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
+    /// * `unlimited`: %gboolean, Remove all denial of service limits
+    ///
+    /// Exactly as vips_pngload(), but read from a PNG-formatted memory block.
+    ///
+    /// You must not free the buffer while `out` is active. The
+    /// `VipsObject`::postclose signal on `out` is a good place to free.
+    ///
+    /// See also: vips_pngload().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -53,33 +86,53 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func pngloadBuffer(buffer: Data, unlimited: Bool = false, memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
-            var opt = VIPSOption()
+    @inlinable
+    public static func pngload(buffer: some Collection<UInt8>, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+        let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
+            return try VIPSImage(nil) { out in
+                var opt = VIPSOption()
 
-            opt.set("buffer", value: buffer)
-            if unlimited != false {
-                opt.set("unlimited", value: unlimited)
-            }
-            if memory != false {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if revalidate != false {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
+                let blob = vips_blob_new(nil, buffer.baseAddress, buffer.count)
+                defer { vips_area_unref(shim_vips_area(blob)) }
 
-            try VIPSImage.call("pngload_buffer", options: &opt)
+                opt.set("buffer", value: blob)
+                if let unlimited = unlimited {
+                    opt.set("unlimited", value: unlimited)
+                }
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try VIPSImage.call("pngload_buffer", options: &opt)
+            }
+        }
+        if let maybeImage {
+            return maybeImage
+        } else {
+            return try pngload(buffer: Array(buffer), unlimited: unlimited, memory: memory, access: access, failOn: failOn, revalidate: revalidate)
         }
     }
 
-    /// Load png from source
+    /// Optional arguments:
+    ///
+    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
+    /// * `unlimited`: %gboolean, Remove all denial of service limits
+    ///
+    /// Exactly as vips_pngload(), but read from a source.
+    ///
+    /// See also: vips_pngload().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - source: Source to load from
@@ -88,15 +141,15 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func pngloadSource(source: VIPSSource, unlimited: Bool = false, memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+    public static func pngload(source: VIPSSource, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+        return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
-            if unlimited != false {
+            if let unlimited = unlimited {
                 opt.set("unlimited", value: unlimited)
             }
-            if memory != false {
+            if let memory = memory {
                 opt.set("memory", value: memory)
             }
             if let access = access {
@@ -105,7 +158,7 @@ extension VIPSImage {
             if let failOn = failOn {
                 opt.set("fail_on", value: failOn)
             }
-            if revalidate != false {
+            if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
             }
             opt.set("out", value: &out)
@@ -130,45 +183,45 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func pngsave(filename: String, compression: Int = 0, interlace: Bool = false, filter: VipsForeignPngFilter? = nil, palette: Bool = false, Q: Int = 0, dither: Double = 0.0, bitdepth: Int = 0, effort: Int = 0, keep: VipsForeignKeep? = nil, background: [Double] = [], pageHeight: Int = 0, profile: String = "") throws {
-            var opt = VIPSOption()
+    public func pngsave(filename: String, compression: Int? = nil, interlace: Bool? = nil, filter: VipsForeignPngFilter? = nil, palette: Bool? = nil, Q: Int? = nil, dither: Double? = nil, bitdepth: Int? = nil, effort: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+        var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("filename", value: filename)
-            if compression != 0 {
+            if let compression = compression {
                 opt.set("compression", value: compression)
             }
-            if interlace != false {
+            if let interlace = interlace {
                 opt.set("interlace", value: interlace)
             }
             if let filter = filter {
                 opt.set("filter", value: filter)
             }
-            if palette != false {
+            if let palette = palette {
                 opt.set("palette", value: palette)
             }
-            if Q != 0 {
+            if let Q = Q {
                 opt.set("Q", value: Q)
             }
-            if dither != 0.0 {
+            if let dither = dither {
                 opt.set("dither", value: dither)
             }
-            if bitdepth != 0 {
+            if let bitdepth = bitdepth {
                 opt.set("bitdepth", value: bitdepth)
             }
-            if effort != 0 {
+            if let effort = effort {
                 opt.set("effort", value: effort)
             }
             if let keep = keep {
                 opt.set("keep", value: keep)
             }
-            if background != [] {
+            if let background = background {
                 opt.set("background", value: background)
             }
-            if pageHeight != 0 {
+            if let pageHeight = pageHeight {
                 opt.set("page_height", value: pageHeight)
             }
-            if profile != "" {
+            if let profile = profile {
                 opt.set("profile", value: profile)
             }
 
@@ -190,48 +243,57 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func pngsaveBuffer(compression: Int = 0, interlace: Bool = false, filter: VipsForeignPngFilter? = nil, palette: Bool = false, Q: Int = 0, dither: Double = 0.0, bitdepth: Int = 0, effort: Int = 0, keep: VipsForeignKeep? = nil, background: [Double] = [], pageHeight: Int = 0, profile: String = "") throws -> Data {
-            var opt = VIPSOption()
+    public func pngsave(compression: Int? = nil, interlace: Bool? = nil, filter: VipsForeignPngFilter? = nil, palette: Bool? = nil, Q: Int? = nil, dither: Double? = nil, bitdepth: Int? = nil, effort: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
+        var opt = VIPSOption()
+
+        var out: UnsafeMutablePointer<VipsBlob>! = nil
 
             opt.set("in", value: self.image)
-            if compression != 0 {
+            if let compression = compression {
                 opt.set("compression", value: compression)
             }
-            if interlace != false {
+            if let interlace = interlace {
                 opt.set("interlace", value: interlace)
             }
             if let filter = filter {
                 opt.set("filter", value: filter)
             }
-            if palette != false {
+            if let palette = palette {
                 opt.set("palette", value: palette)
             }
-            if Q != 0 {
+            if let Q = Q {
                 opt.set("Q", value: Q)
             }
-            if dither != 0.0 {
+            if let dither = dither {
                 opt.set("dither", value: dither)
             }
-            if bitdepth != 0 {
+            if let bitdepth = bitdepth {
                 opt.set("bitdepth", value: bitdepth)
             }
-            if effort != 0 {
+            if let effort = effort {
                 opt.set("effort", value: effort)
             }
             if let keep = keep {
                 opt.set("keep", value: keep)
             }
-            if background != [] {
+            if let background = background {
                 opt.set("background", value: background)
             }
-            if pageHeight != 0 {
+            if let pageHeight = pageHeight {
                 opt.set("page_height", value: pageHeight)
             }
-            if profile != "" {
+            if let profile = profile {
                 opt.set("profile", value: profile)
             }
+            opt.set("buffer", value: &out)
 
             try VIPSImage.call("pngsave_buffer", options: &opt)
+
+        guard let vipsBlob = out else {
+            throw VIPSError("Failed to get buffer from pngsave_buffer")
+        }
+
+        return VIPSBlob(vipsBlob)
     }
 
     /// Save image to target as png
@@ -250,45 +312,45 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func pngsaveTarget(target: VIPSTarget, compression: Int = 0, interlace: Bool = false, filter: VipsForeignPngFilter? = nil, palette: Bool = false, Q: Int = 0, dither: Double = 0.0, bitdepth: Int = 0, effort: Int = 0, keep: VipsForeignKeep? = nil, background: [Double] = [], pageHeight: Int = 0, profile: String = "") throws {
-            var opt = VIPSOption()
+    public func pngsave(target: VIPSTarget, compression: Int? = nil, interlace: Bool? = nil, filter: VipsForeignPngFilter? = nil, palette: Bool? = nil, Q: Int? = nil, dither: Double? = nil, bitdepth: Int? = nil, effort: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+        var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("target", value: target)
-            if compression != 0 {
+            if let compression = compression {
                 opt.set("compression", value: compression)
             }
-            if interlace != false {
+            if let interlace = interlace {
                 opt.set("interlace", value: interlace)
             }
             if let filter = filter {
                 opt.set("filter", value: filter)
             }
-            if palette != false {
+            if let palette = palette {
                 opt.set("palette", value: palette)
             }
-            if Q != 0 {
+            if let Q = Q {
                 opt.set("Q", value: Q)
             }
-            if dither != 0.0 {
+            if let dither = dither {
                 opt.set("dither", value: dither)
             }
-            if bitdepth != 0 {
+            if let bitdepth = bitdepth {
                 opt.set("bitdepth", value: bitdepth)
             }
-            if effort != 0 {
+            if let effort = effort {
                 opt.set("effort", value: effort)
             }
             if let keep = keep {
                 opt.set("keep", value: keep)
             }
-            if background != [] {
+            if let background = background {
                 opt.set("background", value: background)
             }
-            if pageHeight != 0 {
+            if let pageHeight = pageHeight {
                 opt.set("page_height", value: pageHeight)
             }
-            if profile != "" {
+            if let profile = profile {
                 opt.set("profile", value: profile)
             }
 

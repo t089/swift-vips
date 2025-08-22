@@ -14,7 +14,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("CMC2LCh", options: &opt)
@@ -26,7 +26,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("CMYK2XYZ", options: &opt)
@@ -38,7 +38,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("HSV2sRGB", options: &opt)
@@ -50,7 +50,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("LCh2CMC", options: &opt)
@@ -62,7 +62,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("LCh2Lab", options: &opt)
@@ -74,7 +74,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("Lab2LCh", options: &opt)
@@ -86,7 +86,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("Lab2LabQ", options: &opt)
@@ -97,12 +97,12 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - temp: Color temperature
-    public func Lab2XYZ(temp: [Double] = []) throws -> VIPSImage {
+    public func Lab2XYZ(temp: [Double]? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            if temp != [] {
+            opt.set("in", value: self)
+            if let temp = temp {
                 opt.set("temp", value: temp)
             }
             opt.set("out", value: &out)
@@ -116,7 +116,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("LabQ2Lab", options: &opt)
@@ -128,7 +128,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("LabQ2sRGB", options: &opt)
@@ -140,7 +140,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("XYZ2CMYK", options: &opt)
@@ -151,12 +151,12 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - temp: Colour temperature
-    public func XYZ2Lab(temp: [Double] = []) throws -> VIPSImage {
+    public func XYZ2Lab(temp: [Double]? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            if temp != [] {
+            opt.set("in", value: self)
+            if let temp = temp {
                 opt.set("temp", value: temp)
             }
             opt.set("out", value: &out)
@@ -170,7 +170,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("XYZ2Yxy", options: &opt)
@@ -182,7 +182,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("XYZ2scRGB", options: &opt)
@@ -194,7 +194,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("Yxy2XYZ", options: &opt)
@@ -210,7 +210,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("space", value: space)
             if let sourceSpace = sourceSpace {
                 opt.set("source_space", value: sourceSpace)
@@ -226,7 +226,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("falsecolour", options: &opt)
@@ -241,24 +241,24 @@ extension VIPSImage {
     ///   - blackPointCompensation: Enable black point compensation
     ///   - outputProfile: Filename to load output profile from
     ///   - depth: Output device space depth in bits
-    public func iccExport(pcs: VipsPCS? = nil, intent: VipsIntent? = nil, blackPointCompensation: Bool = false, outputProfile: String = "", depth: Int = 0) throws -> VIPSImage {
+    public func iccExport(pcs: VipsPCS? = nil, intent: VipsIntent? = nil, blackPointCompensation: Bool? = nil, outputProfile: String? = nil, depth: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             if let pcs = pcs {
                 opt.set("pcs", value: pcs)
             }
             if let intent = intent {
                 opt.set("intent", value: intent)
             }
-            if blackPointCompensation != false {
+            if let blackPointCompensation = blackPointCompensation {
                 opt.set("black_point_compensation", value: blackPointCompensation)
             }
-            if outputProfile != "" {
+            if let outputProfile = outputProfile {
                 opt.set("output_profile", value: outputProfile)
             }
-            if depth != 0 {
+            if let depth = depth {
                 opt.set("depth", value: depth)
             }
             opt.set("out", value: &out)
@@ -275,24 +275,24 @@ extension VIPSImage {
     ///   - blackPointCompensation: Enable black point compensation
     ///   - embedded: Use embedded input profile, if available
     ///   - inputProfile: Filename to load input profile from
-    public func iccImport(pcs: VipsPCS? = nil, intent: VipsIntent? = nil, blackPointCompensation: Bool = false, embedded: Bool = false, inputProfile: String = "") throws -> VIPSImage {
+    public func iccImport(pcs: VipsPCS? = nil, intent: VipsIntent? = nil, blackPointCompensation: Bool? = nil, embedded: Bool? = nil, inputProfile: String? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             if let pcs = pcs {
                 opt.set("pcs", value: pcs)
             }
             if let intent = intent {
                 opt.set("intent", value: intent)
             }
-            if blackPointCompensation != false {
+            if let blackPointCompensation = blackPointCompensation {
                 opt.set("black_point_compensation", value: blackPointCompensation)
             }
-            if embedded != false {
+            if let embedded = embedded {
                 opt.set("embedded", value: embedded)
             }
-            if inputProfile != "" {
+            if let inputProfile = inputProfile {
                 opt.set("input_profile", value: inputProfile)
             }
             opt.set("out", value: &out)
@@ -311,11 +311,11 @@ extension VIPSImage {
     ///   - embedded: Use embedded input profile, if available
     ///   - inputProfile: Filename to load input profile from
     ///   - depth: Output device space depth in bits
-    public func iccTransform(outputProfile: String, pcs: VipsPCS? = nil, intent: VipsIntent? = nil, blackPointCompensation: Bool = false, embedded: Bool = false, inputProfile: String = "", depth: Int = 0) throws -> VIPSImage {
+    public func iccTransform(outputProfile: String, pcs: VipsPCS? = nil, intent: VipsIntent? = nil, blackPointCompensation: Bool? = nil, embedded: Bool? = nil, inputProfile: String? = nil, depth: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("output_profile", value: outputProfile)
             if let pcs = pcs {
                 opt.set("pcs", value: pcs)
@@ -323,16 +323,16 @@ extension VIPSImage {
             if let intent = intent {
                 opt.set("intent", value: intent)
             }
-            if blackPointCompensation != false {
+            if let blackPointCompensation = blackPointCompensation {
                 opt.set("black_point_compensation", value: blackPointCompensation)
             }
-            if embedded != false {
+            if let embedded = embedded {
                 opt.set("embedded", value: embedded)
             }
-            if inputProfile != "" {
+            if let inputProfile = inputProfile {
                 opt.set("input_profile", value: inputProfile)
             }
-            if depth != 0 {
+            if let depth = depth {
                 opt.set("depth", value: depth)
             }
             opt.set("out", value: &out)
@@ -346,7 +346,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("mask", value: &out)
 
             try VIPSImage.call("labelregions", options: &opt)
@@ -358,7 +358,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("sRGB2HSV", options: &opt)
@@ -370,7 +370,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("sRGB2scRGB", options: &opt)
@@ -381,12 +381,12 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - depth: Output device space depth in bits
-    public func scRGB2BW(depth: Int = 0) throws -> VIPSImage {
+    public func scRGB2BW(depth: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            if depth != 0 {
+            opt.set("in", value: self)
+            if let depth = depth {
                 opt.set("depth", value: depth)
             }
             opt.set("out", value: &out)
@@ -400,7 +400,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("scRGB2XYZ", options: &opt)
@@ -411,12 +411,12 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - depth: Output device space depth in bits
-    public func scRGB2sRGB(depth: Int = 0) throws -> VIPSImage {
+    public func scRGB2sRGB(depth: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            if depth != 0 {
+            opt.set("in", value: self)
+            if let depth = depth {
                 opt.set("depth", value: depth)
             }
             opt.set("out", value: &out)
@@ -425,7 +425,26 @@ extension VIPSImage {
         }
     }
 
-    /// Make an image where pixel values are coordinates
+    /// Optional arguments:
+    ///
+    /// * `csize`: size for third dimension
+    /// * `dsize`: size for fourth dimension
+    /// * `esize`: size for fifth dimension
+    ///
+    /// Create a two-band uint32 image where the elements in the first band have the
+    /// value of their x coordinate and elements in the second band have their y
+    /// coordinate.
+    ///
+    /// You can make any image where the value of a pixel is a function of its (x,
+    /// y) coordinate by combining this operator with the arithmetic operators.
+    ///
+    /// Set `csize`, `dsize`, `esize` to generate higher dimensions and add more
+    /// bands. The extra dimensions are placed down the vertical axis. Use
+    /// vips_grid() to change the layout.
+    ///
+    /// See also: vips_grey(), vips_grid(), vips_identity().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -433,19 +452,19 @@ extension VIPSImage {
     ///   - csize: Size of third dimension
     ///   - dsize: Size of fourth dimension
     ///   - esize: Size of fifth dimension
-    public static func xyz(width: Int, height: Int, csize: Int = 0, dsize: Int = 0, esize: Int = 0) throws -> VIPSImage {
+    public static func xyz(width: Int, height: Int, csize: Int? = nil, dsize: Int? = nil, esize: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            if csize != 0 {
+            if let csize = csize {
                 opt.set("csize", value: csize)
             }
-            if dsize != 0 {
+            if let dsize = dsize {
                 opt.set("dsize", value: dsize)
             }
-            if esize != 0 {
+            if let esize = esize {
                 opt.set("esize", value: esize)
             }
             opt.set("out", value: &out)

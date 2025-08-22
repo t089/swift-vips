@@ -5,7 +5,7 @@ This directory contains automatically generated Swift wrappers for libvips opera
 ## Categories
 
 ### Arithmetic
-- Operations: 36
+- Operations: 40
 - Examples: Lab2LabS, LabQ2LabS, LabS2Lab, LabS2LabQ, abs...
 
 ### Colour
@@ -37,7 +37,7 @@ This directory contains automatically generated Swift wrappers for libvips opera
 - Examples: jpegload, jpegload_buffer, jpegload_source, jpegsave, jpegsave_buffer...
 
 ### Foreign/Other
-- Operations: 53
+- Operations: 54
 - Examples: analyzeload, csvload, csvload_source, csvsave, csvsave_target...
 
 ### Foreign/PDF
@@ -65,11 +65,11 @@ This directory contains automatically generated Swift wrappers for libvips opera
 - Examples: freqmult, fwfft, invfft
 
 ### Histogram
-- Operations: 17
+- Operations: 15
 - Examples: hist_cum, hist_entropy, hist_equal, hist_find, hist_find_indexed...
 
 ### Misc
-- Operations: 39
+- Operations: 40
 - Examples: bandbool, bandfold, bandmean, bandunfold, byteswap...
 
 ### Morphology

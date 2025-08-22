@@ -14,7 +14,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("hist_cum", options: &opt)
@@ -23,25 +23,28 @@ extension VIPSImage {
 
     /// Estimate image entropy
     public func histEntropy() throws -> Double {
-        try VIPSImage.execute {
-            var opt = VIPSOption()
+        var opt = VIPSOption()
+
+        var out: Double = 0.0
 
             opt.set("in", value: self.image)
+            opt.set("out", value: &out)
 
             try VIPSImage.call("hist_entropy", options: &opt)
-        }
+
+        return out
     }
 
     /// Histogram equalisation
     ///
     /// - Parameters:
     ///   - band: Equalise with this band
-    public func histEqual(band: Int = 0) throws -> VIPSImage {
+    public func histEqual(band: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            if band != 0 {
+            opt.set("in", value: self)
+            if let band = band {
                 opt.set("band", value: band)
             }
             opt.set("out", value: &out)
@@ -54,12 +57,12 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - band: Find histogram of band
-    public func histFind(band: Int = 0) throws -> VIPSImage {
+    public func histFind(band: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            if band != 0 {
+            opt.set("in", value: self)
+            if let band = band {
                 opt.set("band", value: band)
             }
             opt.set("out", value: &out)
@@ -77,8 +80,8 @@ extension VIPSImage {
         return try VIPSImage([self, index]) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            opt.set("index", value: index.image)
+            opt.set("in", value: self)
+            opt.set("index", value: index)
             if let combine = combine {
                 opt.set("combine", value: combine)
             }
@@ -92,12 +95,12 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - bins: Number of bins in each dimension
-    public func histFindNdim(bins: Int = 0) throws -> VIPSImage {
+    public func histFindNdim(bins: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            if bins != 0 {
+            opt.set("in", value: self)
+            if let bins = bins {
                 opt.set("bins", value: bins)
             }
             opt.set("out", value: &out)
@@ -108,13 +111,16 @@ extension VIPSImage {
 
     /// Test for monotonicity
     public func histIsmonotonic() throws -> Bool {
-        try VIPSImage.execute {
-            var opt = VIPSOption()
+        var opt = VIPSOption()
+
+        var out: Bool = false
 
             opt.set("in", value: self.image)
+            opt.set("monotonic", value: &out)
 
             try VIPSImage.call("hist_ismonotonic", options: &opt)
-        }
+
+        return out
     }
 
     /// Local histogram equalisation
@@ -123,14 +129,14 @@ extension VIPSImage {
     ///   - width: Window width in pixels
     ///   - height: Window height in pixels
     ///   - maxSlope: Maximum slope (CLAHE)
-    public func histLocal(width: Int, height: Int, maxSlope: Int = 0) throws -> VIPSImage {
+    public func histLocal(width: Int, height: Int, maxSlope: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("width", value: width)
             opt.set("height", value: height)
-            if maxSlope != 0 {
+            if let maxSlope = maxSlope {
                 opt.set("max_slope", value: maxSlope)
             }
             opt.set("out", value: &out)
@@ -147,8 +153,8 @@ extension VIPSImage {
         return try VIPSImage([self, ref]) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            opt.set("ref", value: ref.image)
+            opt.set("in", value: self)
+            opt.set("ref", value: ref)
             opt.set("out", value: &out)
 
             try VIPSImage.call("hist_match", options: &opt)
@@ -160,7 +166,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("hist_norm", options: &opt)
@@ -172,7 +178,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("hist_plot", options: &opt)
@@ -185,18 +191,18 @@ extension VIPSImage {
     ///   - scale: Scale down dimensions by this factor
     ///   - minRadius: Smallest radius to search for
     ///   - maxRadius: Largest radius to search for
-    public func houghCircle(scale: Int = 0, minRadius: Int = 0, maxRadius: Int = 0) throws -> VIPSImage {
+    public func houghCircle(scale: Int? = nil, minRadius: Int? = nil, maxRadius: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            if scale != 0 {
+            opt.set("in", value: self)
+            if let scale = scale {
                 opt.set("scale", value: scale)
             }
-            if minRadius != 0 {
+            if let minRadius = minRadius {
                 opt.set("min_radius", value: minRadius)
             }
-            if maxRadius != 0 {
+            if let maxRadius = maxRadius {
                 opt.set("max_radius", value: maxRadius)
             }
             opt.set("out", value: &out)
@@ -210,15 +216,15 @@ extension VIPSImage {
     /// - Parameters:
     ///   - width: Horizontal size of parameter space
     ///   - height: Vertical size of parameter space
-    public func houghLine(width: Int = 0, height: Int = 0) throws -> VIPSImage {
+    public func houghLine(width: Int? = nil, height: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            if width != 0 {
+            opt.set("in", value: self)
+            if let width = width {
                 opt.set("width", value: width)
             }
-            if height != 0 {
+            if let height = height {
                 opt.set("height", value: height)
             }
             opt.set("out", value: &out)
@@ -227,7 +233,12 @@ extension VIPSImage {
         }
     }
 
-    /// Calculate phase correlation
+    /// Convert the two input images to Fourier space, calculate phase-correlation,
+    /// back to real space.
+    ///
+    /// See also: vips_fwfft(), vips_cross_phase(),
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - in2: Second input image
@@ -235,35 +246,11 @@ extension VIPSImage {
         return try VIPSImage([self, in2]) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            opt.set("in2", value: in2.image)
+            opt.set("in", value: self)
+            opt.set("in2", value: in2)
             opt.set("out", value: &out)
 
             try VIPSImage.call("phasecor", options: &opt)
-        }
-    }
-
-    /// Find image profiles
-    public func profile() throws -> VIPSImage {
-        return try VIPSImage(self) { out in
-            var opt = VIPSOption()
-
-            opt.set("in", value: self.image)
-            opt.set("columns", value: &out)
-
-            try VIPSImage.call("profile", options: &opt)
-        }
-    }
-
-    /// Find image projections
-    public func project() throws -> VIPSImage {
-        return try VIPSImage(self) { out in
-            var opt = VIPSOption()
-
-            opt.set("in", value: self.image)
-            opt.set("columns", value: &out)
-
-            try VIPSImage.call("project", options: &opt)
         }
     }
 
@@ -272,7 +259,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("spectrum", options: &opt)

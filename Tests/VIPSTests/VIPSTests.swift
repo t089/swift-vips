@@ -110,7 +110,7 @@ struct VIPSTests {
     @Test
     func divideOperation() throws {
         let image = try VIPSImage(fromFilePath: testPath)
-        let image2 = try VIPSImage.black(100, 100)
+        let image2 = try VIPSImage.black(width: 100, height: 100)
             .linear(1.0, 10.0)
         
         let divided = try image.divide(image2)
@@ -149,10 +149,10 @@ struct VIPSTests {
     
     @Test
     func roundOperations() throws {
-        let image = try VIPSImage.black(100, 100)
+        let image = try VIPSImage.black(width: 100, height: 100)
             .linear(1.0, 10.7)
-        
-        let rounded = try image.round()
+
+        let rounded = try image.round(.rint)
         let floored = try image.floor()
         let ceiled = try image.ceil()
         
@@ -167,9 +167,9 @@ struct VIPSTests {
     
     @Test
     func relationalOperations() throws {
-        let image1 = try VIPSImage.black(100, 100)
+        let image1 = try VIPSImage.black(width: 100, height: 100)
             .linear(1.0, 50.0)
-        let image2 = try VIPSImage.black(100, 100)
+        let image2 = try VIPSImage.black(width: 100, height: 100)
             .linear(1.0, 100.0)
         
         let equal = try image1.equal(image1)
@@ -188,7 +188,7 @@ struct VIPSTests {
     
     @Test
     func relationalConstOperations() throws {
-        let image = try VIPSImage.black(100, 100)
+        let image = try VIPSImage.black(width: 100, height: 100)
             .linear(1.0, 128.0)
         
         let equalConst = try image.equal(128.0)
@@ -207,9 +207,9 @@ struct VIPSTests {
     
     @Test
     func comparisonOperators() throws {
-        let image1 = try VIPSImage.black(100, 100)
+        let image1 = try VIPSImage.black(width: 100, height: 100)
             .linear(1.0, 50.0)
-        let image2 = try VIPSImage.black(100, 100)
+        let image2 = try VIPSImage.black(width: 100, height: 100)
             .linear(1.0, 100.0)
         
         // Test image-to-image comparison operators
@@ -276,7 +276,6 @@ struct VIPSTests {
     @Test
     func loadImageFromFile() throws {
         let image = try VIPSImage(fromFilePath: testPath)
-        #expect(image != nil)
         try image.write(toFilePath: "/tmp/swift-vips/test_out.jpg")
     }
     
@@ -301,14 +300,6 @@ struct VIPSTests {
         let exported = Data(try image.resize(scale: 0.5).exportedJpeg())
         try exported.write(to: URL(fileURLWithPath: "/tmp/swift-vips/example-source_0.5.jpg"))
         
-    }
-    
-
-    @Test
-    func dynamic() throws {
-        let image = try VIPSImage(fromFilePath: testPath)
-        let thumbnail : VIPSImage = try image.thumbnail_image(width: 500, height: 500, crop: VIPS_INTERESTING_CENTRE)
-        let _ : Void = try thumbnail.jxlsave(filename: "/tmp/swift-vips/thumbnail.jxl")
     }
 
 }

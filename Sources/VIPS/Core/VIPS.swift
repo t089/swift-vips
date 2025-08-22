@@ -39,6 +39,29 @@ public protocol VIPSLoggingDelegate: AnyObject {
     func error(_ message: String)
 }
 
+open class VIPSObject {
+    private(set) var object: UnsafeMutablePointer<VipsObject>!
+
+    init(_ object: UnsafeMutablePointer<VipsObject>!) {
+        self.object = object
+    }
+
+    public var type: GType {
+        return shim_g_object_type(object)
+    }
+
+    public func withVipsObject<R>(_ body: (UnsafeMutablePointer<VipsObject>) throws -> R) rethrows -> R {
+        return try body(self.object)
+    }
+
+    deinit {
+        guard let object = self.object else { return }
+        g_object_unref(object)
+
+        self.object = nil
+    }
+}
+
 public enum VIPS {
     
     
@@ -99,6 +122,13 @@ public struct VIPSOption {
         self.pairs.append(pair)
     }
 
+    public mutating func set(_ name: String, value: VIPSObject) {
+        let pair = Pair(name: name, input: true)
+        g_value_init(&pair.value, value.type)
+        g_value_set_object(&pair.value, value.object)
+        self.pairs.append(pair)
+    }
+
     public mutating func set(_ name: String, value: [VipsBlendMode]) {
         self.set(name, value: value.map({ Int($0.rawValue )}))
     }
@@ -135,6 +165,13 @@ public struct VIPSOption {
         pair.output = .integer(value)
         self.pairs.append(pair)
     }
+
+    public mutating func set(_ name: String, value: UnsafeMutablePointer<Bool>!) {
+        let pair = Pair(name: name, input: false)
+        g_value_init(&pair.value, shim_g_type_boolean())
+        pair.output = .boolean(value)
+        self.pairs.append(pair)
+    }
     
     // input
     public mutating func set(_ name: String, value: UnsafeMutablePointer<VipsImage>!) {
@@ -147,13 +184,16 @@ public struct VIPSOption {
     public mutating func set(_ name: String, value: VIPSImage) {
         set(name, value: value.image)
     }
-    
-    // input
+
     public mutating func set(_ name: String, value: UnsafeMutablePointer<VipsTarget>!) {
         let pair = Pair(name: name, input: true)
         g_value_init(&pair.value, vips_target_get_type())
         g_value_set_object(&pair.value, value)
         self.pairs.append(pair)
+    }
+
+    public mutating func set(_ name: String, value: VIPSTarget) {
+        set(name, value: value.target)
     }
     
     public mutating func set(_ name: String, value: [VIPSImage]) {
@@ -299,6 +339,8 @@ final class VIPSOperation {
                 blob.pointee = g_value_get_boxed(&option.pairs[i].value).assumingMemoryBound(to: VipsBlob.self)
             case .some(.integer(let value)):
                 value?.pointee = Int(g_value_get_int(&option.pairs[i].value))
+            case .some(.boolean(let bool)):
+                bool?.pointee = g_value_get_boolean(&option.pairs[i].value) != 0
             case .none:
                 assertionFailure("no output specified for output value")
             }
@@ -318,6 +360,7 @@ final class Pair {
         case blob(UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>>)
         case double(UnsafeMutablePointer<Double>!)
         case integer(UnsafeMutablePointer<Int>!)
+        case boolean(UnsafeMutablePointer<Bool>!)
     }
     
     var name: String
@@ -340,7 +383,6 @@ final class Pair {
     }
 }
 
-@dynamicMemberLookup
 open class VIPSImage {
     
     private var other: Any? = nil
@@ -375,6 +417,10 @@ open class VIPSImage {
         return VIPSImage(nil) { out in
             shim_vips_copy_interpretation(self.image, &out, interpretation)
         }
+    }
+
+    func withVipsImage<R>(_ body: (UnsafeMutablePointer<VipsImage>) -> R) -> R {
+        return body(self.image)
     }
 
     public init(data: some Collection<UInt8>, width: Int, height: Int, bands: Int, format: VipsBandFormat) throws {
@@ -547,10 +593,12 @@ open class VIPSImage {
         g_object_unref(self.image)
     }
     
+    @usableFromInline
     static func call(_ name: UnsafePointer<CChar>!, optionsString: String? = nil, options: inout VIPSOption) throws {
         try self.call(String(cString: name), optionsString: optionsString, options: &options)
     }
     
+    @usableFromInline
     static func call(_ name: String, optionsString: String? = nil, options: inout VIPSOption) throws {
         let op = try VIPSOperation(name: name)
         
@@ -593,6 +641,7 @@ open class VIPSImage {
         self.image = image
     }
     
+    @usableFromInline
     init(_ other: Any?, _ block: (inout UnsafeMutablePointer<VipsImage>?) throws -> ()) rethrows {
         let image : UnsafeMutablePointer<UnsafeMutablePointer<VipsImage>?> = .allocate(capacity: 1)
         image.initialize(to: nil)
@@ -607,190 +656,6 @@ open class VIPSImage {
     
     func withUnsafeMutablePointer<T>(_ block: (inout UnsafeMutablePointer<VipsImage>) throws -> (T)) rethrows -> T {
         return try block(&self.image)
-    }
-}
-
-extension VIPSImage {
-
-    public subscript(dynamicMember member: String) -> Operation {
-        return Operation(name: member, image: self)
-    }
-
-    @dynamicCallable
-    public struct Operation {
-        var name: String
-        let image: VIPSImage
-
-        func dynamicallyCall(withKeywordArguments args: KeyValuePairs<String, Any>) throws -> VIPSImage {
-            let images = args.compactMap { $0.value as? VIPSImage }
-            return try VIPSImage([self.image] + images) { out in
-                var option = VIPSOption()
-                for (key, value) in args {
-                    option.set("in", value: self.image.image)
-                    option.set("out", value: &out)
-                    switch value {
-                        case let value as VIPSImage:
-                            option.set(key, value: value.image)
-                        case let value as VipsInteresting:
-                            option.set(key, value: value)
-                        case let value as Int:
-                            option.set(key, value: value)
-                        case let value as Double:
-                            option.set(key, value: value)
-                        case let value as String:
-                            option.set(key, value: value)
-                        case let value as Bool:
-                            option.set(key, value: value)
-                        case let value as [Double]:
-                            option.set(key, value: value)
-                        case let value as [Int]:
-                            option.set(key, value: value)
-                        case let value as [VIPSImage]:
-                            option.set(key, value: value)
-
-                        default:
-                            throw VIPSError("Unsupported value type: \(type(of: value)) for key: \(key)")
-                    }
-                    
-                }
-                try VIPSImage.call(self.name, options: &option)
-            }
-        }
-
-        func dynamicallyCall(withKeywordArguments args: KeyValuePairs<String, Any>) throws {
-            var option = VIPSOption()
-            for (key, value) in args {
-                option.set("in", value: self.image.image)
-                switch value {
-                    case let value as VIPSImage:
-                        option.set(key, value: value.image)
-                    case let value as VipsInteresting:
-                        option.set(key, value: value)
-                    case let value as Int:
-                        option.set(key, value: value)
-                    case let value as Double:
-                        option.set(key, value: value)
-                    case let value as String:
-                        option.set(key, value: value)
-                    case let value as Bool:
-                        option.set(key, value: value)
-                    case let value as [Double]:
-                        option.set(key, value: value)
-                    case let value as [Int]:
-                        option.set(key, value: value)
-                    case let value as [VIPSImage]:
-                        option.set(key, value: value)
-
-                    default:
-                        throw VIPSError("Unsupported value type: \(type(of: value)) for key: \(key)")
-                }
-                
-            }
-            try VIPSImage.call(self.name, options: &option)
-        }
-    }
-}
-
-extension VIPSImage {
-    public static func tonelut(
-        inMax: Int? = nil,
-        outMax: Int? = nil,
-        blackPoint lb: Double? = nil,
-        whitePoint lw: Double? = nil,
-        shadowPoint ps: Double? = nil,
-        midTonePoint pm: Double? = nil,
-        highlightPoint ph: Double? = nil,
-        shadowAdjustment s: Double? = nil,
-        midToneAdjustment m: Double? = nil,
-        highlightAdjustment h: Double? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
-            var opt = VIPSOption()
-            
-            opt.set("out", value: &out)
-            
-            opt.set("in_max", value: inMax)
-            opt.set("out_max", value: outMax)
-            opt.set("Lb", value: lb)
-            opt.set("Lw", value: lw)
-            opt.set("Ps", value: ps)
-            opt.set("Pm", value: pm)
-            opt.set("Ph", value: ph)
-            opt.set("S", value: s)
-            opt.set("M", value: m)
-            opt.set("H", value: h)
-            
-            try VIPSImage.call("tonelut", optionsString: nil, options: &opt)
-        }
-    }
-    
-    
-    public func maplut(_ lut: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage([self, lut], { out in
-            
-            var opt = VIPSOption()
-            
-            opt.set("out", value: &out)
-            opt.set("lut", value: lut.image)
-            opt.set("in", value: self.image)
-            
-            try VIPSImage.call("maplut", optionsString: nil, options: &opt)
-        })
-    }
-    
-    public func cast(_ format: VipsBandFormat, shift: Bool = false) throws -> VIPSImage {
-        return try VIPSImage(self, { out in
-            
-            var opt = VIPSOption()
-            
-            opt.set("out", value: &out)
-            opt.set("format", value: format)
-            opt.set("in", value: self.image)
-            opt.set("shift", value: shift)
-            
-            try VIPSImage.call("cast", optionsString: nil, options: &opt)
-        })
-    }
-    
-    public func colourspace(_ colourspace: VipsInterpretation, sourceSpace: VipsInterpretation? = nil) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
-            var opt = VIPSOption()
-            
-            opt.set("out", value: &out)
-            opt.set("in", value: self.image)
-            opt.set("space", value: colourspace)
-            if let sourceSpace = sourceSpace {
-                opt.set("source_space", value: sourceSpace)
-            }
-            
-            try VIPSImage.call("colourspace", optionsString: nil, options: &opt)
-        }
-    }
-    
-    public func extractBand(_ band: Int) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
-            var opt = VIPSOption()
-            opt.set("in", value: self.image)
-            opt.set("out", value: &out)
-            opt.set("band", value: band)
-            
-            try VIPSImage.call("extract_band", options: &opt)
-        }
-    }
-    
-    public func bandjoin<Images: Collection>(_ other: Images) throws -> VIPSImage where Images.Element == VIPSImage {
-        return try VIPSImage([self, other]) { out in
-            
-            var opt = VIPSOption()
-            opt.set("in", value: [ self ] + other)
-            opt.set("out", value: &out)
-            
-            try VIPSImage.call("bandjoin", options: &opt)
-        }
-    }
-    
-    public subscript(band: Int) -> VIPSImage? {
-        return try? self.extractBand(band)
     }
 }
 
@@ -870,7 +735,7 @@ extension VIPSImage {
         var options = VIPSOption()
         options.set("in", value: self.image)
         if let q = quality { options.set("Q", value: q) }
-        options.set("target", value: shim_VIPS_TARGET(target.target))
+        options.set("target", value: target.target)
         
         try VIPSImage.call(name, options: &options)
     }
@@ -1177,12 +1042,12 @@ public struct ForeignSubsample: Hashable {
     }
 }
 
-public class VIPSSource {
+public class VIPSSource: VIPSObject {
     var source: UnsafeMutablePointer<VipsSource>!
     
     public init(_ source: UnsafeMutablePointer<VipsSource>!) {
+        super.init(shim_vips_object(source))
         self.source = source
-        g_object_ref(self.source)
     }
     
     public init(fromFile path: String) throws {
@@ -1191,10 +1056,11 @@ public class VIPSSource {
         }
         
         self.source = source
+        super.init(shim_vips_object(source))
     }
-    
-    deinit {
-        g_object_unref(self.source)
+
+    func withVipsSource<R>(_ body: (UnsafeMutablePointer<VipsSource>) throws -> R) rethrows -> R {
+        return try body(self.source)
     }
     
     public func findLoader() throws -> String {
@@ -1218,21 +1084,36 @@ public class VIPSSource {
     }
 }
 
-public final class VIPSCustomTarget {
-    var target: UnsafeMutablePointer<VipsTargetCustom>!
+open class VIPSTarget: VIPSObject {
+    private(set) var target: UnsafeMutablePointer<VipsTarget>!
+
+    public init(_ target: UnsafeMutablePointer<VipsTarget>!) {
+        super.init(shim_vips_object(target))
+        self.target = target
+    }
+
+    func withVipsTarget<R>(_ body: (UnsafeMutablePointer<VipsTarget>) throws -> R) rethrows -> R {
+        return try body(self.target)
+    }
+}
+
+public final class VIPSCustomTarget: VIPSTarget {
+    private var customTarget: UnsafeMutablePointer<VipsTargetCustom>!
     
     var writer: ([UInt8]) -> Int = { _ in return 0 }
     var finisher: () -> () = {  }
     
     public init() {
-        self.target = vips_target_custom_new()
+        let customTarget = vips_target_custom_new()
+        super.init(shim_VIPS_TARGET(customTarget))
+        self.customTarget = customTarget
     }
     
     typealias WriteHandle = @convention(c) (UnsafeMutablePointer<VipsTargetCustom>?, gpointer, Int64, gpointer ) -> Int64
     
     
     private func _onWrite(_ handle: @escaping WriteHandle, userInfo: UnsafeMutableRawPointer? = nil) {
-        shim_g_signal_connect(self.target, "write", shim_G_CALLBACK(unsafeBitCast(handle, to: UnsafeMutableRawPointer.self)), userInfo);
+        shim_g_signal_connect(self.customTarget, "write", shim_G_CALLBACK(unsafeBitCast(handle, to: UnsafeMutableRawPointer.self)), userInfo);
     }
     
     public func onWrite(_ handler: @escaping ([UInt8]) -> Int) {
@@ -1262,7 +1143,11 @@ public final class VIPSCustomTarget {
             me.finisher()
         }
         
-        shim_g_signal_connect(self.target, "finish", shim_G_CALLBACK(unsafeBitCast(_onFinish, to: UnsafeMutableRawPointer.self)), data);
+        shim_g_signal_connect(self.customTarget, "finish", shim_G_CALLBACK(unsafeBitCast(_onFinish, to: UnsafeMutableRawPointer.self)), data);
+    }
+
+    func withVipsTargetCustom<R>(_ body: (UnsafeMutablePointer<VipsTargetCustom>) throws -> R) rethrows -> R {
+        return try body(self.customTarget)
     }
 }
 
@@ -1279,7 +1164,6 @@ public final class VIPSSourceCustom : VIPSSource {
         let source = vips_source_custom_new()
         super.init(shim_VIPS_SOURCE(source))
         self.customSource = source
-        g_object_unref(source)
     }
     
     typealias ReadHandle = @convention(c) (UnsafeMutablePointer<VipsSourceCustom>?, UnsafeMutableRawPointer, Int64, gpointer ) -> Int64

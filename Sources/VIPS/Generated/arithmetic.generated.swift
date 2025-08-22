@@ -14,7 +14,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("Lab2LabS", options: &opt)
@@ -26,7 +26,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("LabQ2LabS", options: &opt)
@@ -38,7 +38,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("LabS2Lab", options: &opt)
@@ -50,7 +50,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("LabS2LabQ", options: &opt)
@@ -62,51 +62,144 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("abs", options: &opt)
         }
     }
 
-    /// Add two images
+    /// This operation calculates `in1` + `in2` and writes the result to `out`.
+    ///
+    /// If the images differ in size, the smaller image is enlarged to match the
+    /// larger by adding zero pixels along the bottom and right.
+    ///
+    /// If the number of bands differs, one of the images
+    /// must have one band. In this case, an n-band image is formed from the
+    /// one-band image by joining n copies of the one-band image together, and then
+    /// the two n-band images are operated upon.
+    ///
+    /// The two input images are cast up to the smallest common format (see table
+    /// Smallest common format in
+    /// arithmetic), then the
+    /// following table is used to determine the output type:
+    ///
+    ///   VipsAdd type promotion
+    ///
+    ///         input type
+    ///         output type
+    ///
+    ///         uchar
+    ///         ushort
+    ///
+    ///         char
+    ///         short
+    ///
+    ///         ushort
+    ///         uint
+    ///
+    ///         short
+    ///         int
+    ///
+    ///         uint
+    ///         uint
+    ///
+    ///         int
+    ///         int
+    ///
+    ///         float
+    ///         float
+    ///
+    ///         double
+    ///         double
+    ///
+    ///         complex
+    ///         complex
+    ///
+    ///         double complex
+    ///         double complex
+    ///
+    /// In other words, the output type is just large enough to hold the whole
+    /// range of possible values.
+    ///
+    /// Operations on integer images are performed using the processor's vector unit,
+    /// if possible. Disable this with --vips-novector or VIPS_NOVECTOR.
+    ///
+    /// See also: vips_subtract(), vips_linear().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
-    public func add(`right`: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage([self, `right`]) { out in
+    public func add(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, rhs]) { out in
             var opt = VIPSOption()
 
-            opt.set("left", value: self.image)
-            opt.set("right", value: `right`.image)
+            opt.set("left", value: self)
+            opt.set("right", value: rhs)
             opt.set("out", value: &out)
 
             try VIPSImage.call("add", options: &opt)
         }
     }
 
-    /// Find image average
-    public func avg() throws -> Double {
-        try VIPSImage.execute {
+    /// Append an alpha channel
+    public func addalpha() throws -> VIPSImage {
+        return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
+            opt.set("out", value: &out)
 
-            try VIPSImage.call("avg", options: &opt)
+            try VIPSImage.call("addalpha", options: &opt)
         }
     }
 
-    /// Boolean operation on two images
+    /// Find image average
+    public func avg() throws -> Double {
+        var opt = VIPSOption()
+
+        var out: Double = 0.0
+
+            opt.set("in", value: self.image)
+            opt.set("out", value: &out)
+
+            try VIPSImage.call("avg", options: &opt)
+
+        return out
+    }
+
+    /// Perform various boolean operations on pairs of images.
+    ///
+    /// The output image is the same format as the upcast input images for integer
+    /// types. Float types are cast to int before processing. Complex types are not
+    /// supported.
+    ///
+    /// If the images differ in size, the smaller image is enlarged to match the
+    /// larger by adding zero pixels along the bottom and right.
+    ///
+    /// If the number of bands differs, one of the images
+    /// must have one band. In this case, an n-band image is formed from the
+    /// one-band image by joining n copies of the one-band image together, and then
+    /// the two n-band images are operated upon.
+    ///
+    /// The two input images are cast up to the smallest common format (see table
+    /// Smallest common format in
+    /// arithmetic).
+    ///
+    /// See also: vips_boolean_const().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     ///   - boolean: Boolean to perform
-    public func boolean(`right`: VIPSImage, boolean: VipsOperationBoolean) throws -> VIPSImage {
-        return try VIPSImage([self, `right`]) { out in
+    public func boolean(_ rhs: VIPSImage, boolean: VipsOperationBoolean) throws -> VIPSImage {
+        return try VIPSImage([self, rhs]) { out in
             var opt = VIPSOption()
 
-            opt.set("left", value: self.image)
-            opt.set("right", value: `right`.image)
+            opt.set("left", value: self)
+            opt.set("right", value: rhs)
             opt.set("boolean", value: boolean)
             opt.set("out", value: &out)
 
@@ -123,7 +216,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("boolean", value: boolean)
             opt.set("c", value: c)
             opt.set("out", value: &out)
@@ -140,7 +233,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("cmplx", value: cmplx)
             opt.set("out", value: &out)
 
@@ -148,17 +241,22 @@ extension VIPSImage {
         }
     }
 
-    /// Complex binary operations on two images
+    /// Perform various binary operations on complex images.
+    ///
+    /// Angles are expressed in degrees. The output type is complex unless the
+    /// input is double or dpcomplex, in which case the output is dpcomplex.
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     ///   - cmplx: Binary complex operation to perform
-    public func complex2(`right`: VIPSImage, cmplx: VipsOperationComplex2) throws -> VIPSImage {
-        return try VIPSImage([self, `right`]) { out in
+    public func complex2(_ rhs: VIPSImage, cmplx: VipsOperationComplex2) throws -> VIPSImage {
+        return try VIPSImage([self, rhs]) { out in
             var opt = VIPSOption()
 
-            opt.set("left", value: self.image)
-            opt.set("right", value: `right`.image)
+            opt.set("left", value: self)
+            opt.set("right", value: rhs)
             opt.set("cmplx", value: cmplx)
             opt.set("out", value: &out)
 
@@ -166,16 +264,28 @@ extension VIPSImage {
         }
     }
 
-    /// Form a complex image from two real images
+    /// Compose two real images to make a complex image. If either `left` or `right`
+    /// are `VIPS_FORMAT_DOUBLE`, `out` is `VIPS_FORMAT_DPCOMPLEX`. Otherwise `out`
+    /// is `VIPS_FORMAT_COMPLEX`. `left` becomes the real component of `out` and
+    /// `right` the imaginary.
+    ///
+    /// If the number of bands differs, one of the images
+    /// must have one band. In this case, an n-band image is formed from the
+    /// one-band image by joining n copies of the one-band image together, and then
+    /// the two n-band images are operated upon.
+    ///
+    /// See also: vips_complexget().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
-    public func complexform(`right`: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage([self, `right`]) { out in
+    public func complexform(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, rhs]) { out in
             var opt = VIPSOption()
 
-            opt.set("left", value: self.image)
-            opt.set("right", value: `right`.image)
+            opt.set("left", value: self)
+            opt.set("right", value: rhs)
             opt.set("out", value: &out)
 
             try VIPSImage.call("complexform", options: &opt)
@@ -190,7 +300,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("get", value: `get`)
             opt.set("out", value: &out)
 
@@ -200,25 +310,84 @@ extension VIPSImage {
 
     /// Find image standard deviation
     public func deviate() throws -> Double {
-        try VIPSImage.execute {
-            var opt = VIPSOption()
+        var opt = VIPSOption()
+
+        var out: Double = 0.0
 
             opt.set("in", value: self.image)
+            opt.set("out", value: &out)
 
             try VIPSImage.call("deviate", options: &opt)
-        }
+
+        return out
     }
 
-    /// Divide two images
+    /// This operation calculates `in1` / `in2` and writes the result to `out`. If any
+    /// pixels in `in2` are zero, the corresponding pixel in `out` is also zero.
+    ///
+    /// If the images differ in size, the smaller image is enlarged to match the
+    /// larger by adding zero pixels along the bottom and right.
+    ///
+    /// If the number of bands differs, one of the images
+    /// must have one band. In this case, an n-band image is formed from the
+    /// one-band image by joining n copies of the one-band image together, and then
+    /// the two n-band images are operated upon.
+    ///
+    /// The two input images are cast up to the smallest common format (see table
+    /// Smallest common format in
+    /// arithmetic), then the
+    /// following table is used to determine the output type:
+    ///
+    ///   vips_divide() type promotion
+    ///
+    ///         input type
+    ///         output type
+    ///
+    ///         uchar
+    ///         float
+    ///
+    ///         char
+    ///         float
+    ///
+    ///         ushort
+    ///         float
+    ///
+    ///         short
+    ///         float
+    ///
+    ///         uint
+    ///         float
+    ///
+    ///         int
+    ///         float
+    ///
+    ///         float
+    ///         float
+    ///
+    ///         double
+    ///         double
+    ///
+    ///         complex
+    ///         complex
+    ///
+    ///         double complex
+    ///         double complex
+    ///
+    /// In other words, the output type is just large enough to hold the whole
+    /// range of possible values.
+    ///
+    /// See also: vips_multiply(), vips_linear(), vips_pow().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
-    public func divide(`right`: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage([self, `right`]) { out in
+    public func divide(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, rhs]) { out in
             var opt = VIPSOption()
 
-            opt.set("left", value: self.image)
-            opt.set("right", value: `right`.image)
+            opt.set("left", value: self)
+            opt.set("right", value: rhs)
             opt.set("out", value: &out)
 
             try VIPSImage.call("divide", options: &opt)
@@ -230,7 +399,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("invert", options: &opt)
@@ -241,12 +410,12 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - size: LUT size to generate
-    public func invertlut(size: Int = 0) throws -> VIPSImage {
+    public func invertlut(size: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            if size != 0 {
+            opt.set("in", value: self)
+            if let size = size {
                 opt.set("size", value: size)
             }
             opt.set("out", value: &out)
@@ -255,37 +424,15 @@ extension VIPSImage {
         }
     }
 
-    /// Calculate (a * in + b)
-    ///
-    /// - Parameters:
-    ///   - a: Multiply by this
-    ///   - b: Add this
-    ///   - uchar: Output should be uchar
-    public func linear(a: [Double], b: [Double], uchar: Bool = false) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
-            var opt = VIPSOption()
-
-            opt.set("in", value: self.image)
-            opt.set("a", value: a)
-            opt.set("b", value: b)
-            if uchar != false {
-                opt.set("uchar", value: uchar)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("linear", options: &opt)
-        }
-    }
-
     /// Apply a math operation to an image
     ///
     /// - Parameters:
     ///   - math: Math to perform
-    public func math(math: VipsOperationMath) throws -> VIPSImage {
+    public func math(_ math: VipsOperationMath) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("math", value: math)
             opt.set("out", value: &out)
 
@@ -293,17 +440,40 @@ extension VIPSImage {
         }
     }
 
-    /// Binary math operations
+    /// This operation calculates a 2-ary maths operation on a pair of images
+    /// and writes the result to `out`. The images may have any
+    /// non-complex format. `out` is float except in the case that either of `left`
+    /// or `right` are double, in which case `out` is also double.
+    ///
+    /// It detects division by zero, setting those pixels to zero in the output.
+    /// Beware: it does this silently!
+    ///
+    /// If the images differ in size, the smaller image is enlarged to match the
+    /// larger by adding zero pixels along the bottom and right.
+    ///
+    /// If the number of bands differs, one of the images
+    /// must have one band. In this case, an n-band image is formed from the
+    /// one-band image by joining n copies of the one-band image together, and then
+    /// the two n-band images are operated upon.
+    ///
+    /// The two input images are cast up to the smallest common format (see table
+    /// Smallest common format in
+    /// arithmetic), and that format is the
+    /// result type.
+    ///
+    /// See also: vips_math2_const().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     ///   - math2: Math to perform
-    public func math2(`right`: VIPSImage, math2: VipsOperationMath2) throws -> VIPSImage {
-        return try VIPSImage([self, `right`]) { out in
+    public func math2(_ rhs: VIPSImage, math2: VipsOperationMath2) throws -> VIPSImage {
+        return try VIPSImage([self, rhs]) { out in
             var opt = VIPSOption()
 
-            opt.set("left", value: self.image)
-            opt.set("right", value: `right`.image)
+            opt.set("left", value: self)
+            opt.set("right", value: rhs)
             opt.set("math2", value: math2)
             opt.set("out", value: &out)
 
@@ -320,7 +490,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("math2", value: math2)
             opt.set("c", value: c)
             opt.set("out", value: &out)
@@ -334,7 +504,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("matrixinvert", options: &opt)
@@ -345,16 +515,35 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - size: Number of maximum values to find
-    public func max(size: Int = 0) throws -> Double {
-        try VIPSImage.execute {
-            var opt = VIPSOption()
+    public func max(size: Int? = nil) throws -> Double {
+        var opt = VIPSOption()
+
+        var out: Double = 0.0
 
             opt.set("in", value: self.image)
-            if size != 0 {
+            if let size = size {
                 opt.set("size", value: size)
             }
+            opt.set("out", value: &out)
 
             try VIPSImage.call("max", options: &opt)
+
+        return out
+    }
+
+    /// Maximum of a pair of images
+    ///
+    /// - Parameters:
+    ///   - `right`: Right-hand image argument
+    public func maxpair(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, rhs]) { out in
+            var opt = VIPSOption()
+
+            opt.set("left", value: self)
+            opt.set("right", value: rhs)
+            opt.set("out", value: &out)
+
+            try VIPSImage.call("maxpair", options: &opt)
         }
     }
 
@@ -362,29 +551,103 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - size: Number of minimum values to find
-    public func min(size: Int = 0) throws -> Double {
-        try VIPSImage.execute {
-            var opt = VIPSOption()
+    public func min(size: Int? = nil) throws -> Double {
+        var opt = VIPSOption()
+
+        var out: Double = 0.0
 
             opt.set("in", value: self.image)
-            if size != 0 {
+            if let size = size {
                 opt.set("size", value: size)
             }
+            opt.set("out", value: &out)
 
             try VIPSImage.call("min", options: &opt)
-        }
+
+        return out
     }
 
-    /// Multiply two images
+    /// Minimum of a pair of images
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
-    public func multiply(`right`: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage([self, `right`]) { out in
+    public func minpair(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, rhs]) { out in
             var opt = VIPSOption()
 
-            opt.set("left", value: self.image)
-            opt.set("right", value: `right`.image)
+            opt.set("left", value: self)
+            opt.set("right", value: rhs)
+            opt.set("out", value: &out)
+
+            try VIPSImage.call("minpair", options: &opt)
+        }
+    }
+
+    /// This operation calculates `left` * `right` and writes the result to `out`.
+    ///
+    /// If the images differ in size, the smaller image is enlarged to match the
+    /// larger by adding zero pixels along the bottom and right.
+    ///
+    /// If the number of bands differs, one of the images
+    /// must have one band. In this case, an n-band image is formed from the
+    /// one-band image by joining n copies of the one-band image together, and then
+    /// the two n-band images are operated upon.
+    ///
+    /// The two input images are cast up to the smallest common format (see table
+    /// Smallest common format in
+    /// arithmetic), then the
+    /// following table is used to determine the output type:
+    ///
+    ///   VipsMultiply type promotion
+    ///
+    ///         input type
+    ///         output type
+    ///
+    ///         uchar
+    ///         ushort
+    ///
+    ///         char
+    ///         short
+    ///
+    ///         ushort
+    ///         uint
+    ///
+    ///         short
+    ///         int
+    ///
+    ///         uint
+    ///         uint
+    ///
+    ///         int
+    ///         int
+    ///
+    ///         float
+    ///         float
+    ///
+    ///         double
+    ///         double
+    ///
+    ///         complex
+    ///         complex
+    ///
+    ///         double complex
+    ///         double complex
+    ///
+    /// In other words, the output type is just large enough to hold the whole
+    /// range of possible values.
+    ///
+    /// See also: vips_add(), vips_linear().
+    ///
+    /// Returns: 0 on success, -1 on error
+    ///
+    /// - Parameters:
+    ///   - `right`: Right-hand image argument
+    public func multiply(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, rhs]) { out in
+            var opt = VIPSOption()
+
+            opt.set("left", value: self)
+            opt.set("right", value: rhs)
             opt.set("out", value: &out)
 
             try VIPSImage.call("multiply", options: &opt)
@@ -395,12 +658,12 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - maxAlpha: Maximum value of alpha channel
-    public func premultiply(maxAlpha: Double = 0.0) throws -> VIPSImage {
+    public func premultiply(maxAlpha: Double? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            if maxAlpha != 0.0 {
+            opt.set("in", value: self)
+            if let maxAlpha = maxAlpha {
                 opt.set("max_alpha", value: maxAlpha)
             }
             opt.set("out", value: &out)
@@ -409,17 +672,41 @@ extension VIPSImage {
         }
     }
 
-    /// Relational operation on two images
+    /// Perform various relational operations on pairs of images.
+    ///
+    /// The output type is always uchar, with 0 for FALSE and 255 for TRUE.
+    ///
+    /// Less-than and greater-than for complex images compare the modulus.
+    ///
+    /// If the images differ in size, the smaller image is enlarged to match the
+    /// larger by adding zero pixels along the bottom and right.
+    ///
+    /// If the number of bands differs, one of the images
+    /// must have one band. In this case, an n-band image is formed from the
+    /// one-band image by joining n copies of the one-band image together, and then
+    /// the two n-band images are operated upon.
+    ///
+    /// The two input images are cast up to the smallest common format (see table
+    /// Smallest common format in
+    /// arithmetic).
+    ///
+    /// To decide if pixels match exactly, that is have the same value in every
+    /// band, use vips_bandbool() after this operation to AND or OR image bands
+    /// together.
+    ///
+    /// See also: vips_boolean(), vips_bandbool(), vips_relational_const().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     ///   - relational: Relational to perform
-    public func relational(`right`: VIPSImage, relational: VipsOperationRelational) throws -> VIPSImage {
-        return try VIPSImage([self, `right`]) { out in
+    public func relational(_ rhs: VIPSImage, relational: VipsOperationRelational) throws -> VIPSImage {
+        return try VIPSImage([self, rhs]) { out in
             var opt = VIPSOption()
 
-            opt.set("left", value: self.image)
-            opt.set("right", value: `right`.image)
+            opt.set("left", value: self)
+            opt.set("right", value: rhs)
             opt.set("relational", value: relational)
             opt.set("out", value: &out)
 
@@ -436,7 +723,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("relational", value: relational)
             opt.set("c", value: c)
             opt.set("out", value: &out)
@@ -445,20 +732,56 @@ extension VIPSImage {
         }
     }
 
-    /// Remainder after integer division of two images
+    /// This operation calculates `left` % `right` (remainder after integer division)
+    /// and writes the result to `out`. The images may have any
+    /// non-complex format. For float formats, vips_remainder() calculates `in1` -
+    /// `in2` * floor (`in1` / `in2`).
+    ///
+    /// If the images differ in size, the smaller image is enlarged to match the
+    /// larger by adding zero pixels along the bottom and right.
+    ///
+    /// If the number of bands differs, one of the images
+    /// must have one band. In this case, an n-band image is formed from the
+    /// one-band image by joining n copies of the one-band image together, and then
+    /// the two n-band images are operated upon.
+    ///
+    /// The two input images are cast up to the smallest common format (see table
+    /// Smallest common format in
+    /// arithmetic), and that format is the
+    /// result type.
+    ///
+    /// See also: vips_remainder_const(), vips_divide(), vips_round().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
-    public func remainder(`right`: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage([self, `right`]) { out in
+    public func remainder(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, rhs]) { out in
             var opt = VIPSOption()
 
-            opt.set("left", value: self.image)
-            opt.set("right", value: `right`.image)
+            opt.set("left", value: self)
+            opt.set("right", value: rhs)
             opt.set("out", value: &out)
 
             try VIPSImage.call("remainder", options: &opt)
         }
+    }
+
+    /// Remainder after integer division of an image and a constant
+    ///
+    /// - Parameters:
+    ///   - value: Constant value
+    public func remainder(_ value: Double) throws -> VIPSImage {
+        return try remainderConst(c: [value])
+    }
+
+    /// Remainder after integer division of an image and a constant
+    ///
+    /// - Parameters:
+    ///   - value: Constant value
+    public func remainder(_ value: Int) throws -> VIPSImage {
+        return try remainderConst(c: [Double(value)])
     }
 
     /// Remainder after integer division of an image and a constant
@@ -469,7 +792,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("c", value: c)
             opt.set("out", value: &out)
 
@@ -481,11 +804,11 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - round: Rounding operation to perform
-    public func round(round: VipsOperationRound) throws -> VIPSImage {
+    public func round(_ round: VipsOperationRound) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("round", value: round)
             opt.set("out", value: &out)
 
@@ -498,7 +821,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("sign", options: &opt)
@@ -510,34 +833,144 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("stats", options: &opt)
         }
     }
 
-    /// Subtract two images
+    /// This operation calculates `in1` - `in2` and writes the result to `out`.
+    ///
+    /// If the images differ in size, the smaller image is enlarged to match the
+    /// larger by adding zero pixels along the bottom and right.
+    ///
+    /// If the number of bands differs, one of the images
+    /// must have one band. In this case, an n-band image is formed from the
+    /// one-band image by joining n copies of the one-band image together, and then
+    /// the two n-band images are operated upon.
+    ///
+    /// The two input images are cast up to the smallest common format (see table
+    /// Smallest common format in
+    /// arithmetic), then the
+    /// following table is used to determine the output type:
+    ///
+    ///   VipsSubtract type promotion
+    ///
+    ///         input type
+    ///         output type
+    ///
+    ///         uchar
+    ///         short
+    ///
+    ///         char
+    ///         short
+    ///
+    ///         ushort
+    ///         int
+    ///
+    ///         short
+    ///         int
+    ///
+    ///         uint
+    ///         int
+    ///
+    ///         int
+    ///         int
+    ///
+    ///         float
+    ///         float
+    ///
+    ///         double
+    ///         double
+    ///
+    ///         complex
+    ///         complex
+    ///
+    ///         double complex
+    ///         double complex
+    ///
+    /// In other words, the output type is just large enough to hold the whole
+    /// range of possible values.
+    ///
+    /// See also: vips_add(), vips_linear().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
-    public func subtract(`right`: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage([self, `right`]) { out in
+    public func subtract(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try VIPSImage([self, rhs]) { out in
             var opt = VIPSOption()
 
-            opt.set("left", value: self.image)
-            opt.set("right", value: `right`.image)
+            opt.set("left", value: self)
+            opt.set("right", value: rhs)
             opt.set("out", value: &out)
 
             try VIPSImage.call("subtract", options: &opt)
         }
     }
 
-    /// Sum an array of images
+    /// This operation sums all images in `in` and writes the result to `out`.
+    ///
+    /// If the images differ in size, the smaller images are enlarged to match the
+    /// largest by adding zero pixels along the bottom and right.
+    ///
+    /// If the number of bands differs, all but one of the images
+    /// must have one band. In this case, n-band images are formed from the
+    /// one-band images by joining n copies of the one-band images together, and then
+    /// the n-band images are operated upon.
+    ///
+    /// The input images are cast up to the smallest common format (see table
+    /// Smallest common format in
+    /// arithmetic), then the
+    /// following table is used to determine the output type:
+    ///
+    ///   VipsSum type promotion
+    ///
+    ///         input type
+    ///         output type
+    ///
+    ///         uchar
+    ///         uint
+    ///
+    ///         char
+    ///         int
+    ///
+    ///         ushort
+    ///         uint
+    ///
+    ///         short
+    ///         int
+    ///
+    ///         uint
+    ///         uint
+    ///
+    ///         int
+    ///         int
+    ///
+    ///         float
+    ///         float
+    ///
+    ///         double
+    ///         double
+    ///
+    ///         complex
+    ///         complex
+    ///
+    ///         double complex
+    ///         double complex
+    ///
+    /// In other words, the output type is just large enough to hold the whole
+    /// range of possible values.
+    ///
+    /// See also: vips_add().
+    ///
+    /// Returns: 0 on success, -1 on error
     ///
     /// - Parameters:
     ///   - `in`: Array of input images
-    public static func sum(`in`: [VIPSImage]) throws -> VIPSImage {
+    public static func sum(_ `in`: [VIPSImage]) throws -> VIPSImage {
         return try VIPSImage([`in`]) { out in
             var opt = VIPSOption()
 
@@ -553,15 +986,15 @@ extension VIPSImage {
     /// - Parameters:
     ///   - maxAlpha: Maximum value of alpha channel
     ///   - alphaBand: Unpremultiply with this alpha
-    public func unpremultiply(maxAlpha: Double = 0.0, alphaBand: Int = 0) throws -> VIPSImage {
+    public func unpremultiply(maxAlpha: Double? = nil, alphaBand: Int? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            if maxAlpha != 0.0 {
+            opt.set("in", value: self)
+            if let maxAlpha = maxAlpha {
                 opt.set("max_alpha", value: maxAlpha)
             }
-            if alphaBand != 0 {
+            if let alphaBand = alphaBand {
                 opt.set("alpha_band", value: alphaBand)
             }
             opt.set("out", value: &out)
@@ -569,5 +1002,142 @@ extension VIPSImage {
             try VIPSImage.call("unpremultiply", options: &opt)
         }
     }
+
+    /// Test for equality
+    ///
+    /// - Parameters:
+    ///   - rhs: Right-hand input image
+    public func equal(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try relational(rhs, relational: .equal)
+    }
+
+    /// Test for equality
+    ///
+    /// - Parameters:
+    ///   - value: Constant value
+    public func equal(_ value: Double) throws -> VIPSImage {
+        return try relationalConst(relational: .equal, c: [value])
+    }
+
+    /// Test for inequality
+    ///
+    /// - Parameters:
+    ///   - rhs: Right-hand input image
+    public func notequal(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try relational(rhs, relational: .noteq)
+    }
+
+    /// Test for inequality
+    ///
+    /// - Parameters:
+    ///   - value: Constant value
+    public func notequal(_ value: Double) throws -> VIPSImage {
+        return try relationalConst(relational: .noteq, c: [value])
+    }
+
+    /// Test for less than
+    ///
+    /// - Parameters:
+    ///   - rhs: Right-hand input image
+    public func less(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try relational(rhs, relational: .less)
+    }
+
+    /// Test for less than
+    ///
+    /// - Parameters:
+    ///   - value: Constant value
+    public func less(_ value: Double) throws -> VIPSImage {
+        return try relationalConst(relational: .less, c: [value])
+    }
+
+    /// Test for less than or equal
+    ///
+    /// - Parameters:
+    ///   - rhs: Right-hand input image
+    public func lesseq(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try relational(rhs, relational: .lesseq)
+    }
+
+    /// Test for less than or equal
+    ///
+    /// - Parameters:
+    ///   - value: Constant value
+    public func lesseq(_ value: Double) throws -> VIPSImage {
+        return try relationalConst(relational: .lesseq, c: [value])
+    }
+
+    /// Test for greater than
+    ///
+    /// - Parameters:
+    ///   - rhs: Right-hand input image
+    public func more(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try relational(rhs, relational: .more)
+    }
+
+    /// Test for greater than
+    ///
+    /// - Parameters:
+    ///   - value: Constant value
+    public func more(_ value: Double) throws -> VIPSImage {
+        return try relationalConst(relational: .more, c: [value])
+    }
+
+    /// Test for greater than or equal
+    ///
+    /// - Parameters:
+    ///   - rhs: Right-hand input image
+    public func moreeq(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try relational(rhs, relational: .moreeq)
+    }
+
+    /// Test for greater than or equal
+    ///
+    /// - Parameters:
+    ///   - value: Constant value
+    public func moreeq(_ value: Double) throws -> VIPSImage {
+        return try relationalConst(relational: .moreeq, c: [value])
+    }
+
+    /// Bitwise AND of two images
+    ///
+    /// - Parameters:
+    ///   - rhs: Right-hand input image
+    public func andimage(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try boolean(rhs, boolean: .and)
+    }
+
+    /// Bitwise OR of two images
+    ///
+    /// - Parameters:
+    ///   - rhs: Right-hand input image
+    public func orimage(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try boolean(rhs, boolean: .or)
+    }
+
+    /// Bitwise XOR of two images
+    ///
+    /// - Parameters:
+    ///   - rhs: Right-hand input image
+    public func eorimage(_ rhs: VIPSImage) throws -> VIPSImage {
+        return try boolean(rhs, boolean: .eor)
+    }
+
+    /// Left shift
+    ///
+    /// - Parameters:
+    ///   - amount: Number of bits to shift
+    public func lshift(_ amount: Int) throws -> VIPSImage {
+        return try booleanConst(boolean: .lshift, c: [Double(amount)])
+    }
+
+    /// Right shift
+    ///
+    /// - Parameters:
+    ///   - amount: Number of bits to shift
+    public func rshift(_ amount: Int) throws -> VIPSImage {
+        return try booleanConst(boolean: .rshift, c: [Double(amount)])
+    }
+
 
 }

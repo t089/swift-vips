@@ -8,7 +8,6 @@ let package = Package(
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(name: "VIPS", targets: ["VIPS"]),
-        .executable(name: "vips-generator", targets: ["VIPSGenerator"])
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -26,11 +25,6 @@ let package = Package(
                 "Cvips"
             ]),
         .target(
-            name: "CvipsIntrospection",
-            dependencies: [
-                "Cvips"
-            ]),
-        .target(
             name: "VIPS",
             dependencies: [
                 "Cvips",
@@ -39,13 +33,6 @@ let package = Package(
             ]),
         .executableTarget(name: "vips-tool",
             dependencies: ["VIPS", "Cvips"]
-        ),
-        .executableTarget(
-            name: "VIPSGenerator",
-            dependencies: [
-                "Cvips",
-                "CvipsIntrospection"
-            ]
         ),
         .testTarget(
             name: "VIPSTests",

@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsBandFormat = Cvips.VipsBandFormat
+
 extension VipsBandFormat {
     public static var notset: Self { VIPS_FORMAT_NOTSET }
     public static var uchar: Self { VIPS_FORMAT_UCHAR }

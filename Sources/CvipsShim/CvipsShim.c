@@ -12,6 +12,10 @@ GObject* shim_g_object(const void * p) {
     return G_OBJECT(p);
 }
 
+GType shim_g_object_type(const void * p) {
+    return G_OBJECT_TYPE(p);
+}
+
 VipsImage* shim_vips_image(const void * p) {
     return VIPS_IMAGE(p);
 }

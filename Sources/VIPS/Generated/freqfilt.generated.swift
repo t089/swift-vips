@@ -17,8 +17,8 @@ extension VIPSImage {
         return try VIPSImage([self, mask]) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            opt.set("mask", value: mask.image)
+            opt.set("in", value: self)
+            opt.set("mask", value: mask)
             opt.set("out", value: &out)
 
             try VIPSImage.call("freqmult", options: &opt)
@@ -30,7 +30,7 @@ extension VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("out", value: &out)
 
             try VIPSImage.call("fwfft", options: &opt)
@@ -41,12 +41,12 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - real: Output only the real part of the transform
-    public func invfft(real: Bool = false) throws -> VIPSImage {
+    public func invfft(real: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
-            if real != false {
+            opt.set("in", value: self)
+            if let real = real {
                 opt.set("real", value: real)
             }
             opt.set("out", value: &out)

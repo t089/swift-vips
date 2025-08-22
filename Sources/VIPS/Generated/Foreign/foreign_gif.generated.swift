@@ -6,10 +6,33 @@
 //
 
 import Cvips
+import CvipsShim
 
 extension VIPSImage {
 
-    /// Load gif with libnsgif
+    /// Optional arguments:
+    ///
+    /// * `page`: %gint, page (frame) to read
+    /// * `n`: %gint, load this many pages
+    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
+    ///
+    /// Read a GIF file into a libvips image.
+    ///
+    /// Use `page` to select a page to render, numbering from zero.
+    ///
+    /// Use `n` to select the number of pages to render. The default is 1. Pages are
+    /// rendered in a vertical column. Set to -1 to mean "until the end of the
+    /// document". Use vips_grid() to change page layout.
+    ///
+    /// Use `fail_on` to set the type of error that will cause load to fail. By
+    /// default, loaders are permissive, that is, `VIPS_FAIL_ON_NONE`.
+    ///
+    /// The output image is RGBA for GIFs containing transparent elements, RGB
+    /// otherwise.
+    ///
+    /// See also: vips_image_new_from_file().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -19,18 +42,18 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func gifload(filename: String, n: Int = 0, page: Int = 0, memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
+    public static func gifload(filename: String, n: Int? = nil, page: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
-            if n != 0 {
+            if let n = n {
                 opt.set("n", value: n)
             }
-            if page != 0 {
+            if let page = page {
                 opt.set("page", value: page)
             }
-            if memory != false {
+            if let memory = memory {
                 opt.set("memory", value: memory)
             }
             if let access = access {
@@ -39,7 +62,7 @@ extension VIPSImage {
             if let failOn = failOn {
                 opt.set("fail_on", value: failOn)
             }
-            if revalidate != false {
+            if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
             }
             opt.set("out", value: &out)
@@ -48,7 +71,20 @@ extension VIPSImage {
         }
     }
 
-    /// Load gif with libnsgif
+    /// Optional arguments:
+    ///
+    /// * `page`: %gint, page (frame) to read
+    /// * `n`: %gint, load this many pages
+    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
+    ///
+    /// Exactly as vips_gifload(), but read from a memory buffer.
+    ///
+    /// You must not free the buffer while `out` is active. The
+    /// `VipsObject`::postclose signal on `out` is a good place to free.
+    ///
+    /// See also: vips_gifload().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -58,36 +94,57 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func gifloadBuffer(buffer: Data, n: Int = 0, page: Int = 0, memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
-            var opt = VIPSOption()
+    @inlinable
+    public static func gifload(buffer: some Collection<UInt8>, n: Int? = nil, page: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+        let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
+            return try VIPSImage(nil) { out in
+                var opt = VIPSOption()
 
-            opt.set("buffer", value: buffer)
-            if n != 0 {
-                opt.set("n", value: n)
-            }
-            if page != 0 {
-                opt.set("page", value: page)
-            }
-            if memory != false {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if revalidate != false {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
+                let blob = vips_blob_new(nil, buffer.baseAddress, buffer.count)
+                defer { vips_area_unref(shim_vips_area(blob)) }
 
-            try VIPSImage.call("gifload_buffer", options: &opt)
+                opt.set("buffer", value: blob)
+                if let n = n {
+                    opt.set("n", value: n)
+                }
+                if let page = page {
+                    opt.set("page", value: page)
+                }
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try VIPSImage.call("gifload_buffer", options: &opt)
+            }
+        }
+        if let maybeImage {
+            return maybeImage
+        } else {
+            return try gifload(buffer: Array(buffer), n: n, page: page, memory: memory, access: access, failOn: failOn, revalidate: revalidate)
         }
     }
 
-    /// Load gif from source
+    /// Optional arguments:
+    ///
+    /// * `page`: %gint, page (frame) to read
+    /// * `n`: %gint, load this many pages
+    /// * `fail_on`: `VipsFailOn`, types of read error to fail on
+    ///
+    /// Exactly as vips_gifload(), but read from a source.
+    ///
+    /// See also: vips_gifload().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - source: Source to load from
@@ -97,18 +154,18 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func gifloadSource(source: VIPSSource, n: Int = 0, page: Int = 0, memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+    public static func gifload(source: VIPSSource, n: Int? = nil, page: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+        return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
-            if n != 0 {
+            if let n = n {
                 opt.set("n", value: n)
             }
-            if page != 0 {
+            if let page = page {
                 opt.set("page", value: page)
             }
-            if memory != false {
+            if let memory = memory {
                 opt.set("memory", value: memory)
             }
             if let access = access {
@@ -117,7 +174,7 @@ extension VIPSImage {
             if let failOn = failOn {
                 opt.set("fail_on", value: failOn)
             }
-            if revalidate != false {
+            if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
             }
             opt.set("out", value: &out)
@@ -141,42 +198,42 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func gifsave(filename: String, dither: Double = 0.0, effort: Int = 0, bitdepth: Int = 0, interframeMaxerror: Double = 0.0, reuse: Bool = false, interpaletteMaxerror: Double = 0.0, interlace: Bool = false, keep: VipsForeignKeep? = nil, background: [Double] = [], pageHeight: Int = 0, profile: String = "") throws {
-            var opt = VIPSOption()
+    public func gifsave(filename: String, dither: Double? = nil, effort: Int? = nil, bitdepth: Int? = nil, interframeMaxerror: Double? = nil, reuse: Bool? = nil, interpaletteMaxerror: Double? = nil, interlace: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+        var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("filename", value: filename)
-            if dither != 0.0 {
+            if let dither = dither {
                 opt.set("dither", value: dither)
             }
-            if effort != 0 {
+            if let effort = effort {
                 opt.set("effort", value: effort)
             }
-            if bitdepth != 0 {
+            if let bitdepth = bitdepth {
                 opt.set("bitdepth", value: bitdepth)
             }
-            if interframeMaxerror != 0.0 {
+            if let interframeMaxerror = interframeMaxerror {
                 opt.set("interframe_maxerror", value: interframeMaxerror)
             }
-            if reuse != false {
+            if let reuse = reuse {
                 opt.set("reuse", value: reuse)
             }
-            if interpaletteMaxerror != 0.0 {
+            if let interpaletteMaxerror = interpaletteMaxerror {
                 opt.set("interpalette_maxerror", value: interpaletteMaxerror)
             }
-            if interlace != false {
+            if let interlace = interlace {
                 opt.set("interlace", value: interlace)
             }
             if let keep = keep {
                 opt.set("keep", value: keep)
             }
-            if background != [] {
+            if let background = background {
                 opt.set("background", value: background)
             }
-            if pageHeight != 0 {
+            if let pageHeight = pageHeight {
                 opt.set("page_height", value: pageHeight)
             }
-            if profile != "" {
+            if let profile = profile {
                 opt.set("profile", value: profile)
             }
 
@@ -197,45 +254,54 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func gifsaveBuffer(dither: Double = 0.0, effort: Int = 0, bitdepth: Int = 0, interframeMaxerror: Double = 0.0, reuse: Bool = false, interpaletteMaxerror: Double = 0.0, interlace: Bool = false, keep: VipsForeignKeep? = nil, background: [Double] = [], pageHeight: Int = 0, profile: String = "") throws -> Data {
-            var opt = VIPSOption()
+    public func gifsave(dither: Double? = nil, effort: Int? = nil, bitdepth: Int? = nil, interframeMaxerror: Double? = nil, reuse: Bool? = nil, interpaletteMaxerror: Double? = nil, interlace: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
+        var opt = VIPSOption()
+
+        var out: UnsafeMutablePointer<VipsBlob>! = nil
 
             opt.set("in", value: self.image)
-            if dither != 0.0 {
+            if let dither = dither {
                 opt.set("dither", value: dither)
             }
-            if effort != 0 {
+            if let effort = effort {
                 opt.set("effort", value: effort)
             }
-            if bitdepth != 0 {
+            if let bitdepth = bitdepth {
                 opt.set("bitdepth", value: bitdepth)
             }
-            if interframeMaxerror != 0.0 {
+            if let interframeMaxerror = interframeMaxerror {
                 opt.set("interframe_maxerror", value: interframeMaxerror)
             }
-            if reuse != false {
+            if let reuse = reuse {
                 opt.set("reuse", value: reuse)
             }
-            if interpaletteMaxerror != 0.0 {
+            if let interpaletteMaxerror = interpaletteMaxerror {
                 opt.set("interpalette_maxerror", value: interpaletteMaxerror)
             }
-            if interlace != false {
+            if let interlace = interlace {
                 opt.set("interlace", value: interlace)
             }
             if let keep = keep {
                 opt.set("keep", value: keep)
             }
-            if background != [] {
+            if let background = background {
                 opt.set("background", value: background)
             }
-            if pageHeight != 0 {
+            if let pageHeight = pageHeight {
                 opt.set("page_height", value: pageHeight)
             }
-            if profile != "" {
+            if let profile = profile {
                 opt.set("profile", value: profile)
             }
+            opt.set("buffer", value: &out)
 
             try VIPSImage.call("gifsave_buffer", options: &opt)
+
+        guard let vipsBlob = out else {
+            throw VIPSError("Failed to get buffer from gifsave_buffer")
+        }
+
+        return VIPSBlob(vipsBlob)
     }
 
     /// Save as gif
@@ -253,42 +319,42 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func gifsaveTarget(target: VIPSTarget, dither: Double = 0.0, effort: Int = 0, bitdepth: Int = 0, interframeMaxerror: Double = 0.0, reuse: Bool = false, interpaletteMaxerror: Double = 0.0, interlace: Bool = false, keep: VipsForeignKeep? = nil, background: [Double] = [], pageHeight: Int = 0, profile: String = "") throws {
-            var opt = VIPSOption()
+    public func gifsave(target: VIPSTarget, dither: Double? = nil, effort: Int? = nil, bitdepth: Int? = nil, interframeMaxerror: Double? = nil, reuse: Bool? = nil, interpaletteMaxerror: Double? = nil, interlace: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+        var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("target", value: target)
-            if dither != 0.0 {
+            if let dither = dither {
                 opt.set("dither", value: dither)
             }
-            if effort != 0 {
+            if let effort = effort {
                 opt.set("effort", value: effort)
             }
-            if bitdepth != 0 {
+            if let bitdepth = bitdepth {
                 opt.set("bitdepth", value: bitdepth)
             }
-            if interframeMaxerror != 0.0 {
+            if let interframeMaxerror = interframeMaxerror {
                 opt.set("interframe_maxerror", value: interframeMaxerror)
             }
-            if reuse != false {
+            if let reuse = reuse {
                 opt.set("reuse", value: reuse)
             }
-            if interpaletteMaxerror != 0.0 {
+            if let interpaletteMaxerror = interpaletteMaxerror {
                 opt.set("interpalette_maxerror", value: interpaletteMaxerror)
             }
-            if interlace != false {
+            if let interlace = interlace {
                 opt.set("interlace", value: interlace)
             }
             if let keep = keep {
                 opt.set("keep", value: keep)
             }
-            if background != [] {
+            if let background = background {
                 opt.set("background", value: background)
             }
-            if pageHeight != 0 {
+            if let pageHeight = pageHeight {
                 opt.set("page_height", value: pageHeight)
             }
-            if profile != "" {
+            if let profile = profile {
                 opt.set("profile", value: profile)
             }
 

@@ -6,10 +6,31 @@
 //
 
 import Cvips
+import CvipsShim
 
 extension VIPSImage {
 
-    /// Load svg with rsvg
+    /// Optional arguments:
+    ///
+    /// * `dpi`: %gdouble, render at this DPI
+    /// * `scale`: %gdouble, scale render by this factor
+    /// * `unlimited`: %gboolean, allow SVGs of any size
+    ///
+    /// Render a SVG file into a VIPS image.  Rendering uses the librsvg library
+    /// and should be fast.
+    ///
+    /// Use `dpi` to set the rendering resolution. The default is 72. You can also
+    /// scale the rendering by `scale`.
+    ///
+    /// This function only reads the image header and does not render any pixel
+    /// data. Rendering occurs when pixels are accessed.
+    ///
+    /// SVGs larger than 10MB are normally blocked for security. Set `unlimited` to
+    /// allow SVGs of any size.
+    ///
+    /// See also: vips_image_new_from_file().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -20,21 +41,21 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func svgload(filename: String, dpi: Double = 0.0, scale: Double = 0.0, unlimited: Bool = false, memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
+    public static func svgload(filename: String, dpi: Double? = nil, scale: Double? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
-            if dpi != 0.0 {
+            if let dpi = dpi {
                 opt.set("dpi", value: dpi)
             }
-            if scale != 0.0 {
+            if let scale = scale {
                 opt.set("scale", value: scale)
             }
-            if unlimited != false {
+            if let unlimited = unlimited {
                 opt.set("unlimited", value: unlimited)
             }
-            if memory != false {
+            if let memory = memory {
                 opt.set("memory", value: memory)
             }
             if let access = access {
@@ -43,7 +64,7 @@ extension VIPSImage {
             if let failOn = failOn {
                 opt.set("fail_on", value: failOn)
             }
-            if revalidate != false {
+            if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
             }
             opt.set("out", value: &out)
@@ -52,7 +73,21 @@ extension VIPSImage {
         }
     }
 
-    /// Load svg with rsvg
+    /// Optional arguments:
+    ///
+    /// * `dpi`: %gdouble, render at this DPI
+    /// * `scale`: %gdouble, scale render by this factor
+    /// * `unlimited`: %gboolean, allow SVGs of any size
+    ///
+    /// Read a SVG-formatted memory block into a VIPS image. Exactly as
+    /// vips_svgload(), but read from a memory buffer.
+    ///
+    /// You must not free the buffer while `out` is active. The
+    /// `VipsObject`::postclose signal on `out` is a good place to free.
+    ///
+    /// See also: vips_svgload().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -63,39 +98,54 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func svgloadBuffer(buffer: Data, dpi: Double = 0.0, scale: Double = 0.0, unlimited: Bool = false, memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
-            var opt = VIPSOption()
+    @inlinable
+    public static func svgload(buffer: some Collection<UInt8>, dpi: Double? = nil, scale: Double? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+        let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
+            return try VIPSImage(nil) { out in
+                var opt = VIPSOption()
 
-            opt.set("buffer", value: buffer)
-            if dpi != 0.0 {
-                opt.set("dpi", value: dpi)
-            }
-            if scale != 0.0 {
-                opt.set("scale", value: scale)
-            }
-            if unlimited != false {
-                opt.set("unlimited", value: unlimited)
-            }
-            if memory != false {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if revalidate != false {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
+                let blob = vips_blob_new(nil, buffer.baseAddress, buffer.count)
+                defer { vips_area_unref(shim_vips_area(blob)) }
 
-            try VIPSImage.call("svgload_buffer", options: &opt)
+                opt.set("buffer", value: blob)
+                if let dpi = dpi {
+                    opt.set("dpi", value: dpi)
+                }
+                if let scale = scale {
+                    opt.set("scale", value: scale)
+                }
+                if let unlimited = unlimited {
+                    opt.set("unlimited", value: unlimited)
+                }
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try VIPSImage.call("svgload_buffer", options: &opt)
+            }
+        }
+        if let maybeImage {
+            return maybeImage
+        } else {
+            return try svgload(buffer: Array(buffer), dpi: dpi, scale: scale, unlimited: unlimited, memory: memory, access: access, failOn: failOn, revalidate: revalidate)
         }
     }
 
-    /// Load svg from source
+    /// Exactly as vips_svgload(), but read from a source.
+    ///
+    /// See also: vips_svgload().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - source: Source to load from
@@ -106,21 +156,21 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func svgloadSource(source: VIPSSource, dpi: Double = 0.0, scale: Double = 0.0, unlimited: Bool = false, memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+    public static func svgload(source: VIPSSource, dpi: Double? = nil, scale: Double? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+        return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
-            if dpi != 0.0 {
+            if let dpi = dpi {
                 opt.set("dpi", value: dpi)
             }
-            if scale != 0.0 {
+            if let scale = scale {
                 opt.set("scale", value: scale)
             }
-            if unlimited != false {
+            if let unlimited = unlimited {
                 opt.set("unlimited", value: unlimited)
             }
-            if memory != false {
+            if let memory = memory {
                 opt.set("memory", value: memory)
             }
             if let access = access {
@@ -129,7 +179,7 @@ extension VIPSImage {
             if let failOn = failOn {
                 opt.set("fail_on", value: failOn)
             }
-            if revalidate != false {
+            if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
             }
             opt.set("out", value: &out)

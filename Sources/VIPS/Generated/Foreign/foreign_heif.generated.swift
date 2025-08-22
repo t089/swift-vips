@@ -6,10 +6,41 @@
 //
 
 import Cvips
+import CvipsShim
 
 extension VIPSImage {
 
-    /// Load a heif image
+    /// Optional arguments:
+    ///
+    /// * `page`: %gint, page (top-level image number) to read
+    /// * `n`: %gint, load this many pages
+    /// * `thumbnail`: %gboolean, fetch thumbnail instead of image
+    /// * `unlimited`: %gboolean, remove all denial of service limits
+    ///
+    /// Read a HEIF image file into a VIPS image.
+    ///
+    /// Use `page` to select a page to render, numbering from zero. If neither `n`
+    /// nor `page` are set, `page` defaults to the primary page, otherwise to 0.
+    ///
+    /// Use `n` to select the number of pages to render. The default is 1. Pages are
+    /// rendered in a vertical column. Set to -1 to mean "until the end of the
+    /// document". Use vips_grid() to reorganise pages.
+    ///
+    /// HEIF images have a primary image. The metadata item `heif-primary` gives
+    /// the page number of the primary.
+    ///
+    /// If `thumbnail` is `TRUE`, then fetch a stored thumbnail rather than the
+    /// image.
+    ///
+    /// By default, input image dimensions are limited to 16384x16384.
+    /// If `unlimited` is `TRUE`, this increases to the maximum of 65535x65535.
+    ///
+    /// The bitdepth of the heic image is recorded in the metadata item
+    /// `heif-bitdepth`.
+    ///
+    /// See also: vips_image_new_from_file().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -21,24 +52,24 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func heifload(filename: String, page: Int = 0, n: Int = 0, thumbnail: Bool = false, unlimited: Bool = false, memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
+    public static func heifload(filename: String, page: Int? = nil, n: Int? = nil, thumbnail: Bool? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
-            if page != 0 {
+            if let page = page {
                 opt.set("page", value: page)
             }
-            if n != 0 {
+            if let n = n {
                 opt.set("n", value: n)
             }
-            if thumbnail != false {
+            if let thumbnail = thumbnail {
                 opt.set("thumbnail", value: thumbnail)
             }
-            if unlimited != false {
+            if let unlimited = unlimited {
                 opt.set("unlimited", value: unlimited)
             }
-            if memory != false {
+            if let memory = memory {
                 opt.set("memory", value: memory)
             }
             if let access = access {
@@ -47,7 +78,7 @@ extension VIPSImage {
             if let failOn = failOn {
                 opt.set("fail_on", value: failOn)
             }
-            if revalidate != false {
+            if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
             }
             opt.set("out", value: &out)
@@ -56,7 +87,22 @@ extension VIPSImage {
         }
     }
 
-    /// Load a heif image
+    /// Optional arguments:
+    ///
+    /// * `page`: %gint, page (top-level image number) to read
+    /// * `n`: %gint, load this many pages
+    /// * `thumbnail`: %gboolean, fetch thumbnail instead of image
+    /// * `unlimited`: %gboolean, remove all denial of service limits
+    ///
+    /// Read a HEIF image file into a VIPS image.
+    /// Exactly as vips_heifload(), but read from a memory buffer.
+    ///
+    /// You must not free the buffer while `out` is active. The
+    /// `VipsObject`::postclose signal on `out` is a good place to free.
+    ///
+    /// See also: vips_heifload().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -68,42 +114,64 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func heifloadBuffer(buffer: Data, page: Int = 0, n: Int = 0, thumbnail: Bool = false, unlimited: Bool = false, memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
-            var opt = VIPSOption()
+    @inlinable
+    public static func heifload(buffer: some Collection<UInt8>, page: Int? = nil, n: Int? = nil, thumbnail: Bool? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+        let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
+            return try VIPSImage(nil) { out in
+                var opt = VIPSOption()
 
-            opt.set("buffer", value: buffer)
-            if page != 0 {
-                opt.set("page", value: page)
-            }
-            if n != 0 {
-                opt.set("n", value: n)
-            }
-            if thumbnail != false {
-                opt.set("thumbnail", value: thumbnail)
-            }
-            if unlimited != false {
-                opt.set("unlimited", value: unlimited)
-            }
-            if memory != false {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if revalidate != false {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
+                let blob = vips_blob_new(nil, buffer.baseAddress, buffer.count)
+                defer { vips_area_unref(shim_vips_area(blob)) }
 
-            try VIPSImage.call("heifload_buffer", options: &opt)
+                opt.set("buffer", value: blob)
+                if let page = page {
+                    opt.set("page", value: page)
+                }
+                if let n = n {
+                    opt.set("n", value: n)
+                }
+                if let thumbnail = thumbnail {
+                    opt.set("thumbnail", value: thumbnail)
+                }
+                if let unlimited = unlimited {
+                    opt.set("unlimited", value: unlimited)
+                }
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try VIPSImage.call("heifload_buffer", options: &opt)
+            }
+        }
+        if let maybeImage {
+            return maybeImage
+        } else {
+            return try heifload(buffer: Array(buffer), page: page, n: n, thumbnail: thumbnail, unlimited: unlimited, memory: memory, access: access, failOn: failOn, revalidate: revalidate)
         }
     }
 
-    /// Load a heif image
+    /// Optional arguments:
+    ///
+    /// * `page`: %gint, page (top-level image number) to read
+    /// * `n`: %gint, load this many pages
+    /// * `thumbnail`: %gboolean, fetch thumbnail instead of image
+    /// * `unlimited`: %gboolean, remove all denial of service limits
+    ///
+    /// Exactly as vips_heifload(), but read from a source.
+    ///
+    /// See also: vips_heifload().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - source: Source to load from
@@ -115,24 +183,24 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func heifloadSource(source: VIPSSource, page: Int = 0, n: Int = 0, thumbnail: Bool = false, unlimited: Bool = false, memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+    public static func heifload(source: VIPSSource, page: Int? = nil, n: Int? = nil, thumbnail: Bool? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+        return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
-            if page != 0 {
+            if let page = page {
                 opt.set("page", value: page)
             }
-            if n != 0 {
+            if let n = n {
                 opt.set("n", value: n)
             }
-            if thumbnail != false {
+            if let thumbnail = thumbnail {
                 opt.set("thumbnail", value: thumbnail)
             }
-            if unlimited != false {
+            if let unlimited = unlimited {
                 opt.set("unlimited", value: unlimited)
             }
-            if memory != false {
+            if let memory = memory {
                 opt.set("memory", value: memory)
             }
             if let access = access {
@@ -141,7 +209,7 @@ extension VIPSImage {
             if let failOn = failOn {
                 opt.set("fail_on", value: failOn)
             }
-            if revalidate != false {
+            if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
             }
             opt.set("out", value: &out)
@@ -165,24 +233,24 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func heifsave(filename: String, Q: Int = 0, bitdepth: Int = 0, lossless: Bool = false, compression: VipsForeignHeifCompression? = nil, effort: Int = 0, subsampleMode: VipsForeignSubsample? = nil, encoder: VipsForeignHeifEncoder? = nil, keep: VipsForeignKeep? = nil, background: [Double] = [], pageHeight: Int = 0, profile: String = "") throws {
-            var opt = VIPSOption()
+    public func heifsave(filename: String, Q: Int? = nil, bitdepth: Int? = nil, lossless: Bool? = nil, compression: VipsForeignHeifCompression? = nil, effort: Int? = nil, subsampleMode: VipsForeignSubsample? = nil, encoder: VipsForeignHeifEncoder? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+        var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("filename", value: filename)
-            if Q != 0 {
+            if let Q = Q {
                 opt.set("Q", value: Q)
             }
-            if bitdepth != 0 {
+            if let bitdepth = bitdepth {
                 opt.set("bitdepth", value: bitdepth)
             }
-            if lossless != false {
+            if let lossless = lossless {
                 opt.set("lossless", value: lossless)
             }
             if let compression = compression {
                 opt.set("compression", value: compression)
             }
-            if effort != 0 {
+            if let effort = effort {
                 opt.set("effort", value: effort)
             }
             if let subsampleMode = subsampleMode {
@@ -194,13 +262,13 @@ extension VIPSImage {
             if let keep = keep {
                 opt.set("keep", value: keep)
             }
-            if background != [] {
+            if let background = background {
                 opt.set("background", value: background)
             }
-            if pageHeight != 0 {
+            if let pageHeight = pageHeight {
                 opt.set("page_height", value: pageHeight)
             }
-            if profile != "" {
+            if let profile = profile {
                 opt.set("profile", value: profile)
             }
 
@@ -221,23 +289,25 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func heifsaveBuffer(Q: Int = 0, bitdepth: Int = 0, lossless: Bool = false, compression: VipsForeignHeifCompression? = nil, effort: Int = 0, subsampleMode: VipsForeignSubsample? = nil, encoder: VipsForeignHeifEncoder? = nil, keep: VipsForeignKeep? = nil, background: [Double] = [], pageHeight: Int = 0, profile: String = "") throws -> Data {
-            var opt = VIPSOption()
+    public func heifsave(Q: Int? = nil, bitdepth: Int? = nil, lossless: Bool? = nil, compression: VipsForeignHeifCompression? = nil, effort: Int? = nil, subsampleMode: VipsForeignSubsample? = nil, encoder: VipsForeignHeifEncoder? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
+        var opt = VIPSOption()
+
+        var out: UnsafeMutablePointer<VipsBlob>! = nil
 
             opt.set("in", value: self.image)
-            if Q != 0 {
+            if let Q = Q {
                 opt.set("Q", value: Q)
             }
-            if bitdepth != 0 {
+            if let bitdepth = bitdepth {
                 opt.set("bitdepth", value: bitdepth)
             }
-            if lossless != false {
+            if let lossless = lossless {
                 opt.set("lossless", value: lossless)
             }
             if let compression = compression {
                 opt.set("compression", value: compression)
             }
-            if effort != 0 {
+            if let effort = effort {
                 opt.set("effort", value: effort)
             }
             if let subsampleMode = subsampleMode {
@@ -249,17 +319,24 @@ extension VIPSImage {
             if let keep = keep {
                 opt.set("keep", value: keep)
             }
-            if background != [] {
+            if let background = background {
                 opt.set("background", value: background)
             }
-            if pageHeight != 0 {
+            if let pageHeight = pageHeight {
                 opt.set("page_height", value: pageHeight)
             }
-            if profile != "" {
+            if let profile = profile {
                 opt.set("profile", value: profile)
             }
+            opt.set("buffer", value: &out)
 
             try VIPSImage.call("heifsave_buffer", options: &opt)
+
+        guard let vipsBlob = out else {
+            throw VIPSError("Failed to get buffer from heifsave_buffer")
+        }
+
+        return VIPSBlob(vipsBlob)
     }
 
     /// Save image in heif format
@@ -277,24 +354,24 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func heifsaveTarget(target: VIPSTarget, Q: Int = 0, bitdepth: Int = 0, lossless: Bool = false, compression: VipsForeignHeifCompression? = nil, effort: Int = 0, subsampleMode: VipsForeignSubsample? = nil, encoder: VipsForeignHeifEncoder? = nil, keep: VipsForeignKeep? = nil, background: [Double] = [], pageHeight: Int = 0, profile: String = "") throws {
-            var opt = VIPSOption()
+    public func heifsave(target: VIPSTarget, Q: Int? = nil, bitdepth: Int? = nil, lossless: Bool? = nil, compression: VipsForeignHeifCompression? = nil, effort: Int? = nil, subsampleMode: VipsForeignSubsample? = nil, encoder: VipsForeignHeifEncoder? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+        var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("target", value: target)
-            if Q != 0 {
+            if let Q = Q {
                 opt.set("Q", value: Q)
             }
-            if bitdepth != 0 {
+            if let bitdepth = bitdepth {
                 opt.set("bitdepth", value: bitdepth)
             }
-            if lossless != false {
+            if let lossless = lossless {
                 opt.set("lossless", value: lossless)
             }
             if let compression = compression {
                 opt.set("compression", value: compression)
             }
-            if effort != 0 {
+            if let effort = effort {
                 opt.set("effort", value: effort)
             }
             if let subsampleMode = subsampleMode {
@@ -306,13 +383,13 @@ extension VIPSImage {
             if let keep = keep {
                 opt.set("keep", value: keep)
             }
-            if background != [] {
+            if let background = background {
                 opt.set("background", value: background)
             }
-            if pageHeight != 0 {
+            if let pageHeight = pageHeight {
                 opt.set("page_height", value: pageHeight)
             }
-            if profile != "" {
+            if let profile = profile {
                 opt.set("profile", value: profile)
             }
 

@@ -15,6 +15,8 @@ VipsImage* shim_vips_image_new_from_source(VipsSource *source, const char* optio
 
 GObject* shim_g_object(const void * p);
 
+GType shim_g_object_type(const void * p);
+
 VipsImage* shim_vips_image(const void * p);
 
 VipsObject* shim_vips_object(const void *p);

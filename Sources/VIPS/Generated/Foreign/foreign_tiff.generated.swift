@@ -6,10 +6,59 @@
 //
 
 import Cvips
+import CvipsShim
 
 extension VIPSImage {
 
-    /// Load tiff from file
+    /// Optional arguments:
+    ///
+    /// * `page`: %gint, load this page
+    /// * `n`: %gint, load this many pages
+    /// * `autorotate`: %gboolean, use orientation tag to rotate the image
+    ///   during load
+    /// * `subifd`: %gint, select this subifd index
+    ///
+    /// Read a TIFF file into a VIPS image. It is a full baseline TIFF 6 reader,
+    /// with extensions for tiled images, multipage images, XYZ and LAB colour
+    /// space, pyramidal images and JPEG compression, including CMYK and YCbCr.
+    ///
+    /// `page` means load this page from the file. By default the first page (page
+    /// 0) is read.
+    ///
+    /// `n` means load this many pages. By default a single page is read. All the
+    /// pages must have the same dimensions, and they are loaded as a tall, thin
+    /// "toilet roll" image. The `VIPS_META_PAGE_HEIGHT` metadata
+    /// tag gives the height in pixels of each page. Use -1 to load all pages.
+    ///
+    /// Setting `autorotate` to `TRUE` will make the loader interpret the
+    /// orientation tag and automatically rotate the image appropriately during
+    /// load.
+    ///
+    /// If `autorotate` is `FALSE`, the metadata field `VIPS_META_ORIENTATION` is set
+    /// to the value of the orientation tag. Applications may read and interpret
+    /// this field
+    /// as they wish later in processing. See vips_autorot(). Save
+    /// operations will use `VIPS_META_ORIENTATION`, if present, to set the
+    /// orientation of output images.
+    ///
+    /// If `autorotate` is TRUE, the image will be rotated upright during load and
+    /// no metadata attached. This can be very slow.
+    ///
+    /// If `subifd` is -1 (the default), the main image is selected for each page.
+    /// If it is 0 or greater and there is a SUBIFD tag, the indexed SUBIFD is
+    /// selected. This can be used to read lower resolution layers from
+    /// bioformats-style image pyramids.
+    ///
+    /// Any ICC profile is read and attached to the VIPS image as
+    /// `VIPS_META_ICC_NAME`. Any XMP metadata is read and attached to the image
+    /// as `VIPS_META_XMP_NAME`. Any IPTC is attached as `VIPS_META_IPTC_NAME`. The
+    /// image description is
+    /// attached as `VIPS_META_IMAGEDESCRIPTION`. Data in the photoshop tag is
+    /// attached as `VIPS_META_PHOTOSHOP_NAME`.
+    ///
+    /// See also: vips_image_new_from_file(), vips_autorot().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -21,24 +70,24 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func tiffload(filename: String, page: Int = 0, subifd: Int = 0, n: Int = 0, autorotate: Bool = false, memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
+    public static func tiffload(filename: String, page: Int? = nil, subifd: Int? = nil, n: Int? = nil, autorotate: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
-            if page != 0 {
+            if let page = page {
                 opt.set("page", value: page)
             }
-            if subifd != 0 {
+            if let subifd = subifd {
                 opt.set("subifd", value: subifd)
             }
-            if n != 0 {
+            if let n = n {
                 opt.set("n", value: n)
             }
-            if autorotate != false {
+            if let autorotate = autorotate {
                 opt.set("autorotate", value: autorotate)
             }
-            if memory != false {
+            if let memory = memory {
                 opt.set("memory", value: memory)
             }
             if let access = access {
@@ -47,7 +96,7 @@ extension VIPSImage {
             if let failOn = failOn {
                 opt.set("fail_on", value: failOn)
             }
-            if revalidate != false {
+            if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
             }
             opt.set("out", value: &out)
@@ -56,7 +105,23 @@ extension VIPSImage {
         }
     }
 
-    /// Load tiff from buffer
+    /// Optional arguments:
+    ///
+    /// * `page`: %gint, load this page
+    /// * `n`: %gint, load this many pages
+    /// * `autorotate`: %gboolean, use orientation tag to rotate the image
+    ///   during load
+    /// * `subifd`: %gint, select this subifd index
+    ///
+    /// Read a TIFF-formatted memory block into a VIPS image. Exactly as
+    /// vips_tiffload(), but read from a memory source.
+    ///
+    /// You must not free the buffer while `out` is active. The
+    /// `VipsObject`::postclose signal on `out` is a good place to free.
+    ///
+    /// See also: vips_tiffload().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -68,42 +133,65 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func tiffloadBuffer(buffer: Data, page: Int = 0, subifd: Int = 0, n: Int = 0, autorotate: Bool = false, memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
-            var opt = VIPSOption()
+    @inlinable
+    public static func tiffload(buffer: some Collection<UInt8>, page: Int? = nil, subifd: Int? = nil, n: Int? = nil, autorotate: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+        let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
+            return try VIPSImage(nil) { out in
+                var opt = VIPSOption()
 
-            opt.set("buffer", value: buffer)
-            if page != 0 {
-                opt.set("page", value: page)
-            }
-            if subifd != 0 {
-                opt.set("subifd", value: subifd)
-            }
-            if n != 0 {
-                opt.set("n", value: n)
-            }
-            if autorotate != false {
-                opt.set("autorotate", value: autorotate)
-            }
-            if memory != false {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if revalidate != false {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
+                let blob = vips_blob_new(nil, buffer.baseAddress, buffer.count)
+                defer { vips_area_unref(shim_vips_area(blob)) }
 
-            try VIPSImage.call("tiffload_buffer", options: &opt)
+                opt.set("buffer", value: blob)
+                if let page = page {
+                    opt.set("page", value: page)
+                }
+                if let subifd = subifd {
+                    opt.set("subifd", value: subifd)
+                }
+                if let n = n {
+                    opt.set("n", value: n)
+                }
+                if let autorotate = autorotate {
+                    opt.set("autorotate", value: autorotate)
+                }
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try VIPSImage.call("tiffload_buffer", options: &opt)
+            }
+        }
+        if let maybeImage {
+            return maybeImage
+        } else {
+            return try tiffload(buffer: Array(buffer), page: page, subifd: subifd, n: n, autorotate: autorotate, memory: memory, access: access, failOn: failOn, revalidate: revalidate)
         }
     }
 
-    /// Load tiff from source
+    /// Optional arguments:
+    ///
+    /// * `page`: %gint, load this page
+    /// * `n`: %gint, load this many pages
+    /// * `autorotate`: %gboolean, use orientation tag to rotate the image
+    ///   during load
+    /// * `subifd`: %gint, select this subifd index
+    ///
+    /// Exactly as vips_tiffload(), but read from a source.
+    ///
+    /// See also: vips_tiffload().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - source: Source to load from
@@ -115,24 +203,24 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func tiffloadSource(source: VIPSSource, page: Int = 0, subifd: Int = 0, n: Int = 0, autorotate: Bool = false, memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+    public static func tiffload(source: VIPSSource, page: Int? = nil, subifd: Int? = nil, n: Int? = nil, autorotate: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+        return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
-            if page != 0 {
+            if let page = page {
                 opt.set("page", value: page)
             }
-            if subifd != 0 {
+            if let subifd = subifd {
                 opt.set("subifd", value: subifd)
             }
-            if n != 0 {
+            if let n = n {
                 opt.set("n", value: n)
             }
-            if autorotate != false {
+            if let autorotate = autorotate {
                 opt.set("autorotate", value: autorotate)
             }
-            if memory != false {
+            if let memory = memory {
                 opt.set("memory", value: memory)
             }
             if let access = access {
@@ -141,7 +229,7 @@ extension VIPSImage {
             if let failOn = failOn {
                 opt.set("fail_on", value: failOn)
             }
-            if revalidate != false {
+            if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
             }
             opt.set("out", value: &out)
@@ -169,7 +257,7 @@ extension VIPSImage {
     ///   - bigtiff: Write a bigtiff image
     ///   - properties: Write a properties document to IMAGEDESCRIPTION
     ///   - regionShrink: Method to shrink regions
-    ///   - level: ZSTD compression level
+    ///   - level: Deflate (1-9, default 6) or ZSTD (1-22, default 9) compression level
     ///   - lossless: Enable WEBP lossless mode
     ///   - depth: Pyramid depth
     ///   - subifd: Save pyr layers as sub-IFDs
@@ -178,81 +266,81 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func tiffsave(filename: String, compression: VipsForeignTiffCompression? = nil, Q: Int = 0, predictor: VipsForeignTiffPredictor? = nil, tile: Bool = false, tileWidth: Int = 0, tileHeight: Int = 0, pyramid: Bool = false, miniswhite: Bool = false, bitdepth: Int = 0, resunit: VipsForeignTiffResunit? = nil, xres: Double = 0.0, yres: Double = 0.0, bigtiff: Bool = false, properties: Bool = false, regionShrink: VipsRegionShrink? = nil, level: Int = 0, lossless: Bool = false, depth: VipsForeignDzDepth? = nil, subifd: Bool = false, premultiply: Bool = false, keep: VipsForeignKeep? = nil, background: [Double] = [], pageHeight: Int = 0, profile: String = "") throws {
-            var opt = VIPSOption()
+    public func tiffsave(filename: String, compression: VipsForeignTiffCompression? = nil, Q: Int? = nil, predictor: VipsForeignTiffPredictor? = nil, tile: Bool? = nil, tileWidth: Int? = nil, tileHeight: Int? = nil, pyramid: Bool? = nil, miniswhite: Bool? = nil, bitdepth: Int? = nil, resunit: VipsForeignTiffResunit? = nil, xres: Double? = nil, yres: Double? = nil, bigtiff: Bool? = nil, properties: Bool? = nil, regionShrink: VipsRegionShrink? = nil, level: Int? = nil, lossless: Bool? = nil, depth: VipsForeignDzDepth? = nil, subifd: Bool? = nil, premultiply: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+        var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("filename", value: filename)
             if let compression = compression {
                 opt.set("compression", value: compression)
             }
-            if Q != 0 {
+            if let Q = Q {
                 opt.set("Q", value: Q)
             }
             if let predictor = predictor {
                 opt.set("predictor", value: predictor)
             }
-            if tile != false {
+            if let tile = tile {
                 opt.set("tile", value: tile)
             }
-            if tileWidth != 0 {
+            if let tileWidth = tileWidth {
                 opt.set("tile_width", value: tileWidth)
             }
-            if tileHeight != 0 {
+            if let tileHeight = tileHeight {
                 opt.set("tile_height", value: tileHeight)
             }
-            if pyramid != false {
+            if let pyramid = pyramid {
                 opt.set("pyramid", value: pyramid)
             }
-            if miniswhite != false {
+            if let miniswhite = miniswhite {
                 opt.set("miniswhite", value: miniswhite)
             }
-            if bitdepth != 0 {
+            if let bitdepth = bitdepth {
                 opt.set("bitdepth", value: bitdepth)
             }
             if let resunit = resunit {
                 opt.set("resunit", value: resunit)
             }
-            if xres != 0.0 {
+            if let xres = xres {
                 opt.set("xres", value: xres)
             }
-            if yres != 0.0 {
+            if let yres = yres {
                 opt.set("yres", value: yres)
             }
-            if bigtiff != false {
+            if let bigtiff = bigtiff {
                 opt.set("bigtiff", value: bigtiff)
             }
-            if properties != false {
+            if let properties = properties {
                 opt.set("properties", value: properties)
             }
             if let regionShrink = regionShrink {
                 opt.set("region_shrink", value: regionShrink)
             }
-            if level != 0 {
+            if let level = level {
                 opt.set("level", value: level)
             }
-            if lossless != false {
+            if let lossless = lossless {
                 opt.set("lossless", value: lossless)
             }
             if let depth = depth {
                 opt.set("depth", value: depth)
             }
-            if subifd != false {
+            if let subifd = subifd {
                 opt.set("subifd", value: subifd)
             }
-            if premultiply != false {
+            if let premultiply = premultiply {
                 opt.set("premultiply", value: premultiply)
             }
             if let keep = keep {
                 opt.set("keep", value: keep)
             }
-            if background != [] {
+            if let background = background {
                 opt.set("background", value: background)
             }
-            if pageHeight != 0 {
+            if let pageHeight = pageHeight {
                 opt.set("page_height", value: pageHeight)
             }
-            if profile != "" {
+            if let profile = profile {
                 opt.set("profile", value: profile)
             }
 
@@ -277,7 +365,7 @@ extension VIPSImage {
     ///   - bigtiff: Write a bigtiff image
     ///   - properties: Write a properties document to IMAGEDESCRIPTION
     ///   - regionShrink: Method to shrink regions
-    ///   - level: ZSTD compression level
+    ///   - level: Deflate (1-9, default 6) or ZSTD (1-22, default 9) compression level
     ///   - lossless: Enable WEBP lossless mode
     ///   - depth: Pyramid depth
     ///   - subifd: Save pyr layers as sub-IFDs
@@ -286,84 +374,93 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func tiffsaveBuffer(compression: VipsForeignTiffCompression? = nil, Q: Int = 0, predictor: VipsForeignTiffPredictor? = nil, tile: Bool = false, tileWidth: Int = 0, tileHeight: Int = 0, pyramid: Bool = false, miniswhite: Bool = false, bitdepth: Int = 0, resunit: VipsForeignTiffResunit? = nil, xres: Double = 0.0, yres: Double = 0.0, bigtiff: Bool = false, properties: Bool = false, regionShrink: VipsRegionShrink? = nil, level: Int = 0, lossless: Bool = false, depth: VipsForeignDzDepth? = nil, subifd: Bool = false, premultiply: Bool = false, keep: VipsForeignKeep? = nil, background: [Double] = [], pageHeight: Int = 0, profile: String = "") throws -> Data {
-            var opt = VIPSOption()
+    public func tiffsave(compression: VipsForeignTiffCompression? = nil, Q: Int? = nil, predictor: VipsForeignTiffPredictor? = nil, tile: Bool? = nil, tileWidth: Int? = nil, tileHeight: Int? = nil, pyramid: Bool? = nil, miniswhite: Bool? = nil, bitdepth: Int? = nil, resunit: VipsForeignTiffResunit? = nil, xres: Double? = nil, yres: Double? = nil, bigtiff: Bool? = nil, properties: Bool? = nil, regionShrink: VipsRegionShrink? = nil, level: Int? = nil, lossless: Bool? = nil, depth: VipsForeignDzDepth? = nil, subifd: Bool? = nil, premultiply: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
+        var opt = VIPSOption()
+
+        var out: UnsafeMutablePointer<VipsBlob>! = nil
 
             opt.set("in", value: self.image)
             if let compression = compression {
                 opt.set("compression", value: compression)
             }
-            if Q != 0 {
+            if let Q = Q {
                 opt.set("Q", value: Q)
             }
             if let predictor = predictor {
                 opt.set("predictor", value: predictor)
             }
-            if tile != false {
+            if let tile = tile {
                 opt.set("tile", value: tile)
             }
-            if tileWidth != 0 {
+            if let tileWidth = tileWidth {
                 opt.set("tile_width", value: tileWidth)
             }
-            if tileHeight != 0 {
+            if let tileHeight = tileHeight {
                 opt.set("tile_height", value: tileHeight)
             }
-            if pyramid != false {
+            if let pyramid = pyramid {
                 opt.set("pyramid", value: pyramid)
             }
-            if miniswhite != false {
+            if let miniswhite = miniswhite {
                 opt.set("miniswhite", value: miniswhite)
             }
-            if bitdepth != 0 {
+            if let bitdepth = bitdepth {
                 opt.set("bitdepth", value: bitdepth)
             }
             if let resunit = resunit {
                 opt.set("resunit", value: resunit)
             }
-            if xres != 0.0 {
+            if let xres = xres {
                 opt.set("xres", value: xres)
             }
-            if yres != 0.0 {
+            if let yres = yres {
                 opt.set("yres", value: yres)
             }
-            if bigtiff != false {
+            if let bigtiff = bigtiff {
                 opt.set("bigtiff", value: bigtiff)
             }
-            if properties != false {
+            if let properties = properties {
                 opt.set("properties", value: properties)
             }
             if let regionShrink = regionShrink {
                 opt.set("region_shrink", value: regionShrink)
             }
-            if level != 0 {
+            if let level = level {
                 opt.set("level", value: level)
             }
-            if lossless != false {
+            if let lossless = lossless {
                 opt.set("lossless", value: lossless)
             }
             if let depth = depth {
                 opt.set("depth", value: depth)
             }
-            if subifd != false {
+            if let subifd = subifd {
                 opt.set("subifd", value: subifd)
             }
-            if premultiply != false {
+            if let premultiply = premultiply {
                 opt.set("premultiply", value: premultiply)
             }
             if let keep = keep {
                 opt.set("keep", value: keep)
             }
-            if background != [] {
+            if let background = background {
                 opt.set("background", value: background)
             }
-            if pageHeight != 0 {
+            if let pageHeight = pageHeight {
                 opt.set("page_height", value: pageHeight)
             }
-            if profile != "" {
+            if let profile = profile {
                 opt.set("profile", value: profile)
             }
+            opt.set("buffer", value: &out)
 
             try VIPSImage.call("tiffsave_buffer", options: &opt)
+
+        guard let vipsBlob = out else {
+            throw VIPSError("Failed to get buffer from tiffsave_buffer")
+        }
+
+        return VIPSBlob(vipsBlob)
     }
 
     /// Save image to tiff target
@@ -385,7 +482,7 @@ extension VIPSImage {
     ///   - bigtiff: Write a bigtiff image
     ///   - properties: Write a properties document to IMAGEDESCRIPTION
     ///   - regionShrink: Method to shrink regions
-    ///   - level: ZSTD compression level
+    ///   - level: Deflate (1-9, default 6) or ZSTD (1-22, default 9) compression level
     ///   - lossless: Enable WEBP lossless mode
     ///   - depth: Pyramid depth
     ///   - subifd: Save pyr layers as sub-IFDs
@@ -394,81 +491,81 @@ extension VIPSImage {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func tiffsaveTarget(target: VIPSTarget, compression: VipsForeignTiffCompression? = nil, Q: Int = 0, predictor: VipsForeignTiffPredictor? = nil, tile: Bool = false, tileWidth: Int = 0, tileHeight: Int = 0, pyramid: Bool = false, miniswhite: Bool = false, bitdepth: Int = 0, resunit: VipsForeignTiffResunit? = nil, xres: Double = 0.0, yres: Double = 0.0, bigtiff: Bool = false, properties: Bool = false, regionShrink: VipsRegionShrink? = nil, level: Int = 0, lossless: Bool = false, depth: VipsForeignDzDepth? = nil, subifd: Bool = false, premultiply: Bool = false, keep: VipsForeignKeep? = nil, background: [Double] = [], pageHeight: Int = 0, profile: String = "") throws {
-            var opt = VIPSOption()
+    public func tiffsave(target: VIPSTarget, compression: VipsForeignTiffCompression? = nil, Q: Int? = nil, predictor: VipsForeignTiffPredictor? = nil, tile: Bool? = nil, tileWidth: Int? = nil, tileHeight: Int? = nil, pyramid: Bool? = nil, miniswhite: Bool? = nil, bitdepth: Int? = nil, resunit: VipsForeignTiffResunit? = nil, xres: Double? = nil, yres: Double? = nil, bigtiff: Bool? = nil, properties: Bool? = nil, regionShrink: VipsRegionShrink? = nil, level: Int? = nil, lossless: Bool? = nil, depth: VipsForeignDzDepth? = nil, subifd: Bool? = nil, premultiply: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+        var opt = VIPSOption()
 
-            opt.set("in", value: self.image)
+            opt.set("in", value: self)
             opt.set("target", value: target)
             if let compression = compression {
                 opt.set("compression", value: compression)
             }
-            if Q != 0 {
+            if let Q = Q {
                 opt.set("Q", value: Q)
             }
             if let predictor = predictor {
                 opt.set("predictor", value: predictor)
             }
-            if tile != false {
+            if let tile = tile {
                 opt.set("tile", value: tile)
             }
-            if tileWidth != 0 {
+            if let tileWidth = tileWidth {
                 opt.set("tile_width", value: tileWidth)
             }
-            if tileHeight != 0 {
+            if let tileHeight = tileHeight {
                 opt.set("tile_height", value: tileHeight)
             }
-            if pyramid != false {
+            if let pyramid = pyramid {
                 opt.set("pyramid", value: pyramid)
             }
-            if miniswhite != false {
+            if let miniswhite = miniswhite {
                 opt.set("miniswhite", value: miniswhite)
             }
-            if bitdepth != 0 {
+            if let bitdepth = bitdepth {
                 opt.set("bitdepth", value: bitdepth)
             }
             if let resunit = resunit {
                 opt.set("resunit", value: resunit)
             }
-            if xres != 0.0 {
+            if let xres = xres {
                 opt.set("xres", value: xres)
             }
-            if yres != 0.0 {
+            if let yres = yres {
                 opt.set("yres", value: yres)
             }
-            if bigtiff != false {
+            if let bigtiff = bigtiff {
                 opt.set("bigtiff", value: bigtiff)
             }
-            if properties != false {
+            if let properties = properties {
                 opt.set("properties", value: properties)
             }
             if let regionShrink = regionShrink {
                 opt.set("region_shrink", value: regionShrink)
             }
-            if level != 0 {
+            if let level = level {
                 opt.set("level", value: level)
             }
-            if lossless != false {
+            if let lossless = lossless {
                 opt.set("lossless", value: lossless)
             }
             if let depth = depth {
                 opt.set("depth", value: depth)
             }
-            if subifd != false {
+            if let subifd = subifd {
                 opt.set("subifd", value: subifd)
             }
-            if premultiply != false {
+            if let premultiply = premultiply {
                 opt.set("premultiply", value: premultiply)
             }
             if let keep = keep {
                 opt.set("keep", value: keep)
             }
-            if background != [] {
+            if let background = background {
                 opt.set("background", value: background)
             }
-            if pageHeight != 0 {
+            if let pageHeight = pageHeight {
                 opt.set("page_height", value: pageHeight)
             }
-            if profile != "" {
+            if let profile = profile {
                 opt.set("profile", value: profile)
             }
 

@@ -6,10 +6,49 @@
 //
 
 import Cvips
+import CvipsShim
 
 extension VIPSImage {
 
-    /// Load pdf from file
+    /// Optional arguments:
+    ///
+    /// * `page`: %gint, load this page, numbered from zero
+    /// * `n`: %gint, load this many pages
+    /// * `dpi`: %gdouble, render at this DPI
+    /// * `scale`: %gdouble, scale render by this factor
+    /// * `background`: `VipsArrayDouble` background colour
+    /// * `password`: %gchararray background colour
+    ///
+    /// Render a PDF file into a VIPS image.
+    ///
+    /// The output image is always RGBA --- CMYK PDFs will be
+    /// converted. If you need CMYK bitmaps, you should use vips_magickload()
+    /// instead.
+    ///
+    /// Use `page` to select a page to render, numbering from zero.
+    ///
+    /// Use `n` to select the number of pages to render. The default is 1. Pages are
+    /// rendered in a vertical column, with each individual page aligned to the
+    /// left. Set to -1 to mean "until the end of the document". Use vips_grid()
+    /// to change page layout.
+    ///
+    /// Use `dpi` to set the rendering resolution. The default is 72. Additionally,
+    /// you can scale by setting `scale`. If you set both, they combine.
+    ///
+    /// Use `background` to set the background RGBA colour. The default is 255
+    /// (solid white), use eg. 0 for a transparent background.
+    ///
+    /// Use `password` to supply a decryption password.
+    ///
+    /// The operation fills a number of header fields with metadata, for example
+    /// "pdf-author". They may be useful.
+    ///
+    /// This function only reads the image header and does not render any pixel
+    /// data. Rendering occurs when pixels are accessed.
+    ///
+    /// See also: vips_image_new_from_file(), vips_magickload().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - filename: Filename to load from
@@ -23,30 +62,30 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func pdfload(filename: String, page: Int = 0, n: Int = 0, dpi: Double = 0.0, scale: Double = 0.0, background: [Double] = [], password: String = "", memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
+    public static func pdfload(filename: String, page: Int? = nil, n: Int? = nil, dpi: Double? = nil, scale: Double? = nil, background: [Double]? = nil, password: String? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
         return try VIPSImage(nil) { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
-            if page != 0 {
+            if let page = page {
                 opt.set("page", value: page)
             }
-            if n != 0 {
+            if let n = n {
                 opt.set("n", value: n)
             }
-            if dpi != 0.0 {
+            if let dpi = dpi {
                 opt.set("dpi", value: dpi)
             }
-            if scale != 0.0 {
+            if let scale = scale {
                 opt.set("scale", value: scale)
             }
-            if background != [] {
+            if let background = background {
                 opt.set("background", value: background)
             }
-            if password != "" {
+            if let password = password {
                 opt.set("password", value: password)
             }
-            if memory != false {
+            if let memory = memory {
                 opt.set("memory", value: memory)
             }
             if let access = access {
@@ -55,7 +94,7 @@ extension VIPSImage {
             if let failOn = failOn {
                 opt.set("fail_on", value: failOn)
             }
-            if revalidate != false {
+            if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
             }
             opt.set("out", value: &out)
@@ -64,7 +103,23 @@ extension VIPSImage {
         }
     }
 
-    /// Load pdf from buffer
+    /// Optional arguments:
+    ///
+    /// * `page`: %gint, load this page, numbered from zero
+    /// * `n`: %gint, load this many pages
+    /// * `dpi`: %gdouble, render at this DPI
+    /// * `scale`: %gdouble, scale render by this factor
+    /// * `background`: `VipsArrayDouble` background colour
+    ///
+    /// Read a PDF-formatted memory buffer into a VIPS image. Exactly as
+    /// vips_pdfload(), but read from memory.
+    ///
+    /// You must not free the buffer while `out` is active. The
+    /// `VipsObject`::postclose signal on `out` is a good place to free.
+    ///
+    /// See also: vips_pdfload().
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - buffer: Buffer to load from
@@ -78,48 +133,71 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func pdfloadBuffer(buffer: Data, page: Int = 0, n: Int = 0, dpi: Double = 0.0, scale: Double = 0.0, background: [Double] = [], password: String = "", memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
-            var opt = VIPSOption()
+    @inlinable
+    public static func pdfload(buffer: some Collection<UInt8>, page: Int? = nil, n: Int? = nil, dpi: Double? = nil, scale: Double? = nil, background: [Double]? = nil, password: String? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+        let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
+            return try VIPSImage(nil) { out in
+                var opt = VIPSOption()
 
-            opt.set("buffer", value: buffer)
-            if page != 0 {
-                opt.set("page", value: page)
-            }
-            if n != 0 {
-                opt.set("n", value: n)
-            }
-            if dpi != 0.0 {
-                opt.set("dpi", value: dpi)
-            }
-            if scale != 0.0 {
-                opt.set("scale", value: scale)
-            }
-            if background != [] {
-                opt.set("background", value: background)
-            }
-            if password != "" {
-                opt.set("password", value: password)
-            }
-            if memory != false {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if revalidate != false {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
+                let blob = vips_blob_new(nil, buffer.baseAddress, buffer.count)
+                defer { vips_area_unref(shim_vips_area(blob)) }
 
-            try VIPSImage.call("pdfload_buffer", options: &opt)
+                opt.set("buffer", value: blob)
+                if let page = page {
+                    opt.set("page", value: page)
+                }
+                if let n = n {
+                    opt.set("n", value: n)
+                }
+                if let dpi = dpi {
+                    opt.set("dpi", value: dpi)
+                }
+                if let scale = scale {
+                    opt.set("scale", value: scale)
+                }
+                if let background = background {
+                    opt.set("background", value: background)
+                }
+                if let password = password {
+                    opt.set("password", value: password)
+                }
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try VIPSImage.call("pdfload_buffer", options: &opt)
+            }
+        }
+        if let maybeImage {
+            return maybeImage
+        } else {
+            return try pdfload(buffer: Array(buffer), page: page, n: n, dpi: dpi, scale: scale, background: background, password: password, memory: memory, access: access, failOn: failOn, revalidate: revalidate)
         }
     }
 
-    /// Load pdf from source
+    /// Optional arguments:
+    ///
+    /// * `page`: %gint, load this page, numbered from zero
+    /// * `n`: %gint, load this many pages
+    /// * `dpi`: %gdouble, render at this DPI
+    /// * `scale`: %gdouble, scale render by this factor
+    /// * `background`: `VipsArrayDouble` background colour
+    ///
+    /// Exactly as vips_pdfload(), but read from a source.
+    ///
+    /// See also: vips_pdfload()
+    ///
+    /// Returns: 0 on success, -1 on error.
     ///
     /// - Parameters:
     ///   - source: Source to load from
@@ -133,30 +211,30 @@ extension VIPSImage {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func pdfloadSource(source: VIPSSource, page: Int = 0, n: Int = 0, dpi: Double = 0.0, scale: Double = 0.0, background: [Double] = [], password: String = "", memory: Bool = false, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool = false) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+    public static func pdfload(source: VIPSSource, page: Int? = nil, n: Int? = nil, dpi: Double? = nil, scale: Double? = nil, background: [Double]? = nil, password: String? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> VIPSImage {
+        return try VIPSImage([source]) { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
-            if page != 0 {
+            if let page = page {
                 opt.set("page", value: page)
             }
-            if n != 0 {
+            if let n = n {
                 opt.set("n", value: n)
             }
-            if dpi != 0.0 {
+            if let dpi = dpi {
                 opt.set("dpi", value: dpi)
             }
-            if scale != 0.0 {
+            if let scale = scale {
                 opt.set("scale", value: scale)
             }
-            if background != [] {
+            if let background = background {
                 opt.set("background", value: background)
             }
-            if password != "" {
+            if let password = password {
                 opt.set("password", value: password)
             }
-            if memory != false {
+            if let memory = memory {
                 opt.set("memory", value: memory)
             }
             if let access = access {
@@ -165,7 +243,7 @@ extension VIPSImage {
             if let failOn = failOn {
                 opt.set("fail_on", value: failOn)
             }
-            if revalidate != false {
+            if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
             }
             opt.set("out", value: &out)
