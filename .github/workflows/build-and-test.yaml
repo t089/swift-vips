@@ -1,0 +1,30 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    # Runs on pull requests to any branch
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    container:
+      image: swift:6.1.2-noble  # Swift 6.1.2 with Ubuntu 24.04
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install libvips dependencies
+      run: |
+        apt-get update -y
+        apt-get install -y libvips-dev
+    
+    - name: Build
+      run: swift build --build-tests
+    
+    - name: Run tests
+      run: swift test
+    
+    - name: Build release
+      run: swift build -c release
