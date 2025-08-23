@@ -53,6 +53,10 @@ extension VIPSImage {
     public var interpretation: VipsInterpretation {
         return vips_image_get_interpretation(self.image)
     }
+
+    public func getpoint(_ x: Int, _ y: Int) throws -> [Double] {
+        try self.getpoint(x: x, y: y)
+    }
 }
 
 extension VipsBandFormat {

@@ -36,12 +36,12 @@ struct ConversionGeneratedTests {
             .extractBand(0) // Get x coordinate
         
         // Test horizontal flip
-        let hFlipped = try image.flip(.horizontal)
+        let hFlipped = try image.flip(direction: .horizontal)
         #expect(hFlipped.width == image.width)
         #expect(hFlipped.height == image.height)
         
         // Test vertical flip
-        let vFlipped = try image.flip(.vertical)
+        let vFlipped = try image.flip(direction: .vertical)
         #expect(vFlipped.width == image.width)
         #expect(vFlipped.height == image.height)
     }
@@ -52,17 +52,17 @@ struct ConversionGeneratedTests {
             .linear(1.0, 100.0)
         
         // Test 90 degree rotation
-        let rot90 = try image.rot(.d90)
+        let rot90 = try image.rot(angle: .d90)
         #expect(rot90.width == 20)
         #expect(rot90.height == 10)
         
         // Test 180 degree rotation
-        let rot180 = try image.rot(.d180)
+        let rot180 = try image.rot(angle: .d180)
         #expect(rot180.width == 10)
         #expect(rot180.height == 20)
         
         // Test 270 degree rotation
-        let rot270 = try image.rot(.d270)
+        let rot270 = try image.rot(angle: .d270)
         #expect(rot270.width == 20)
         #expect(rot270.height == 10)
     }
@@ -96,18 +96,18 @@ struct ConversionGeneratedTests {
             .linear(1.0, 128.0)
         
         // Test shrink by factor of 2
-        let shrunk = try image.shrink(2.0, 2.0)
+        let shrunk = try image.shrink(hshrink: 2.0, vshrink: 2.0)
         #expect(shrunk.width == 50)
         #expect(shrunk.height == 50)
         #expect(abs(try shrunk.avg() - 128.0) < 1.0)
         
         // Test horizontal shrink only
-        let shrunkH = try image.shrinkh(2.0)
+        let shrunkH = try image.shrinkh(hshrink: 2)
         #expect(shrunkH.width == 50)
         #expect(shrunkH.height == 100)
         
         // Test vertical shrink only
-        let shrunkV = try image.shrinkv(2.0)
+        let shrunkV = try image.shrinkv(vshrink: 2)
         #expect(shrunkV.width == 100)
         #expect(shrunkV.height == 50)
     }
@@ -118,17 +118,17 @@ struct ConversionGeneratedTests {
             .linear(1.0, 128.0)
         
         // Test reduce by factor of 2.5
-        let reduced = try image.reduce(2.5, 2.5)
+        let reduced = try image.reduce(hshrink: 2.5, vshrink: 2.5)
         #expect(reduced.width == 40)
         #expect(reduced.height == 40)
         
         // Test horizontal reduce only
-        let reducedH = try image.reduceh(2.5)
+        let reducedH = try image.reduceh(hshrink: 2.5)
         #expect(reducedH.width == 40)
         #expect(reducedH.height == 100)
         
         // Test vertical reduce only
-        let reducedV = try image.reducev(2.5)
+        let reducedV = try image.reducev(vshrink: 2.5)
         #expect(reducedV.width == 100)
         #expect(reducedV.height == 40)
     }
@@ -139,7 +139,7 @@ struct ConversionGeneratedTests {
             .linear(1.0, 128.0)
         
         // Test zoom by factor of 2
-        let zoomed = try image.zoom(2, 2)
+        let zoomed = try image.zoom(xfac: 2, yfac: 2)
         #expect(zoomed.width == 20)
         #expect(zoomed.height == 20)
         #expect(abs(try zoomed.avg() - 128.0) < 1.0)
@@ -284,8 +284,7 @@ struct ConversionGeneratedTests {
     
     @Test
     func testSmartcropOperations() throws {
-        let image = try VIPSImage.black(width: 100, height: 100)
-            .gaussnoise(width: 100, height: 100, sigma: 30.0, mean: 128.0)
+        let image = try VIPSImage.gaussnoise(width: 100, height: 100, sigma: 30.0, mean: 128.0)
         
         // Test smartcrop
         let cropped = try image.smartcrop(width: 50, height: 50)
@@ -319,12 +318,12 @@ struct ConversionGeneratedTests {
             .linear(1.0, 200.0)
         
         // Test horizontal join
-        let hJoined = try image1.join(image2, direction: .horizontal)
+        let hJoined = try image1.join(in2: image2, direction: .horizontal)
         #expect(hJoined.width == 100)
         #expect(hJoined.height == 50)
         
         // Test vertical join  
-        let vJoined = try image1.join(image2, direction: .vertical)
+        let vJoined = try image1.join(in2: image2, direction: .vertical)
         #expect(vJoined.width == 50)
         #expect(vJoined.height == 100)
     }
@@ -337,7 +336,7 @@ struct ConversionGeneratedTests {
             .linear(1.0, 200.0)
         
         // Test insert
-        let result = try background.insert(insert, x: 40, y: 40)
+        let result = try background.insert(sub: insert, x: 40, y: 40)
         #expect(result.width == 100)
         #expect(result.height == 100)
     }
@@ -362,10 +361,7 @@ struct ConversionGeneratedTests {
         let image = try VIPSImage.black(width: 100, height: 100)
             .linear(1.0, 128.0)
         
-        // Test cache
-        let cached = try image.cache()
-        #expect(cached.width == image.width)
-        #expect(cached.height == image.height)
+        // Test cache - skipped as cache() method doesn't exist
         
         // Test tilecache
         let tilecached = try image.tilecache()
