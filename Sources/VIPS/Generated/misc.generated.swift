@@ -848,49 +848,49 @@ extension VIPSImage {
         }
     }
 
-    /// Create an sdf image
-    ///
-    /// - Parameters:
-    ///   - width: Image width in pixels
-    ///   - height: Image height in pixels
-    ///   - shape: SDF shape to create
-    ///   - r: Radius
-    ///   - a: Point a
-    ///   - b: Point b
-    ///   - corners: Corner radii
-    #if SHIM_VIPS_VERSION_8_16
-    public static func sdf(
-        width: Int,
-        height: Int,
-        shape: VipsSdfShape,
-        r: Double? = nil,
-        a: [Double]? = nil,
-        b: [Double]? = nil,
-        corners: [Double]? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
-            var opt = VIPSOption()
+    #if SHIM_VIPS_VERSION_8_17
+        /// Create an sdf image
+        ///
+        /// - Parameters:
+        ///   - width: Image width in pixels
+        ///   - height: Image height in pixels
+        ///   - shape: SDF shape to create
+        ///   - r: Radius
+        ///   - a: Point a
+        ///   - b: Point b
+        ///   - corners: Corner radii
+        public static func sdf(
+            width: Int,
+            height: Int,
+            shape: VipsSdfShape,
+            r: Double? = nil,
+            a: [Double]? = nil,
+            b: [Double]? = nil,
+            corners: [Double]? = nil
+        ) throws -> VIPSImage {
+            return try VIPSImage(nil) { out in
+                var opt = VIPSOption()
 
-            opt.set("width", value: width)
-            opt.set("height", value: height)
-            opt.set("shape", value: shape)
-            if let r = r {
-                opt.set("r", value: r)
-            }
-            if let a = a {
-                opt.set("a", value: a)
-            }
-            if let b = b {
-                opt.set("b", value: b)
-            }
-            if let corners = corners {
-                opt.set("corners", value: corners)
-            }
-            opt.set("out", value: &out)
+                opt.set("width", value: width)
+                opt.set("height", value: height)
+                opt.set("shape", value: shape)
+                if let r = r {
+                    opt.set("r", value: r)
+                }
+                if let a = a {
+                    opt.set("a", value: a)
+                }
+                if let b = b {
+                    opt.set("b", value: b)
+                }
+                if let corners = corners {
+                    opt.set("corners", value: corners)
+                }
+                opt.set("out", value: &out)
 
-            try VIPSImage.call("sdf", options: &opt)
+                try VIPSImage.call("sdf", options: &opt)
+            }
         }
-    }
     #endif
 
     /// Check sequential access

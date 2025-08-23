@@ -7,21 +7,22 @@ struct ConvolutionGeneratedTests {
     
     // MARK: - Basic Convolution Operations
     
-    @Test(.disabled())
+    @Test
     func testConvOperations() throws {
         // Create a simple test image
         let image = try VIPSImage.black(width: 100, height: 100)
             .linear(1.0, 128.0)
         
         // Create a simple blur kernel (3x3 box filter)
+        // Start with a black image and add a constant value to create uniform kernel
         let kernel = try VIPSImage.black(width: 3, height: 3)
-            .linear(0.0, 1.0 / 9.0)
+            .linear(1.0, 1.0) // This creates a 3x3 kernel filled with 1.0
         
         // Test basic convolution
         let convolved = try image.conv(mask: kernel)
         #expect(convolved.width == image.width)
         #expect(convolved.height == image.height)
-        #expect(abs(try convolved.avg() - 128.0) < 1.0)
+        #expect(abs(try convolved.avg() - 1152.0) < 10.0) // 128 * 9 = 1152
         
         // Test with precision parameter
         let convolvedInt = try image.conv(mask: kernel, precision: .integer)

@@ -77,6 +77,13 @@ _MODIFY = 128
 # VipsOperationFlags
 _OPERATION_DEPRECATED = 8
 
+# Version requirements for operations (version string -> list of operations)
+VERSION_REQUIREMENTS = {
+    '8.13': ['premultiply', 'unpremultiply'],
+    '8.16': ['addalpha'],
+    '8.17': ['sdf_shape', 'sdf']
+}
+
 def get_swift_type(gtype):
     """Map a GType to Swift type name."""
     if gtype in gtype_to_swift:
@@ -817,6 +824,13 @@ def get_default_check(swift_type):
     else:
         return 'nil'
 
+def get_operation_version_guard(nickname):
+    """Get the version guard for an operation if it requires a specific version."""
+    for version, operations in VERSION_REQUIREMENTS.items():
+        if nickname in operations:
+            return f"#if SHIM_VIPS_VERSION_{version.replace('.', '_')}"
+    return None
+
 def generate_all_operations():
     """Discover and generate code for all operations."""
     all_nicknames = []
@@ -869,6 +883,12 @@ def generate_all_operations():
         code = generate_swift_operation(nickname)
         if code:
             category = get_operation_category(nickname)
+            
+            # Check if this operation needs version guards
+            version_guard = get_operation_version_guard(nickname)
+            if version_guard:
+                code = f"{version_guard}\n{code}\n#endif"
+            
             operations_by_category[category].append((nickname, code))
             
             # Generate const overloads if this operation has them
@@ -876,6 +896,11 @@ def generate_all_operations():
                 const_op_name = const_variant_operations[nickname]
                 overloads = generate_simple_const_overloads(nickname, const_op_name)
                 for i, overload_code in enumerate(overloads):
+                    # Apply version guards to overloads too if needed
+                    version_guard = get_operation_version_guard(nickname)
+                    if version_guard:
+                        overload_code = f"{version_guard}\n{overload_code}\n#endif"
+                    
                     # Add each overload right after the main operation
                     operations_by_category[category].append((f"{nickname}_overload_{i}", overload_code))
     

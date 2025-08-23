@@ -8,7 +8,6 @@
 #ifndef C_vips_shim_h
 #define C_vips_shim_h
 
-#include "vips/version.h"
 #include <termios.h>
 #include <vips/vips.h>
 
@@ -72,5 +71,26 @@ shim_vips_image_new_from_file( const char *name, VipsAccess access );
 int shim_vips_major_version();
 
 const char* shim_vips_version();
+
+#if VIPS_MAJOR_VERSION >= 8
+#if VIPS_MINOR_VERSION >= 18
+#define SHIM_VIPS_VERSION_8_18
+#endif
+#if VIPS_MINOR_VERSION >= 17
+#define SHIM_VIPS_VERSION_8_17
+#endif
+#if VIPS_MINOR_VERSION >= 16
+#define SHIM_VIPS_VERSION_8_16
+#endif
+#if VIPS_MINOR_VERSION >= 15
+#define SHIM_VIPS_VERSION_8_15
+#endif
+#if VIPS_MINOR_VERSION >= 14
+#define SHIM_VIPS_VERSION_8_14
+#endif
+#if VIPS_MINOR_VERSION >= 13
+#define SHIM_VIPS_VERSION_8_13
+#endif
+#endif
 
 #endif /* C_vips_shim_h */
