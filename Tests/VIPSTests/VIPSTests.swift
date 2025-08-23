@@ -3,13 +3,8 @@ import Cvips
 import Testing
 import Foundation
 
-@Suite(.serialized)
+@Suite(.serialized, VIPSTestTrait())
 struct VIPSTests {
-    init() {
-        try! VIPS.start()
-        
-        try? FileManager.default.createDirectory(at: URL(fileURLWithPath: "/tmp/swift-vips"), withIntermediateDirectories: true)
-    }
     
     var testPath: String {
         testUrl.path

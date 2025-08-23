@@ -3,11 +3,8 @@ import Cvips
 import Testing
 import Foundation
 
-@Suite(.serialized)
+@Suite(.vips)
 struct ConversionGeneratedTests {
-    init() {
-        try! VIPS.start()
-    }
     
     // MARK: - Type Casting Operations
     
@@ -69,7 +66,8 @@ struct ConversionGeneratedTests {
     
     @Test
     func testRot45Operations() throws {
-        let image = try VIPSImage.black(width: 10, height: 10)
+        // rot45 requires images to be odd and square
+        let image = try VIPSImage.black(width: 11, height: 11)
             .linear(1.0, 100.0)
         
         // Test 45 degree rotations
@@ -205,10 +203,10 @@ struct ConversionGeneratedTests {
         let image = try VIPSImage.black(width: 10, height: 10, bands: 4)
             .linear([1.0, 1.0, 1.0, 1.0], [100.0, 150.0, 200.0, 250.0])
         
-        // Test band fold
+        // Test band fold - factor 2 means width/2, bands*2
         let folded = try image.bandfold(factor: 2)
-        #expect(folded.bands == 2)
-        #expect(folded.width == 20)
+        #expect(folded.bands == 8)  // 4 * 2
+        #expect(folded.width == 5)  // 10 / 2
         #expect(folded.height == 10)
         
         // Test band unfold

@@ -3,11 +3,8 @@ import Cvips
 import Testing
 import Foundation
 
-@Suite(.serialized)
+@Suite(.vips)
 struct ArithmeticOperationsTests {
-    init() {
-        try! VIPS.start()
-    }
     
     // MARK: - Trigonometric Operations Tests
     

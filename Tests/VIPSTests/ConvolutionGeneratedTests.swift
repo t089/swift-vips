@@ -2,11 +2,8 @@
 import Cvips
 import Testing
 
-@Suite(.serialized)
+@Suite(.vips)
 struct ConvolutionGeneratedTests {
-    init() {
-        try! VIPS.start()
-    }
     
     // MARK: - Basic Convolution Operations
     
@@ -169,7 +166,9 @@ struct ConvolutionGeneratedTests {
     @Test
     func testSharpenOperations() throws {
         // Create a slightly blurred image to sharpen
+        // Ensure it has a proper color interpretation for sharpen to work
         let original = try VIPSImage.gaussnoise(width: 100, height: 100, sigma: 10.0, mean: 128.0)
+            .colourspace(space: .srgb)
         let blurred = try original.gaussblur(sigma: 1.0)
         
         // Test basic sharpen
