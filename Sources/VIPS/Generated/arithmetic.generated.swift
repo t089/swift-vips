@@ -86,7 +86,8 @@ extension VIPSImage {
     }
 
     /// Append an alpha channel
-    public func addalpha() throws -> VIPSImage {
+    // TODO: conditional compilation
+    /*public func addalpha() throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
 
@@ -95,7 +96,7 @@ extension VIPSImage {
 
             try VIPSImage.call("addalpha", options: &opt)
         }
-    }
+    } */
 
     /// Find image average
     public func avg() throws -> Double {
