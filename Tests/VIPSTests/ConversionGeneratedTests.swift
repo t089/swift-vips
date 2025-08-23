@@ -232,7 +232,6 @@ struct ConversionGeneratedTests {
     }
     
     // MARK: - Alpha Channel Operations
-    
     @Test(.disabled("addalpha not in ci"))
     func testAlphaOperations() throws {
         let rgb = try VIPSImage.black(width: 10, height: 10, bands: 3)
