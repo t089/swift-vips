@@ -1,9 +1,10 @@
 import Cvips
 import CvipsShim
 
+#if SHIM_VIPS_VERSION_8_17
 // VipsSdfShape is not available in the current version of libvips
 // Commenting out until the library is updated
-/*
+
 public typealias VipsSdfShape = Cvips.VipsSdfShape
 
 extension VipsSdfShape {
@@ -13,4 +14,4 @@ extension VipsSdfShape {
     public static var line: Self { VIPS_SDF_SHAPE_LINE }
     public static var last: Self { VIPS_SDF_SHAPE_LAST }
 }
-*/
+#endif

@@ -85,8 +85,8 @@ extension VIPSImage {
         }
     }
 
+#if SHIM_VIPS_VERSION_8_16
     /// Append an alpha channel
-    // TODO: conditional compilation
     public func addalpha() throws -> VIPSImage {
         return try VIPSImage(self) { out in
             var opt = VIPSOption()
@@ -97,6 +97,7 @@ extension VIPSImage {
             try VIPSImage.call("addalpha", options: &opt)
         }
     }
+#endif
 
     /// Find image average
     public func avg() throws -> Double {

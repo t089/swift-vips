@@ -231,12 +231,13 @@ struct ConversionGeneratedTests {
         #expect(bands12.bands == 2)
     }
     
+    #if SHIM_VIPS_VERSION_8_16
     // MARK: - Alpha Channel Operations
-    @Test(.disabled("addalpha not in ci"))
+    @Test
     func testAlphaOperations() throws {
         let rgb = try VIPSImage.black(width: 10, height: 10, bands: 3)
             .linear([1.0, 1.0, 1.0], [100.0, 150.0, 200.0])
-        
+
         // Test add alpha
         let withAlpha = try rgb.addalpha()
         #expect(withAlpha.bands == 4)
@@ -253,6 +254,7 @@ struct ConversionGeneratedTests {
         let unpremultiplied = try premultiplied.unpremultiply()
         #expect(unpremultiplied.bands == 4)
     }
+    #endif
     
     // MARK: - Area Operations
     

@@ -8,6 +8,7 @@
 #ifndef C_vips_shim_h
 #define C_vips_shim_h
 
+#include "vips/version.h"
 #include <termios.h>
 #include <vips/vips.h>
 
@@ -66,5 +67,10 @@ int shim_vips_copy_interpretation(VipsImage *in, VipsImage **out, VipsInterpreta
 
 VipsImage *
 shim_vips_image_new_from_file( const char *name, VipsAccess access );
+
+
+int shim_vips_major_version();
+
+const char* shim_vips_version();
 
 #endif /* C_vips_shim_h */

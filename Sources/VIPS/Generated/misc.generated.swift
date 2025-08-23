@@ -858,7 +858,8 @@ extension VIPSImage {
     ///   - a: Point a
     ///   - b: Point b
     ///   - corners: Corner radii
-    /*public static func sdf(
+    #if SHIM_VIPS_VERSION_8_16
+    public static func sdf(
         width: Int,
         height: Int,
         shape: VipsSdfShape,
@@ -889,7 +890,8 @@ extension VIPSImage {
 
             try VIPSImage.call("sdf", options: &opt)
         }
-    } */
+    }
+    #endif
 
     /// Check sequential access
     ///
