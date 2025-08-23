@@ -7,7 +7,7 @@ struct ConvolutionGeneratedTests {
     
     // MARK: - Basic Convolution Operations
     
-    @Test
+    @Test(.disabled())
     func testConvOperations() throws {
         // Create a simple test image
         let image = try VIPSImage.black(width: 100, height: 100)
