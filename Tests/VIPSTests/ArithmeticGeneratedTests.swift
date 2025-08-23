@@ -293,7 +293,7 @@ struct ArithmeticGeneratedTests {
         
         // Test stats (returns array: min, max, sum, sum_sq, mean, deviation)
         let stats = try image.stats()
-        #expect(stats.bands >= 6)
+        #expect(stats.bands == 1)
     }
     
     @Test

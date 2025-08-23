@@ -53,6 +53,10 @@ GType shim_VIPS_TYPE_ARRAY_DOUBLE() {
     return VIPS_TYPE_ARRAY_DOUBLE;
 }
 
+double* shim_vips_array_double(void *p, int n) {
+    return VIPS_ARRAY(p, n, double);
+}
+
 GType shim_VIPS_TYPE_ARRAY_INT() {
     return VIPS_TYPE_ARRAY_INT;
 }

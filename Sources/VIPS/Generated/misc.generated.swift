@@ -6,6 +6,7 @@
 //
 
 import Cvips
+import CvipsShim
 
 extension VIPSImage {
 
@@ -340,7 +341,7 @@ extension VIPSImage {
     public func getpoint(x: Int, y: Int, unpackComplex: Bool? = nil) throws -> [Double] {
         var opt = VIPSOption()
 
-        var out: [Double] = []
+        var out: UnsafeMutablePointer<VipsArrayDouble>! = .allocate(capacity: 1)
 
         opt.set("in", value: self.image)
         opt.set("x", value: x)
@@ -352,7 +353,18 @@ extension VIPSImage {
 
         try VIPSImage.call("getpoint", options: &opt)
 
-        return out
+        guard let out else {
+            throw VIPSError("getpoint: no output")
+        }
+
+        defer {
+            vips_area_unref(shim_vips_area(out))
+        }
+
+        var length = Int32(0)
+        let doubles = vips_array_double_get(out, &length)
+        let buffer = UnsafeBufferPointer(start: doubles, count: Int(length))
+        return Array(buffer)
     }
 
     /// Global balance an image mosaic
@@ -836,9 +848,6 @@ extension VIPSImage {
         }
     }
 
-    // VipsSdfShape is not available in the current version of libvips
-    // Commenting out until the library is updated
-    /*
     /// Create an sdf image
     ///
     /// - Parameters:
@@ -881,7 +890,6 @@ extension VIPSImage {
             try VIPSImage.call("sdf", options: &opt)
         }
     }
-    */
 
     /// Check sequential access
     ///

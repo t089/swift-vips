@@ -35,6 +35,7 @@ GType shim_VIPS_TYPE_ARRAY_DOUBLE();
 
 GType shim_VIPS_TYPE_ARRAY_INT();
 
+double* shim_vips_array_double(void *p, int n);
 
 GType shim_G_TYPE_INT();
 

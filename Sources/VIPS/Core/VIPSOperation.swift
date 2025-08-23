@@ -44,6 +44,11 @@ final class VIPSOperation {
                 value?.pointee = Int(g_value_get_int(&option.pairs[i].value))
             case .some(.boolean(let bool)):
                 bool?.pointee = g_value_get_boolean(&option.pairs[i].value) != 0
+            case .some(.doubleArray(let outArray)):
+                var length = Int32(0)
+                let data = vips_value_get_array_double(&option.pairs[i].value, &length)
+                let vipsArray = vips_array_double_new(data, length)
+                outArray.pointee = vipsArray!
             case .none:
                 assertionFailure("no output specified for output value")
             }

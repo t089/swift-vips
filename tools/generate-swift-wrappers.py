@@ -701,7 +701,7 @@ def generate_swift_operation(operation_name):
         elif output_type == 'String':
             result.append('        var out: String = ""')
         elif output_type == '[Double]':
-            result.append("        var out: [Double] = []")
+            result.append("        var out: UnsafeMutablePointer<VipsArrayDouble>! = .allocate(capacity: 1)")
         elif output_type == '[Int]':
             result.append("        var out: [Int] = []")
         elif output_gtype == GValue.blob_type:
@@ -769,9 +769,11 @@ def generate_swift_operation(operation_name):
     elif has_output and not has_image_output:
         # For non-image outputs, we need to return the output value
         result.append("")
-        # Check if this is a blob output
+        # Check if this is a blob output or array output
         output_name = required_output[0]
         output_gtype = intro.details[output_name]['type']
+        output_type = get_swift_type(output_gtype)
+        
         if output_gtype == GValue.blob_type:
             # For blob outputs, we need to wrap in VIPSBlob and handle the error case
             result.append("        guard let vipsBlob = out else {")
@@ -779,6 +781,20 @@ def generate_swift_operation(operation_name):
             result.append("        }")
             result.append("")
             result.append("        return VIPSBlob(vipsBlob)")
+        elif output_type == '[Double]':
+            # For double array outputs, we need to extract the array from VipsArrayDouble
+            result.append("        guard let out else {")
+            result.append(f'            throw VIPSError("{operation_name}: no output")')
+            result.append("        }")
+            result.append("")
+            result.append("        defer {")
+            result.append("            vips_area_unref(shim_vips_area(out))")
+            result.append("        }")
+            result.append("        ")
+            result.append("        var length = Int32(0)")
+            result.append("        let doubles = vips_array_double_get(out, &length)")
+            result.append("        let buffer = UnsafeBufferPointer(start: doubles, count: Int(length))")
+            result.append("        return Array(buffer)")
         else:
             result.append("        return out")
     
@@ -878,10 +894,10 @@ def write_category_file(category, operations, output_dir):
         filename = f"{category.lower()}.generated.swift"
         filepath = output_dir / filename
     
-    # Check if any operations use buffer parameters
+    # Check if any operations use buffer parameters or double array outputs
     has_buffer_operations = False
     for nickname, code in operations:
-        if 'vips_blob_new' in code or 'withContiguousStorageIfAvailable' in code:
+        if 'vips_blob_new' in code or 'withContiguousStorageIfAvailable' in code or 'vips_array_double_get' in code:
             has_buffer_operations = True
             break
     
