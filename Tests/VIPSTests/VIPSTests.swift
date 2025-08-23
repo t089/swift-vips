@@ -109,12 +109,10 @@ struct VIPSTests {
             .linear(1.0, 10.0)
         
         let divided = try image.divide(image2)
-        #expect(divided != nil)
         #expect(divided.size.width == image.size.width)
         
         // Test division operator
         let dividedWithOperator = try image / image2
-        #expect(dividedWithOperator != nil)
         #expect(dividedWithOperator.size.width == image.size.width)
     }
     
@@ -169,10 +167,10 @@ struct VIPSTests {
         
         let equal = try image1.equal(image1)
         let notEqual = try image1.notequal(image2)
-        let less = try image1.less(image2)
-        let lessEq = try image1.lesseq(image2)
-        let more = try image2.more(image1)
-        let moreEq = try image2.moreeq(image1)
+        let _ = try image1.less(image2)
+        let _ = try image1.lesseq(image2)
+        let _ = try image2.more(image1)
+        let _ = try image2.moreeq(image1)
         
         let equalAvg = try equal.avg()
         #expect(equalAvg == 255.0)
