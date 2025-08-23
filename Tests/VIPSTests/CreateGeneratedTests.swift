@@ -333,17 +333,65 @@ struct CreateGeneratedTests {
         #expect(lut.height == 1)
     }
     
-    @Test // Temporarily disabled due to segmentation fault
+    @Test
     func testInvertlutCreation() throws {
-        // Create a simple LUT to invert
-        // identity() creates values 0-255, but invertlut needs values in [0,1]
-        let lut = try VIPSImage.identity()
-            .linear(1.0 / 255.0, 0.0) // Scale to [0,1]
+        // Create a simple matrix in the format invertlut expects
+        // invertlut expects matrix with columns: input_values, output1, output2, ...
+        // This creates a simple 3x2 matrix representing points on a curve
+        let testData: [Double] = [
+            0.0, 0.0,   // (0.0 -> 0.0)
+            0.5, 0.3,   // (0.5 -> 0.3) 
+            1.0, 1.0    // (1.0 -> 1.0)
+        ]
+        
+        // Use the safe matrix creation method
+        let matrixImage = try VIPSImage.matrix(width: 2, height: 3, data: testData)
         
         // Test inverting a lookup table
-        let inverted = try lut.invertlut()
+        let inverted = try matrixImage.invertlut()
         #expect(inverted.width > 0)
         #expect(inverted.height == 1)
+        
+        // The inverted LUT should map output values back to input values
+        // So at position corresponding to 0.3, we should get approximately 0.5
+        let midPoint = Int(0.3 * Double(inverted.width))
+        let value = try inverted.getpoint(midPoint, 0).first ?? 0.0
+        #expect(abs(value - 0.5) < 0.1)
+    }
+    
+    @Test
+    func testMatrixCreation() throws {
+        // Test the safe matrix creation methods
+        let data = [1.0, 2.0, 3.0, 4.0]
+        let matrix = try VIPSImage.matrix(width: 2, height: 2, data: data)
+        
+        #expect(matrix.width == 2)
+        #expect(matrix.height == 2) 
+        #expect(matrix.bands == 1)
+        #expect(matrix.format == .double)
+        
+        // Test accessing matrix values
+        let val1 = try matrix.getpoint(0, 0).first ?? 0.0
+        let val2 = try matrix.getpoint(1, 0).first ?? 0.0
+        let val3 = try matrix.getpoint(0, 1).first ?? 0.0 
+        let val4 = try matrix.getpoint(1, 1).first ?? 0.0
+        
+        #expect(val1 == 1.0)
+        #expect(val2 == 2.0)
+        #expect(val3 == 3.0)
+        #expect(val4 == 4.0)
+        
+        // Test empty matrix creation
+        let emptyMatrix = try VIPSImage.matrix(width: 3, height: 3)
+        #expect(emptyMatrix.width == 3)
+        #expect(emptyMatrix.height == 3)
+        #expect(emptyMatrix.bands == 1)
+        #expect(emptyMatrix.format == .double)
+        
+        // Test error condition - mismatched array size
+        #expect(throws: VIPSError.self) {
+            try VIPSImage.matrix(width: 2, height: 2, data: [1.0, 2.0, 3.0]) // Only 3 elements for 2x2
+        }
     }
 
     // MARK: - Fractal Creation

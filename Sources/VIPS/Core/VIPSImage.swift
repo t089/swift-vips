@@ -180,4 +180,42 @@ extension VIPSImage {
             if (out == nil) { throw VIPSError() }
         }
     }
+    
+    /// Create a matrix image from a double array
+    /// - Parameters:
+    ///   - width: Width of the matrix
+    ///   - height: Height of the matrix  
+    ///   - data: Array of doubles, must have width * height elements
+    /// - Returns: A new VIPSImage matrix
+    /// - Note: The data is copied by libvips, so the input array does not need to remain alive
+    public static func matrix(width: Int, height: Int, data: [Double]) throws -> VIPSImage {
+        guard data.count == width * height else {
+            throw VIPSError("Data array size (\(data.count)) must match width * height (\(width * height))")
+        }
+        
+        // libvips copies the data synchronously in vips_image_new_matrix_from_array,
+        // so the pointer only needs to be valid for the duration of this call
+        let image = data.withUnsafeBufferPointer { buffer in
+            vips_image_new_matrix_from_array(Int32(width), Int32(height), buffer.baseAddress, Int32(data.count))
+        }
+        
+        guard let image else {
+            throw VIPSError()
+        }
+        
+        return VIPSImage(image)
+    }
+    
+    /// Create an empty matrix image
+    /// - Parameters:
+    ///   - width: Width of the matrix
+    ///   - height: Height of the matrix
+    /// - Returns: A new VIPSImage matrix filled with zeros
+    public static func matrix(width: Int, height: Int) throws -> VIPSImage {
+        guard let image = vips_image_new_matrix(Int32(width), Int32(height)) else {
+            throw VIPSError()
+        }
+        
+        return VIPSImage(image)
+    }
 }
