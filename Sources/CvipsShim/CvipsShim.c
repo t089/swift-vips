@@ -12,6 +12,10 @@ GObject* shim_g_object(const void * p) {
     return G_OBJECT(p);
 }
 
+GType shim_g_object_type(const void * p) {
+    return G_OBJECT_TYPE(p);
+}
+
 VipsImage* shim_vips_image(const void * p) {
     return VIPS_IMAGE(p);
 }
@@ -47,6 +51,10 @@ GType shim_VIPS_TYPE_BLOB() {
 
 GType shim_VIPS_TYPE_ARRAY_DOUBLE() {
     return VIPS_TYPE_ARRAY_DOUBLE;
+}
+
+double* shim_vips_array_double(void *p, int n) {
+    return VIPS_ARRAY(p, n, double);
 }
 
 GType shim_VIPS_TYPE_ARRAY_INT() {

@@ -3,18 +3,15 @@ import Cvips
 import Testing
 import Foundation
 
-@Suite(.serialized)
+@Suite(.vips)
 struct ArithmeticOperationsTests {
-    init() {
-        try! VIPS.start()
-    }
     
     // MARK: - Trigonometric Operations Tests
     
     @Test
     func testSin() throws {
         // Create a simple test image with known values
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(1.0, 0.0) // Create values [0, 0, 0, 0, 0, 0, 0, 0, 0]
             .linear(0.0, 90.0) // Create values [90, 90, 90, 90, 90, 90, 90, 90, 90]
         
@@ -28,7 +25,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testCos() throws {
         // Create a test image with 0 degrees
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
         
         let result = try image.cos()
         
@@ -40,7 +37,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testTan() throws {
         // Create a test image with 45 degrees
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 45.0)
         
         let result = try image.tan()
@@ -55,7 +52,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testExp() throws {
         // Create image with value 1
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 1.0)
         
         let result = try image.exp()
@@ -68,7 +65,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testLog() throws {
         // Create image with value e
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 2.71828)
         
         let result = try image.log()
@@ -81,7 +78,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testLog10() throws {
         // Create image with value 100
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 100.0)
         
         let result = try image.log10()
@@ -96,11 +93,11 @@ struct ArithmeticOperationsTests {
     @Test
     func testPowImage() throws {
         // Create base image with value 2
-        let base = try VIPSImage.black(3, 3, bands: 1)
+        let base = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 2.0)
         
         // Create exponent image with value 3
-        let exponent = try VIPSImage.black(3, 3, bands: 1)
+        let exponent = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 3.0)
         
         let result = try base.pow(exponent)
@@ -113,7 +110,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testPowConstant() throws {
         // Create base image with value 3
-        let base = try VIPSImage.black(3, 3, bands: 1)
+        let base = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 3.0)
         
         let result = try base.pow(2.0)
@@ -126,11 +123,11 @@ struct ArithmeticOperationsTests {
     @Test
     func testAtan2() throws {
         // Create y image with value 1
-        let y = try VIPSImage.black(3, 3, bands: 1)
+        let y = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 1.0)
         
         // Create x image with value 1
-        let x = try VIPSImage.black(3, 3, bands: 1)
+        let x = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 1.0)
         
         let result = try y.atan2(x)
@@ -145,12 +142,12 @@ struct ArithmeticOperationsTests {
     @Test
     func testAndImage() throws {
         // Create image with value 12 (binary: 1100)
-        let left = try VIPSImage.black(3, 3, bands: 1)
+        let left = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 12.0)
             .cast(.uchar)
         
         // Create image with value 10 (binary: 1010)
-        let right = try VIPSImage.black(3, 3, bands: 1)
+        let right = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 10.0)
             .cast(.uchar)
         
@@ -164,12 +161,12 @@ struct ArithmeticOperationsTests {
     @Test
     func testAndImageOperator() throws {
         // Create image with value 15 (binary: 1111)
-        let left = try VIPSImage.black(3, 3, bands: 1)
+        let left = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 15.0)
             .cast(.uchar)
         
         // Create image with value 7 (binary: 0111)
-        let right = try VIPSImage.black(3, 3, bands: 1)
+        let right = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 7.0)
             .cast(.uchar)
         
@@ -183,12 +180,12 @@ struct ArithmeticOperationsTests {
     @Test
     func testOrImage() throws {
         // Create image with value 12 (binary: 1100)
-        let left = try VIPSImage.black(3, 3, bands: 1)
+        let left = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 12.0)
             .cast(.uchar)
         
         // Create image with value 10 (binary: 1010)
-        let right = try VIPSImage.black(3, 3, bands: 1)
+        let right = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 10.0)
             .cast(.uchar)
         
@@ -202,12 +199,12 @@ struct ArithmeticOperationsTests {
     @Test
     func testOrImageOperator() throws {
         // Create image with value 8 (binary: 1000)
-        let left = try VIPSImage.black(3, 3, bands: 1)
+        let left = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 8.0)
             .cast(.uchar)
         
         // Create image with value 4 (binary: 0100)
-        let right = try VIPSImage.black(3, 3, bands: 1)
+        let right = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 4.0)
             .cast(.uchar)
         
@@ -221,7 +218,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testAndImageConst() throws {
         // Create image with value 15 (binary: 1111)
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 15.0)
             .cast(.uchar)
         
@@ -235,7 +232,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testOrImageConst() throws {
         // Create image with value 8 (binary: 1000)
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 8.0)
             .cast(.uchar)
         
@@ -251,7 +248,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testLShiftConst() throws {
         // Create image with value 3
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 3.0)
             .cast(.uchar)
         
@@ -265,7 +262,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testLShiftOperator() throws {
         // Create image with value 5
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 5.0)
             .cast(.uchar)
         
@@ -279,7 +276,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testRShiftConst() throws {
         // Create image with value 12
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 12.0)
             .cast(.uchar)
         
@@ -293,7 +290,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testRShiftOperator() throws {
         // Create image with value 20
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 20.0)
             .cast(.uchar)
         
@@ -307,12 +304,12 @@ struct ArithmeticOperationsTests {
     @Test
     func testLShiftImage() throws {
         // Create image with value 3
-        let left = try VIPSImage.black(3, 3, bands: 1)
+        let left = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 3.0)
             .cast(.uchar)
         
         // Create shift amount image with value 3
-        let right = try VIPSImage.black(3, 3, bands: 1)
+        let right = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 3.0)
             .cast(.uchar)
         
@@ -326,12 +323,12 @@ struct ArithmeticOperationsTests {
     @Test
     func testRShiftImage() throws {
         // Create image with value 32
-        let left = try VIPSImage.black(3, 3, bands: 1)
+        let left = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 32.0)
             .cast(.uchar)
         
         // Create shift amount image with value 3
-        let right = try VIPSImage.black(3, 3, bands: 1)
+        let right = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 3.0)
             .cast(.uchar)
         
@@ -347,7 +344,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testLinearBasic() throws {
         // Create a test image with value 2
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 2.0)
         
         // Apply linear transform: out = in * 3 + 5
@@ -361,7 +358,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testLinearInteger() throws {
         // Create a test image with value 4
-        let image = try VIPSImage.black(2, 2, bands: 1)
+        let image = try VIPSImage.black(width: 2, height: 2, bands: 1)
             .linear(0, 4)
         
         // Apply linear transform with integers: out = in * 2 + 3
@@ -375,9 +372,9 @@ struct ArithmeticOperationsTests {
     @Test
     func testLinearArrays() throws {
         // Create a 3-band image with values [1, 2, 3]
-        let r = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 1.0)
-        let g = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 2.0)
-        let b = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 3.0)
+        let r = try VIPSImage.black(width: 2, height: 2, bands: 1).linear(0.0, 1.0)
+        let g = try VIPSImage.black(width: 2, height: 2, bands: 1).linear(0.0, 2.0)
+        let b = try VIPSImage.black(width: 2, height: 2, bands: 1).linear(0.0, 3.0)
         let image = try r.bandjoin([g, b])
         
         // Apply different linear transforms per band
@@ -400,7 +397,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testLinearDefaults() throws {
         // Create a test image with value 5
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 5.0)
         
         // Apply linear with default parameters (a=1.0, b=0)
@@ -414,7 +411,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testLinearMultiplyOnly() throws {
         // Create a test image with value 7
-        let image = try VIPSImage.black(2, 2, bands: 1)
+        let image = try VIPSImage.black(width: 2, height: 2, bands: 1)
             .linear(0.0, 7.0)
         
         // Apply linear with only multiplication (b=0 by default)
@@ -428,7 +425,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testLinearAddOnly() throws {
         // Create a test image with value 10
-        let image = try VIPSImage.black(2, 2, bands: 1)
+        let image = try VIPSImage.black(width: 2, height: 2, bands: 1)
             .linear(0.0, 10.0)
         
         // Apply linear with only addition (a=1.0 by default)
@@ -442,7 +439,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testLinearUchar() throws {
         // Create a test image that would overflow uchar without the uchar parameter
-        let image = try VIPSImage.black(2, 2, bands: 1)
+        let image = try VIPSImage.black(width: 2, height: 2, bands: 1)
             .linear(0.0, 100.0)
         
         // Apply linear transform that would create value > 255
@@ -462,7 +459,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testAsin() throws {
         // Create a test image with value 1.0
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 1.0)
         
         let result = try image.asin()
@@ -475,7 +472,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testAcos() throws {
         // Create a test image with value 0.0
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
         
         let result = try image.acos()
         
@@ -487,7 +484,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testAtan() throws {
         // Create a test image with value 1.0
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 1.0)
         
         let result = try image.atan()
@@ -502,7 +499,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testSinh() throws {
         // Create a test image with value 0
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
         
         let result = try image.sinh()
         
@@ -514,7 +511,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testCosh() throws {
         // Create a test image with value 0
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
         
         let result = try image.cosh()
         
@@ -526,7 +523,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testTanh() throws {
         // Create a test image with value 0
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
         
         let result = try image.tanh()
         
@@ -540,7 +537,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testAsinh() throws {
         // Create a test image with value 0
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
         
         let result = try image.asinh()
         
@@ -552,7 +549,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testAcosh() throws {
         // Create a test image with value 1.0
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 1.0)
         
         let result = try image.acosh()
@@ -565,7 +562,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testAtanh() throws {
         // Create a test image with value 0
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
         
         let result = try image.atanh()
         
@@ -579,7 +576,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testExp10() throws {
         // Create a test image with value 2
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 2.0)
         
         let result = try image.exp10()
@@ -594,11 +591,11 @@ struct ArithmeticOperationsTests {
     @Test
     func testWopImage() throws {
         // Create exponent image with value 2
-        let exponent = try VIPSImage.black(3, 3, bands: 1)
+        let exponent = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 2.0)
         
         // Create base image with value 3
-        let base = try VIPSImage.black(3, 3, bands: 1)
+        let base = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 3.0)
         
         let result = try exponent.wop(base)
@@ -611,7 +608,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testWopConst() throws {
         // Create exponent image with value 3
-        let exponent = try VIPSImage.black(3, 3, bands: 1)
+        let exponent = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 3.0)
         
         let result = try exponent.wop(2.0)
@@ -624,11 +621,11 @@ struct ArithmeticOperationsTests {
     @Test
     func testRemainderImage() throws {
         // Create dividend image with value 13
-        let dividend = try VIPSImage.black(3, 3, bands: 1)
+        let dividend = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 13.0)
         
         // Create divisor image with value 5
-        let divisor = try VIPSImage.black(3, 3, bands: 1)
+        let divisor = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 5.0)
         
         let result = try dividend.remainder(divisor)
@@ -641,7 +638,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testRemainderConst() throws {
         // Create dividend image with value 17
-        let dividend = try VIPSImage.black(3, 3, bands: 1)
+        let dividend = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 17.0)
         
         let result = try dividend.remainder(7.0)
@@ -654,7 +651,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testRemainderConstInt() throws {
         // Create dividend image with value 20
-        let dividend = try VIPSImage.black(3, 3, bands: 1)
+        let dividend = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 20.0)
         
         let result = try dividend.remainder(6)
@@ -669,12 +666,12 @@ struct ArithmeticOperationsTests {
     @Test
     func testEorImage() throws {
         // Create image with value 12 (binary: 1100)
-        let left = try VIPSImage.black(3, 3, bands: 1)
+        let left = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 12.0)
             .cast(.uchar)
         
         // Create image with value 5 (binary: 0101)
-        let right = try VIPSImage.black(3, 3, bands: 1)
+        let right = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 5.0)
             .cast(.uchar)
         
@@ -688,7 +685,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testEorImageConst() throws {
         // Create image with value 15 (binary: 1111)
-        let image = try VIPSImage.black(3, 3, bands: 1)
+        let image = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 15.0)
             .cast(.uchar)
         
@@ -702,12 +699,12 @@ struct ArithmeticOperationsTests {
     @Test
     func testXorOperator() throws {
         // Create image with value 7 (binary: 0111)
-        let left = try VIPSImage.black(3, 3, bands: 1)
+        let left = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 7.0)
             .cast(.uchar)
         
         // Create image with value 3 (binary: 0011)
-        let right = try VIPSImage.black(3, 3, bands: 1)
+        let right = try VIPSImage.black(width: 3, height: 3, bands: 1)
             .linear(0.0, 3.0)
             .cast(.uchar)
         
@@ -723,8 +720,8 @@ struct ArithmeticOperationsTests {
     @Test
     func testComplexForm() throws {
         // Create real and imaginary parts
-        let real = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 3.0)  // real = 3
-        let imag = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 4.0)  // imag = 4
+        let real = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 3.0)  // real = 3
+        let imag = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 4.0)  // imag = 4
         
         // Combine into complex image
         let complex = try real.complex(imag)
@@ -740,9 +737,9 @@ struct ArithmeticOperationsTests {
     @Test
     func testPolarAndRect() throws {
         // Create a complex number 3 + 4i
-        let real = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 3.0)
-        let imag = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 4.0)
-        let complex = try real.complex(imag)
+        let real = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 3.0)
+        let imag = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 4.0)
+        let complex = try real.complexform(imag)
         
         // Convert to polar form
         let polar = try complex.polar()
@@ -767,9 +764,9 @@ struct ArithmeticOperationsTests {
     @Test
     func testComplexConjugate() throws {
         // Create complex number 2 + 3i
-        let real = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 2.0)
-        let imag = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 3.0)
-        let complex = try real.complex(imag)
+        let real = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 2.0)
+        let imag = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 3.0)
+        let complex = try real.complexform(imag)
         
         // Get conjugate (2 - 3i)
         let conjugate = try complex.conj()
@@ -787,9 +784,9 @@ struct ArithmeticOperationsTests {
     @Test
     func testRealAndImag() throws {
         // Create complex number 5 + 7i
-        let real = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 5.0)
-        let imag = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 7.0)
-        let complex = try real.complex(imag)
+        let real = try VIPSImage.black(width: 2, height: 2, bands: 1).linear(0.0, 5.0)
+        let imag = try VIPSImage.black(width: 2, height: 2, bands: 1).linear(0.0, 7.0)
+        let complex = try real.complexform(imag)
         
         // Extract real and imaginary parts
         let extractedReal = try complex.real()
@@ -804,9 +801,9 @@ struct ArithmeticOperationsTests {
     @Test
     func testSum() throws {
         // Create three images with different values
-        let img1 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 10.0)
-        let img2 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 20.0)
-        let img3 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 30.0)
+        let img1 = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 10.0)
+        let img2 = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 20.0)
+        let img3 = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 30.0)
         
         // Sum them
         let sum = try VIPSImage.sum([img1, img2, img3])
@@ -818,7 +815,7 @@ struct ArithmeticOperationsTests {
     
     @Test
     func testSumSingleImage() throws {
-        let img = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 42.0)
+        let img = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 42.0)
         
         // Sum of single image should return the image itself
         let sum = try VIPSImage.sum([img])
@@ -831,7 +828,7 @@ struct ArithmeticOperationsTests {
     func testStats() throws {
         // Create a simple test image with uniform values for predictable statistics
         // Using a 4x4 image with value 5.0 everywhere for simple verification
-        let testImg = try VIPSImage.black(4, 4, bands: 1).linear(0.0, 5.0)
+        let testImg = try VIPSImage.black(width: 4, height: 4, bands: 1).linear(0.0, 5.0)
         
         // Get statistics
         let stats = try testImg.stats()
@@ -907,8 +904,8 @@ struct ArithmeticOperationsTests {
         #expect(abs(variedRow0[5] - 2.7386128) < 0.001, "Std dev should be ~2.738, got \(variedRow0[5])")
         
         // Additional test: multi-band image statistics
-        let band1 = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 2.0)  // All 2s
-        let band2 = try VIPSImage.black(2, 2, bands: 1).linear(0.0, 4.0)  // All 4s
+        let band1 = try VIPSImage.black(width: 2, height: 2, bands: 1).linear(0.0, 2.0)  // All 2s
+        let band2 = try VIPSImage.black(width: 2, height: 2, bands: 1).linear(0.0, 4.0)  // All 4s
         let multiBand = try band1.bandjoin([band2])
         
         let multiBandStats = try multiBand.stats()
@@ -943,7 +940,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testProfile() throws {
         // Create a simple 3x3 image with known values
-        let img = try VIPSImage.black(3, 3, bands: 1).linear(1.0, 1.0)
+        let img = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(1.0, 1.0)
         
         // Get profiles (averages across rows and columns)
         let profiles = try img.profile()
@@ -964,7 +961,7 @@ struct ArithmeticOperationsTests {
     @Test
     func testProject() throws {
         // Create a simple 3x3 image with known values
-        let img = try VIPSImage.black(3, 3, bands: 1).linear(1.0, 0.0)
+        let img = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(1.0, 0.0)
         
         // Project to get row and column sums
         let projection = try img.project()
@@ -987,8 +984,8 @@ struct ArithmeticOperationsTests {
     @Test
     func testBandAnd() throws {
         // Create multi-band image
-        let band1 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 7.0).cast(.uchar)  // 0b0111
-        let band2 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 5.0).cast(.uchar)  // 0b0101
+        let band1 = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 7.0).cast(.uchar)  // 0b0111
+        let band2 = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 5.0).cast(.uchar)  // 0b0101
         let img = try band1.bandjoin([band2])
         
         // AND across bands: 7 & 5 = 5
@@ -1002,8 +999,8 @@ struct ArithmeticOperationsTests {
     @Test
     func testBandOr() throws {
         // Create multi-band image
-        let band1 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 4.0).cast(.uchar)  // 0b0100
-        let band2 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 2.0).cast(.uchar)  // 0b0010
+        let band1 = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 4.0).cast(.uchar)  // 0b0100
+        let band2 = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 2.0).cast(.uchar)  // 0b0010
         let img = try band1.bandjoin([band2])
         
         // OR across bands: 4 | 2 = 6
@@ -1017,8 +1014,8 @@ struct ArithmeticOperationsTests {
     @Test
     func testBandEor() throws {
         // Create multi-band image
-        let band1 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 7.0).cast(.uchar)  // 0b0111
-        let band2 = try VIPSImage.black(3, 3, bands: 1).linear(0.0, 3.0).cast(.uchar)  // 0b0011
+        let band1 = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 7.0).cast(.uchar)  // 0b0111
+        let band2 = try VIPSImage.black(width: 3, height: 3, bands: 1).linear(0.0, 3.0).cast(.uchar)  // 0b0011
         let img = try band1.bandjoin([band2])
         
         // XOR across bands: 7 ^ 3 = 4
