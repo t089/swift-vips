@@ -282,13 +282,9 @@ struct VIPSTests {
         var slice = data[...]
         let source = VIPSSourceCustom()
         source.onRead { bytesToRead, buffer in
-            print("On Read: bytesToRead \(bytesToRead)")
-            print("Remaining: \(slice.count)")
             let bytes = slice.prefix(bytesToRead)
             buffer = Array(bytes)
             slice = slice[(slice.startIndex + bytes.count)...]
-            print("bytes read \(buffer.count)")
-            print("Remaining: \(slice.count)")
         }
         
         let image = try VIPSImage(fromSource: source)
