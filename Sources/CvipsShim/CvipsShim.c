@@ -130,17 +130,6 @@ int shim_vips_major_version() {
     return VIPS_MAJOR_VERSION;
 }
 
-#if VIPS_MAJOR_VERSION >= 8
-#if VIPS_MINOR_VERSION >= 17
-#define SHIM_VIPS_VERSION_8_17
-#endif
-#if VIPS_MINOR_VERSION >= 16
-#define SHIM_VIPS_VERSION_8_16
-#endif
-#if VIPS_MINOR_VERSION >= 15
-#define SHIM_VIPS_VERSION_8_15
-#endif
-#endif
 
 const char* shim_vips_version() {
     return VIPS_VERSION;
