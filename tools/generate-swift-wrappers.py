@@ -847,7 +847,6 @@ def generate_all_operations():
         'linear',  # Has manual implementation with multiple overloads
         'project',  # Has manual implementation with tuple return type
         'profile',  # Has manual implementation with tuple return type
-        # Exclude const variants that will be generated as overloads
     ]
     
     # Operations that should have their _const variants automatically generated as overloads
@@ -1079,38 +1078,6 @@ def main():
         operations = operations_by_category[category]
         filepath = write_category_file(category, operations, output_dir)
         print(f"  ✅ Generated {filepath} ({len(operations)} operations)")
-    
-    # Generate README
-    readme_path = output_dir / "README.md"
-    with open(readme_path, 'w') as f:
-        f.write("# Generated VIPS Operations\n\n")
-        f.write("This directory contains automatically generated Swift wrappers for libvips operations.\n\n")
-        f.write("## Categories\n\n")
-        
-        for category in sorted(operations_by_category.keys()):
-            operations = operations_by_category[category]
-            f.write(f"### {category}\n")
-            f.write(f"- Operations: {len(operations)}\n")
-            f.write(f"- Examples: {', '.join(op[0] for op in operations[:5])}")
-            if len(operations) > 5:
-                f.write("...")
-            f.write("\n\n")
-        
-        f.write("## Regenerating\n\n")
-        f.write("To regenerate these files, run:\n")
-        f.write("```bash\n")
-        f.write("pip install pyvips\n")
-        f.write("python3 tools/generate-swift-wrappers.py\n")
-        f.write("```\n\n")
-        f.write("## Implementation Notes\n\n")
-        f.write("- Operations are discovered using GObject introspection via PyVIPS\n")
-        f.write("- Each operation is wrapped in a Swift-friendly API\n")
-        f.write("- Type conversions are handled automatically where possible\n")
-        f.write("- Internal parameters (nickname, description) are filtered out\n")
-        f.write("- Parameter names are converted to Swift conventions (camelCase)\n")
-        f.write("- Swift reserved keywords are properly escaped\n")
-    
-    print(f"  ✅ Generated {readme_path}")
     
     print("\n🎉 Code generation complete!")
     print(f"\n📊 Summary:")
