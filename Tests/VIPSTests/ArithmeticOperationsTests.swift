@@ -6,6 +6,20 @@ import Foundation
 @Suite(.vips)
 struct ArithmeticOperationsTests {
     
+    // MARK: - Basic Arithmetic with Different Formats
+    
+    @Test
+    func testAdditionAcrossFormats() throws {
+        for format in nonComplexFormats {
+            let a = try makeTestImage(value: 10).cast(format)
+            let b = try makeTestImage(value: 20).cast(format)
+            
+            // Image + Image
+            let result1 = try a + b
+            assertAlmostEqual(try result1.avg(), 30.0, threshold: 1.0)
+        }
+    }
+    
     // MARK: - Trigonometric Operations Tests
     
     @Test
@@ -1025,4 +1039,5 @@ struct ArithmeticOperationsTests {
         let avg = try result.avg()
         #expect(abs(avg - 4.0) < 0.01)
     }
+    
 }

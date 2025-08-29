@@ -93,7 +93,7 @@ extension VIPSImage {
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
     public static func pdfload(
-        buffer: some Collection<UInt8>,
+        buffer: VIPSBlob,
         page: Int? = nil,
         n: Int? = nil,
         dpi: Double? = nil,
@@ -105,12 +105,10 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
-            return try VIPSImage(nil) { out in
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try VIPSImage(nil) { out in
                 var opt = VIPSOption()
-
-                let blob = vips_blob_new(nil, buffer.baseAddress, buffer.count)
-                defer { vips_area_unref(shim_vips_area(blob)) }
 
                 opt.set("buffer", value: blob)
                 if let page = page {
@@ -148,23 +146,51 @@ extension VIPSImage {
                 try VIPSImage.call("pdfload_buffer", options: &opt)
             }
         }
-        if let maybeImage {
-            return maybeImage
-        } else {
-            return try pdfload(
-                buffer: Array(buffer),
-                page: page,
-                n: n,
-                dpi: dpi,
-                scale: scale,
-                background: background,
-                password: password,
-                memory: memory,
-                access: access,
-                failOn: failOn,
-                revalidate: revalidate
-            )
-        }
+    }
+
+    /// Load pdf from buffer without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - page: First page to load
+    ///   - n: Number of pages to load, -1 for all
+    ///   - dpi: DPI to render at
+    ///   - scale: Factor to scale by
+    ///   - background: Background colour
+    ///   - password: Password to decrypt with
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func pdfload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        page: Int? = nil,
+        n: Int? = nil,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        background: [Double]? = nil,
+        password: String? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try pdfload(
+            buffer: blob,
+            page: page,
+            n: n,
+            dpi: dpi,
+            scale: scale,
+            background: background,
+            password: password,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
     }
 
     /// Load pdf from source

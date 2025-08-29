@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsInterpretation = Cvips.VipsInterpretation
+
 extension VipsInterpretation {
     public static var error: Self { VIPS_INTERPRETATION_ERROR }
     public static var multiband: Self { VIPS_INTERPRETATION_MULTIBAND }

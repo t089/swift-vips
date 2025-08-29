@@ -75,7 +75,7 @@ extension VIPSImage {
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
     public static func svgload(
-        buffer: some Collection<UInt8>,
+        buffer: VIPSBlob,
         dpi: Double? = nil,
         scale: Double? = nil,
         unlimited: Bool? = nil,
@@ -84,12 +84,10 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
-            return try VIPSImage(nil) { out in
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try VIPSImage(nil) { out in
                 var opt = VIPSOption()
-
-                let blob = vips_blob_new(nil, buffer.baseAddress, buffer.count)
-                defer { vips_area_unref(shim_vips_area(blob)) }
 
                 opt.set("buffer", value: blob)
                 if let dpi = dpi {
@@ -118,20 +116,42 @@ extension VIPSImage {
                 try VIPSImage.call("svgload_buffer", options: &opt)
             }
         }
-        if let maybeImage {
-            return maybeImage
-        } else {
-            return try svgload(
-                buffer: Array(buffer),
-                dpi: dpi,
-                scale: scale,
-                unlimited: unlimited,
-                memory: memory,
-                access: access,
-                failOn: failOn,
-                revalidate: revalidate
-            )
-        }
+    }
+
+    /// Load svg with rsvg without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - dpi: Render at this DPI
+    ///   - scale: Scale output by this factor
+    ///   - unlimited: Allow SVG of any size
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func svgload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try svgload(
+            buffer: blob,
+            dpi: dpi,
+            scale: scale,
+            unlimited: unlimited,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
     }
 
     /// Load svg from source

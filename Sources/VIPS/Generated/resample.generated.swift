@@ -151,7 +151,7 @@ extension VIPSImage {
     ///   - failOn: Error level to fail on
     @inlinable
     public static func thumbnail(
-        buffer: some Collection<UInt8>,
+        buffer: VIPSBlob,
         width: Int,
         optionString: String? = nil,
         height: Int? = nil,
@@ -164,12 +164,10 @@ extension VIPSImage {
         intent: VipsIntent? = nil,
         failOn: VipsFailOn? = nil
     ) throws -> VIPSImage {
-        let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
-            return try VIPSImage(nil) { out in
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try VIPSImage(nil) { out in
                 var opt = VIPSOption()
-
-                let blob = vips_blob_new(nil, buffer.baseAddress, buffer.count)
-                defer { vips_area_unref(shim_vips_area(blob)) }
 
                 opt.set("buffer", value: blob)
                 opt.set("width", value: width)
@@ -207,24 +205,6 @@ extension VIPSImage {
 
                 try VIPSImage.call("thumbnail_buffer", options: &opt)
             }
-        }
-        if let maybeImage {
-            return maybeImage
-        } else {
-            return try thumbnail(
-                buffer: Array(buffer),
-                width: width,
-                optionString: optionString,
-                height: height,
-                size: size,
-                noRotate: noRotate,
-                crop: crop,
-                linear: linear,
-                importProfile: importProfile,
-                exportProfile: exportProfile,
-                intent: intent,
-                failOn: failOn
-            )
         }
     }
 

@@ -48,7 +48,7 @@ public struct VIPSOption {
         self.pairs.append(pair)
     }
     
-    public mutating func set(_ name: String, value: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>>!) {
+    public mutating func set(_ name: String, value: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?>) {
         let pair = Pair(name: name, input: false)
         g_value_init(&pair.value, shim_VIPS_TYPE_BLOB())
         pair.output = .blob(value)
@@ -214,7 +214,7 @@ public struct VIPSOption {
 final class Pair {
     enum Output {
         case image(UnsafeMutablePointer<UnsafeMutablePointer<VipsImage>?>)
-        case blob(UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>>)
+        case blob(UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?>)
         case double(UnsafeMutablePointer<Double>!)
         case doubleArray(UnsafeMutablePointer<UnsafeMutablePointer<VipsArrayDouble>>)
         case integer(UnsafeMutablePointer<Int>!)

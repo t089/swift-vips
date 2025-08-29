@@ -81,7 +81,7 @@ extension VIPSImage {
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
     public static func tiffload(
-        buffer: some Collection<UInt8>,
+        buffer: VIPSBlob,
         page: Int? = nil,
         subifd: Int? = nil,
         n: Int? = nil,
@@ -91,12 +91,10 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
-            return try VIPSImage(nil) { out in
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try VIPSImage(nil) { out in
                 var opt = VIPSOption()
-
-                let blob = vips_blob_new(nil, buffer.baseAddress, buffer.count)
-                defer { vips_area_unref(shim_vips_area(blob)) }
 
                 opt.set("buffer", value: blob)
                 if let page = page {
@@ -128,21 +126,45 @@ extension VIPSImage {
                 try VIPSImage.call("tiffload_buffer", options: &opt)
             }
         }
-        if let maybeImage {
-            return maybeImage
-        } else {
-            return try tiffload(
-                buffer: Array(buffer),
-                page: page,
-                subifd: subifd,
-                n: n,
-                autorotate: autorotate,
-                memory: memory,
-                access: access,
-                failOn: failOn,
-                revalidate: revalidate
-            )
-        }
+    }
+
+    /// Load tiff from buffer without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - page: First page to load
+    ///   - subifd: Subifd index
+    ///   - n: Number of pages to load, -1 for all
+    ///   - autorotate: Rotate image using orientation tag
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func tiffload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        page: Int? = nil,
+        subifd: Int? = nil,
+        n: Int? = nil,
+        autorotate: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try tiffload(
+            buffer: blob,
+            page: page,
+            subifd: subifd,
+            n: n,
+            autorotate: autorotate,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
     }
 
     /// Load tiff from source
@@ -392,7 +414,11 @@ extension VIPSImage {
     ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
-        var out: UnsafeMutablePointer<VipsBlob>! = nil
+        let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)
+        out.initialize(to: nil)
+        defer {
+            out.deallocate()
+        }
 
         opt.set("in", value: self.image)
         if let compression = compression {
@@ -467,11 +493,11 @@ extension VIPSImage {
         if let profile = profile {
             opt.set("profile", value: profile)
         }
-        opt.set("buffer", value: &out)
+        opt.set("buffer", value: out)
 
         try VIPSImage.call("tiffsave_buffer", options: &opt)
 
-        guard let vipsBlob = out else {
+        guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from tiffsave_buffer")
         }
 

@@ -51,7 +51,7 @@ gtype_to_swift = {
     GValue.array_int_type: '[Int]',
     GValue.array_double_type: '[Double]',
     GValue.array_image_type: '[VIPSImage]',
-    GValue.blob_type: 'Data'
+    GValue.blob_type: 'VIPSBlob'
 }
 
 # Swift reserved keywords that need escaping
@@ -395,6 +395,435 @@ def generate_const_overload(base_operation_name, const_operation_name):
     
     return "\n".join(result)
 
+def generate_unsafe_buffer_overload(operation_name):
+    """Generate an UnsafeRawBufferPointer overload for operations that have blob parameters."""
+    try:
+        intro = Introspect.get(operation_name)
+    except Error:
+        return None
+    
+    # Skip deprecated operations
+    if intro.flags & _OPERATION_DEPRECATED:
+        return None
+    
+    # Check if this operation has blob parameters
+    if not has_buffer_parameter(intro):
+        return None
+    
+    # Only generate for load operations that return images
+    if 'load' not in operation_name:
+        return None
+    
+    required_output = [name for name in intro.required_output if name != intro.member_x]
+    if not required_output or intro.details[required_output[0]]['type'] != GValue.image_type:
+        return None
+    
+    # Find the first blob parameter
+    blob_param_name = None
+    all_input_params = intro.method_args + intro.optional_input
+    for name in all_input_params:
+        if name in intro.details and intro.details[name]['type'] == GValue.blob_type:
+            blob_param_name = name
+            break
+    
+    if not blob_param_name:
+        return None
+    
+    # Filter out deprecated and internal parameters for optional inputs
+    optional_input = []
+    for name in intro.optional_input:
+        if intro.details[name]['flags'] & _DEPRECATED == 0:
+            if name not in ['nickname', 'description']:
+                optional_input.append(name)
+    
+    result = []
+    
+    # Generate documentation
+    result.append(f"    /// {intro.description.capitalize()} without copying the data. The caller must ensure the buffer remains valid for")
+    result.append("    /// the lifetime of the returned image and all its descendants.")
+    result.append("    ///")
+    result.append("    /// - Parameters:")
+    result.append(f"    ///   - {swiftize_param(blob_param_name)}: Buffer to load from")
+    
+    # Add other parameters documentation
+    for name in intro.method_args + optional_input:
+        if name == blob_param_name or name == intro.member_x:
+            continue
+        if name in intro.details:
+            details = intro.details[name]
+            param_name = swiftize_param(name)
+            result.append(f"    ///   - {param_name}: {details['blurb']}")
+    
+    # Build function signature
+    func_name = snake_to_camel(operation_name)
+    
+    # Remove common suffixes for overloaded methods
+    overload_suffixes = ['Buffer', 'Source', 'Target', 'Mime']
+    for suffix in overload_suffixes:
+        if func_name.endswith(suffix):
+            func_name = func_name[:-len(suffix)]
+            break
+    
+    # Escape function name if it's a Swift keyword
+    if func_name in swift_keywords:
+        func_name = f"`{func_name}`"
+    
+    signature = f"    public static func {func_name}("
+    
+    # Add required parameters
+    params = [f"unsafeBuffer {swiftize_param(blob_param_name)}: UnsafeRawBufferPointer"]
+    
+    # Add other required parameters (excluding member_x and blob param)
+    for name in intro.method_args:
+        if name == intro.member_x or name == blob_param_name:
+            continue
+        details = intro.details[name]
+        param_name = swiftize_param(name)
+        swift_type = get_swift_type(details['type'])
+        params.append(f"{param_name}: {swift_type}")
+    
+    # Add optional parameters
+    for name in optional_input:
+        details = intro.details[name]
+        param_name = swiftize_param(name)
+        swift_type = get_swift_type(details['type'])
+        params.append(f"{param_name}: {swift_type}? = nil")
+    
+    signature += f"{', '.join(params)}) throws -> VIPSImage {{"
+    
+    # Add @inlinable decorator
+    result.append("    @inlinable")
+    result.append(signature)
+    
+    # Generate function body - create VIPSBlob with noCopy and call the VIPSBlob version
+    blob_param_swift = swiftize_param(blob_param_name)
+    result.append(f"        let blob = VIPSBlob(noCopy: {blob_param_swift})")
+    result.append(f"        return try {func_name}(")
+    
+    # Add blob parameter
+    result.append(f"            {blob_param_swift}: blob,")
+    
+    # Add other required parameters
+    for name in intro.method_args:
+        if name == intro.member_x or name == blob_param_name:
+            continue
+        param_name = swiftize_param(name)
+        result.append(f"            {param_name}: {param_name},")
+    
+    # Add optional parameters
+    for name in optional_input:
+        param_name = swiftize_param(name)
+        result.append(f"            {param_name}: {param_name},")
+    
+    # Remove trailing comma from last parameter
+    if result[-1].endswith(","):
+        result[-1] = result[-1][:-1]
+    
+    result.append("        )")
+    result.append("    }")
+    
+    return "\n".join(result)
+
+
+def generate_collection_uint8_overload(operation_name):
+    """Generate a Collection<UInt8> overload for operations that have blob parameters."""
+    try:
+        intro = Introspect.get(operation_name)
+    except Error:
+        return None
+    
+    # Skip deprecated operations
+    if intro.flags & _OPERATION_DEPRECATED:
+        return None
+    
+    # Check if this operation has blob parameters
+    if not has_buffer_parameter(intro):
+        return None
+    
+    # Only generate for load operations that return images
+    if 'load' not in operation_name:
+        return None
+    
+    required_output = [name for name in intro.required_output if name != intro.member_x]
+    if not required_output or intro.details[required_output[0]]['type'] != GValue.image_type:
+        return None
+    
+    # Find the first blob parameter
+    blob_param_name = None
+    all_input_params = intro.method_args + intro.optional_input
+    for name in all_input_params:
+        if name in intro.details and intro.details[name]['type'] == GValue.blob_type:
+            blob_param_name = name
+            break
+    
+    if not blob_param_name:
+        return None
+    
+    # Filter out deprecated and internal parameters for optional inputs
+    optional_input = []
+    for name in intro.optional_input:
+        if intro.details[name]['flags'] & _DEPRECATED == 0:
+            if name not in ['nickname', 'description']:
+                optional_input.append(name)
+    
+    result = []
+    
+    # Generate documentation
+    result.append(f"    /// {intro.description.capitalize()}")
+    result.append("    ///")
+    result.append("    /// - Parameters:")
+    result.append(f"    ///   - {swiftize_param(blob_param_name)}: Buffer to load from")
+    
+    # Add other parameters documentation
+    for name in intro.method_args + optional_input:
+        if name == blob_param_name or name == intro.member_x:
+            continue
+        if name in intro.details:
+            details = intro.details[name]
+            param_name = swiftize_param(name)
+            result.append(f"    ///   - {param_name}: {details['blurb']}")
+    
+    # Build function signature
+    func_name = snake_to_camel(operation_name)
+    
+    # Remove common suffixes for overloaded methods
+    overload_suffixes = ['Buffer', 'Source', 'Target', 'Mime']
+    for suffix in overload_suffixes:
+        if func_name.endswith(suffix):
+            func_name = func_name[:-len(suffix)]
+            break
+    
+    # Escape function name if it's a Swift keyword
+    if func_name in swift_keywords:
+        func_name = f"`{func_name}`"
+    
+    signature = f"    public static func {func_name}("
+    
+    # Add required parameters
+    params = [f"{swiftize_param(blob_param_name)}: some Collection<UInt8>"]
+    
+    # Add other required parameters (excluding member_x and blob param)
+    for name in intro.method_args:
+        if name == intro.member_x or name == blob_param_name:
+            continue
+        details = intro.details[name]
+        param_name = swiftize_param(name)
+        swift_type = get_swift_type(details['type'])
+        params.append(f"{param_name}: {swift_type}")
+    
+    # Add optional parameters
+    for name in optional_input:
+        details = intro.details[name]
+        param_name = swiftize_param(name)
+        swift_type = get_swift_type(details['type'])
+        params.append(f"{param_name}: {swift_type}? = nil")
+    
+    signature += f"{', '.join(params)}) throws -> VIPSImage {{"
+    
+    # Add @inlinable decorator
+    result.append("    @inlinable")
+    result.append(signature)
+    
+    # Generate function body - create VIPSBlob and call the VIPSBlob version
+    blob_param_swift = swiftize_param(blob_param_name)
+    result.append(f"        let blob = VIPSBlob({blob_param_swift})")
+    result.append(f"        return try {func_name}(")
+    
+    # Add blob parameter
+    result.append(f"            {blob_param_swift}: blob,")
+    
+    # Add other required parameters
+    for name in intro.method_args:
+        if name == intro.member_x or name == blob_param_name:
+            continue
+        param_name = swiftize_param(name)
+        result.append(f"            {param_name}: {param_name},")
+    
+    # Add optional parameters
+    for name in optional_input:
+        param_name = swiftize_param(name)
+        result.append(f"            {param_name}: {param_name},")
+    
+    # Remove trailing comma from last parameter
+    if result[-1].endswith(","):
+        result[-1] = result[-1][:-1]
+    
+    result.append("        )")
+    result.append("    }")
+    
+    return "\n".join(result)
+
+
+def generate_vipsblob_overload(operation_name):
+    """Generate a VIPSBlob overload for operations that have blob parameters."""
+    try:
+        intro = Introspect.get(operation_name)
+    except Error:
+        return None
+    
+    # Skip deprecated operations
+    if intro.flags & _OPERATION_DEPRECATED:
+        return None
+    
+    # Check if this operation has blob parameters
+    if not has_buffer_parameter(intro):
+        return None
+    
+    # Get required and optional parameters
+    required_output = [name for name in intro.required_output if name != intro.member_x]
+    
+    # Filter out deprecated and internal parameters
+    optional_input = []
+    for name in intro.optional_input:
+        if intro.details[name]['flags'] & _DEPRECATED == 0:
+            if name not in ['nickname', 'description']:
+                optional_input.append(name)
+    
+    has_output = len(required_output) >= 1
+    has_image_output = has_output and intro.details[required_output[0]]['type'] == GValue.image_type
+    
+    # Only generate for image output operations
+    if not has_image_output:
+        return None
+    
+    # Find the first blob parameter
+    blob_param_name = None
+    all_input_params = intro.method_args + optional_input
+    for name in all_input_params:
+        if name in intro.details and intro.details[name]['type'] == GValue.blob_type:
+            blob_param_name = name
+            break
+    
+    if not blob_param_name:
+        return None
+    
+    result = []
+    
+    # Generate documentation
+    result.append(f"    /// {intro.description.capitalize()}")
+    
+    # Add parameter documentation
+    all_params = intro.method_args + optional_input
+    if all_params:
+        result.append("    ///")
+        result.append("    /// - Parameters:")
+        for name in all_params:
+            if name in intro.details:
+                details = intro.details[name]
+                param_name = swiftize_param(name)
+                # Special documentation for the blob parameter
+                if name == blob_param_name:
+                    result.append(f"    ///   - {param_name}: Buffer to load from")
+                else:
+                    result.append(f"    ///   - {param_name}: {details['blurb']}")
+    
+    # Build function signature
+    func_name = snake_to_camel(operation_name)
+    
+    # Remove common suffixes for overloaded methods
+    overload_suffixes = ['Buffer', 'Source', 'Target', 'Mime']
+    for suffix in overload_suffixes:
+        if func_name.endswith(suffix):
+            func_name = func_name[:-len(suffix)]
+            break
+    
+    # Escape function name if it's a Swift keyword
+    if func_name in swift_keywords:
+        func_name = f"`{func_name}`"
+    
+    if 'load' in operation_name:
+        signature = f"    public static func {func_name}("
+    else:
+        signature = f"    public func {func_name}("
+    
+    # Add required parameters
+    params = []
+    is_first_param = True
+    for name in intro.method_args:
+        if name == intro.member_x:
+            continue
+        details = intro.details[name]
+        param_name = swiftize_param(name)
+        
+        # Use VIPSBlob for the blob parameter
+        if name == blob_param_name:
+            swift_type = "VIPSBlob"
+        else:
+            swift_type = get_swift_type(details['type'])
+        
+        # Special handling for "right" parameter - rename to "rhs" and hide label
+        if name == "right":
+            params.append(f"_ rhs: {swift_type}")
+        # Special handling for "in" parameter when it's the first parameter - hide label
+        elif name == "in" and is_first_param:
+            params.append(f"_ `in`: {swift_type}")
+        else:
+            # Check if first parameter name matches function name (omit label if so)
+            clean_func_name = func_name.strip('`')
+            if is_first_param and (param_name == clean_func_name or clean_func_name.endswith(param_name.capitalize())):
+                params.append(f"_ {param_name}: {swift_type}")
+            else:
+                params.append(f"{param_name}: {swift_type}")
+        
+        is_first_param = False
+    
+    # Add optional parameters
+    for name in optional_input:
+        if name == blob_param_name:
+            continue  # Skip blob parameter as it's already in required params
+        details = intro.details[name]
+        param_name = swiftize_param(name)
+        swift_type = get_swift_type(details['type'])
+        swift_type = f"{swift_type}?"
+        params.append(f"{param_name}: {swift_type} = nil")
+    
+    signature += ", ".join(params)
+    signature += ") throws -> VIPSImage {"
+    
+    # Add @inlinable decorator
+    result.append("    @inlinable")
+    result.append(signature)
+    
+    # Generate function body
+    blob_param_swift = swiftize_param(blob_param_name)
+    
+    result.append("        // the operation will retain the blob")
+    result.append(f"        try {blob_param_swift}.withVipsBlob {{ blob in")
+    result.append("            try VIPSImage(nil) { out in")
+    result.append("                var opt = VIPSOption()")
+    result.append("")
+    result.append(f'                opt.set("{blob_param_name}", value: blob)')
+    
+    # Set other required parameters
+    for name in intro.method_args:
+        if name == intro.member_x or name == blob_param_name:
+            continue
+        if name == "right":
+            param_name = "rhs"
+        elif name == "in":
+            param_name = "`in`"
+        else:
+            param_name = swiftize_param(name)
+        result.append(f'                opt.set("{name}", value: {param_name})')
+    
+    # Set optional parameters
+    for name in optional_input:
+        if name == blob_param_name:
+            continue
+        param_name = swiftize_param(name)
+        result.append(f"                if let {param_name} = {param_name} {{")
+        result.append(f'                    opt.set("{name}", value: {param_name})')
+        result.append("                }")
+    
+    result.append('                opt.set("out", value: &out)')
+    result.append("")
+    result.append(f'                try VIPSImage.call("{operation_name}", options: &opt)')
+    result.append("            }")
+    result.append("        }")
+    result.append("    }")
+    
+    return "\n".join(result)
+
 def generate_swift_operation(operation_name):
     """Generate Swift code for a single operation."""
     try:
@@ -423,6 +852,7 @@ def generate_swift_operation(operation_name):
     # Skip operations without proper outputs (unless it's a save operation)
     if not has_output and 'save' not in operation_name:
         return None
+    
     
     # Collect all Swift object parameters that need to be kept alive
     swift_object_params = []
@@ -470,8 +900,12 @@ def generate_swift_operation(operation_name):
     # Build function signature
     func_name = snake_to_camel(operation_name)
     
-    # Remove common suffixes for overloaded methods
-    overload_suffixes = ['Buffer', 'Source', 'Target', 'Mime']
+    # Remove common suffixes for overloaded methods, but preserve 'Mime' for save operations
+    # that output to stdout to differentiate them from regular save operations
+    overload_suffixes = ['Buffer', 'Source', 'Target']
+    if not (operation_name.endswith('_mime') and 'save' in operation_name):
+        overload_suffixes.append('Mime')
+    
     for suffix in overload_suffixes:
         if func_name.endswith(suffix):
             func_name = func_name[:-len(suffix)]
@@ -500,11 +934,7 @@ def generate_swift_operation(operation_name):
         details = intro.details[name]
         param_name = swiftize_param(name)
         
-        # Special handling for blob parameters
-        if details['type'] == GValue.blob_type:
-            swift_type = "some Collection<UInt8>"
-        else:
-            swift_type = get_swift_type(details['type'])
+        swift_type = get_swift_type(details['type'])
         
         # Special handling for "right" parameter - rename to "rhs" and hide label
         if name == "right":
@@ -528,13 +958,9 @@ def generate_swift_operation(operation_name):
         details = intro.details[name]
         param_name = swiftize_param(name)
         
-        # Special handling for blob parameters
-        if details['type'] == GValue.blob_type:
-            swift_type = "some Collection<UInt8>?"
-        else:
-            swift_type = get_swift_type(details['type'])
-            # All optional parameters should be Swift optionals with nil default
-            swift_type = f"{swift_type}?"
+        swift_type = get_swift_type(details['type'])
+        # All optional parameters should be Swift optionals with nil default
+        swift_type = f"{swift_type}?"
         params.append(f"{param_name}: {swift_type} = nil")
     
     signature += ", ".join(params)
@@ -567,128 +993,68 @@ def generate_swift_operation(operation_name):
     result.append(signature)
     
     # Generate function body
-    if has_buffer_param and has_image_output:
-        # Find the first blob parameter
-        blob_param_name = None
-        all_input_params = intro.method_args + optional_input
-        for name in all_input_params:
-            if name in intro.details and intro.details[name]['type'] == GValue.blob_type:
-                blob_param_name = name
-                break
+    if has_image_output:
+        # Check if we have blob parameters that need special handling
+        has_blob_params = any(name in intro.details and intro.details[name]['type'] == GValue.blob_type 
+                             for name in intro.method_args + optional_input)
         
-        if blob_param_name:
-            blob_param_swift = swiftize_param(blob_param_name)
+        if has_blob_params:
+            # Find the first blob parameter
+            blob_param_name = None
+            for name in intro.method_args + optional_input:
+                if name in intro.details and intro.details[name]['type'] == GValue.blob_type:
+                    blob_param_name = name
+                    break
             
-            # Generate specialized buffer handling code
-            result.append(f"        let maybeImage = try {blob_param_swift}.withContiguousStorageIfAvailable {{ {blob_param_swift} in")
-            result.append("            return try VIPSImage(nil) { out in")
-            result.append("                var opt = VIPSOption()")
-            result.append("")
-            result.append(f"                let blob = vips_blob_new(nil, {blob_param_swift}.baseAddress, {blob_param_swift}.count)")
-            result.append("                defer { vips_area_unref(shim_vips_area(blob)) }")
-            result.append("")
-            result.append(f'                opt.set("{blob_param_name}", value: blob)')
-            
-            # Set other required parameters
-            for name in intro.method_args:
-                if name == intro.member_x or name == blob_param_name:
-                    continue
-                if name == "right":
-                    param_name = "rhs"
-                elif name == "in":
-                    param_name = "`in`"
-                else:
-                    param_name = swiftize_param(name)
-                result.append(f'                opt.set("{name}", value: {param_name})')
-            
-            # Set optional parameters
-            for name in optional_input:
-                if name == blob_param_name:
-                    continue
-                param_name = swiftize_param(name)
-                result.append(f"                if let {param_name} = {param_name} {{")
-                result.append(f'                    opt.set("{name}", value: {param_name})')
-                result.append("                }")
-            
-            result.append("                opt.set(\"out\", value: &out)")
-            result.append("")
-            result.append(f'                try VIPSImage.call("{operation_name}", options: &opt)')
-            result.append("            }")
-            result.append("        }")
-            result.append("        if let maybeImage {")
-            result.append("            return maybeImage")
-            result.append("        } else {")
-            
-            # Generate fallback call
-            all_params = []
-            for name in intro.method_args:
-                if name == intro.member_x:
-                    continue
-                if name == "right":
-                    param_name = "rhs"
-                elif name == "in":
-                    param_name = "`in`"
-                else:
-                    param_name = swiftize_param(name)
-                if name == blob_param_name:
-                    all_params.append(f"{param_name}: Array({param_name})")
-                else:
-                    all_params.append(f"{param_name}: {param_name}")
-            
-            for name in optional_input:
-                param_name = swiftize_param(name)
-                if name == blob_param_name:
-                    continue
-                all_params.append(f"{param_name}: {param_name}")
-            
-            fallback_call = f"            return try {func_name}({', '.join(all_params)})"
-            result.append(fallback_call)
-            result.append("        }")
-            result.append("    }")
-            
-            return "\n".join(result)
-    elif has_image_output:
-        # Build the array of Swift objects to keep alive
-        if is_instance_method:
-            if swift_object_params:
-                # We have additional Swift object parameters to keep alive
-                object_refs = []
-                for name in swift_object_params:
-                    if name == "right":
-                        param_name = "rhs"
-                    elif name == "in":
-                        param_name = "`in`"
-                    else:
-                        param_name = swiftize_param(name)
-                    # Cast optional parameters to Any to silence compiler warnings
-                    if name in optional_input:
-                        object_refs.append(f"{param_name} as Any")
-                    else:
-                        object_refs.append(param_name)
-                result.append(f"        return try VIPSImage([self, {', '.join(object_refs)}]) {{ out in")
-            else:
-                result.append("        return try VIPSImage(self) { out in")
+            if blob_param_name:
+                blob_param_swift = swiftize_param(blob_param_name)
+                result.append(f"        // the operation will retain the blob")
+                result.append(f"        try {blob_param_swift}.withVipsBlob {{ blob in")
+                result.append("            try VIPSImage(nil) { out in")
+                result.append("                var opt = VIPSOption()")
+                result.append("")
         else:
-            if swift_object_params:
-                # Static method with Swift object parameters
-                object_refs = []
-                for name in swift_object_params:
-                    if name == "right":
-                        param_name = "rhs"
-                    elif name == "in":
-                        param_name = "`in`"
-                    else:
-                        param_name = swiftize_param(name)
-                    # Cast optional parameters to Any to silence compiler warnings
-                    if name in optional_input:
-                        object_refs.append(f"{param_name} as Any")
-                    else:
-                        object_refs.append(param_name)
-                result.append(f"        return try VIPSImage([{', '.join(object_refs)}]) {{ out in")
+            # Build the array of Swift objects to keep alive
+            if is_instance_method:
+                if swift_object_params:
+                    # We have additional Swift object parameters to keep alive
+                    object_refs = []
+                    for name in swift_object_params:
+                        if name == "right":
+                            param_name = "rhs"
+                        elif name == "in":
+                            param_name = "`in`"
+                        else:
+                            param_name = swiftize_param(name)
+                        # Cast optional parameters to Any to silence compiler warnings
+                        if name in optional_input:
+                            object_refs.append(f"{param_name} as Any")
+                        else:
+                            object_refs.append(param_name)
+                    result.append(f"        return try VIPSImage([self, {', '.join(object_refs)}]) {{ out in")
+                else:
+                    result.append("        return try VIPSImage(self) { out in")
             else:
-                result.append("        return try VIPSImage(nil) { out in")
-        result.append("            var opt = VIPSOption()")
-        result.append("")
+                if swift_object_params:
+                    # Static method with Swift object parameters
+                    object_refs = []
+                    for name in swift_object_params:
+                        if name == "right":
+                            param_name = "rhs"
+                        elif name == "in":
+                            param_name = "`in`"
+                        else:
+                            param_name = swiftize_param(name)
+                        # Cast optional parameters to Any to silence compiler warnings
+                        if name in optional_input:
+                            object_refs.append(f"{param_name} as Any")
+                        else:
+                            object_refs.append(param_name)
+                    result.append(f"        return try VIPSImage([{', '.join(object_refs)}]) {{ out in")
+                else:
+                    result.append("        return try VIPSImage(nil) { out in")
+            result.append("            var opt = VIPSOption()")
+            result.append("")
     elif has_output and not has_image_output:
         # Operations that return non-image outputs (like avg, min, max, save_buffer)
         result.append("        var opt = VIPSOption()")
@@ -713,7 +1079,11 @@ def generate_swift_operation(operation_name):
             result.append("        var out: [Int] = []")
         elif output_gtype == GValue.blob_type:
             # Special handling for blob outputs
-            result.append("        var out: UnsafeMutablePointer<VipsBlob>! = nil")
+            result.append("        let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)")
+            result.append("        out.initialize(to: nil)")
+            result.append("        defer {")
+            result.append("            out.deallocate()")
+            result.append("        }")
         else:
             # For other types, we'll need to handle them as needed
             result.append(f"        var out: {output_type} = /* TODO: initialize {output_type} */")
@@ -745,8 +1115,13 @@ def generate_swift_operation(operation_name):
             param_name = "`in`"
         else:
             param_name = swiftize_param(name)
-        # VIPSOption handles Swift wrapper objects directly, so we can pass them as-is
-        result.append(f'            opt.set("{name}", value: {param_name})')
+        
+        # Special handling for blob parameters - use the blob pointer from withVipsBlob
+        if name in intro.details and intro.details[name]['type'] == GValue.blob_type:
+            result.append(f'                opt.set("{name}", value: blob)')
+        else:
+            # VIPSOption handles Swift wrapper objects directly, so we can pass them as-is
+            result.append(f'                opt.set("{name}", value: {param_name})')
     
     # Set optional parameters
     for name in optional_input:
@@ -754,25 +1129,49 @@ def generate_swift_operation(operation_name):
         details = intro.details[name]
         swift_type = get_swift_type(details['type'])
         
-        # All optional parameters are now Swift optionals, so we use if-let
-        result.append(f"            if let {param_name} = {param_name} {{")
-        result.append(f'                opt.set("{name}", value: {param_name})')
-        result.append("            }")
+        # Special handling for optional blob parameters - use the blob pointer from withVipsBlob
+        if details['type'] == GValue.blob_type:
+            result.append(f"                if let {param_name} = {param_name} {{")
+            result.append(f'                    opt.set("{name}", value: blob)')
+            result.append("                }")
+        else:
+            # All optional parameters are now Swift optionals, so we use if-let
+            result.append(f"                if let {param_name} = {param_name} {{")
+            result.append(f'                    opt.set("{name}", value: {param_name})')
+            result.append("                }")
     
     # Set output parameters
     if has_output:
+        # Check if we have blob parameters for correct indentation
+        has_blob_params = any(name in intro.details and intro.details[name]['type'] == GValue.blob_type 
+                             for name in intro.method_args + optional_input)
+        indent = "                " if has_blob_params else "            "
+        
         for i, name in enumerate(required_output):
             if i == 0:
-                result.append(f'            opt.set("{name}", value: &out)')
+                # For blob outputs, use "out" directly instead of "&out"
+                output_gtype = intro.details[name]['type']
+                if output_gtype == GValue.blob_type:
+                    result.append(f'{indent}opt.set("{name}", value: out)')
+                else:
+                    result.append(f'{indent}opt.set("{name}", value: &out)')
             else:
                 # Handle additional outputs if needed
                 pass
     
     result.append("")
-    result.append(f'            try VIPSImage.call("{operation_name}", options: &opt)')
+    result.append(f'                try VIPSImage.call("{operation_name}", options: &opt)')
     
     if has_image_output:
-        result.append("        }")
+        # Check if we have blob parameters that need special closing
+        has_blob_params = any(name in intro.details and intro.details[name]['type'] == GValue.blob_type 
+                             for name in intro.method_args + optional_input)
+        
+        if has_blob_params:
+            result.append("            }")
+            result.append("        }")
+        else:
+            result.append("        }")
     elif has_output and not has_image_output:
         # For non-image outputs, we need to return the output value
         result.append("")
@@ -783,7 +1182,7 @@ def generate_swift_operation(operation_name):
         
         if output_gtype == GValue.blob_type:
             # For blob outputs, we need to wrap in VIPSBlob and handle the error case
-            result.append("        guard let vipsBlob = out else {")
+            result.append("        guard let vipsBlob = out.pointee else {")
             result.append(f'            throw VIPSError("Failed to get buffer from {operation_name}")')
             result.append("        }")
             result.append("")
@@ -890,6 +1289,16 @@ def generate_all_operations():
             
             operations_by_category[category].append((nickname, code))
             
+            # VIPSBlob overload is no longer needed since the main method now uses VIPSBlob directly
+            
+            # Generate UnsafeRawBufferPointer overload if this operation has blob parameters
+            unsafe_buffer_overload = generate_unsafe_buffer_overload(nickname)
+            if unsafe_buffer_overload:
+                if version_guard:
+                    unsafe_buffer_overload = f"{version_guard}\n{unsafe_buffer_overload}\n#endif"
+                operations_by_category[category].append((f"{nickname}_unsafe_buffer_overload", unsafe_buffer_overload))
+            
+            
             # Generate const overloads if this operation has them
             if nickname in const_variant_operations:
                 const_op_name = const_variant_operations[nickname]
@@ -921,7 +1330,9 @@ def write_category_file(category, operations, output_dir):
     # Check if any operations use buffer parameters or double array outputs
     has_buffer_operations = False
     for nickname, code in operations:
-        if 'vips_blob_new' in code or 'withContiguousStorageIfAvailable' in code or 'vips_array_double_get' in code:
+        if ('vips_blob_copy' in code or 'vips_blob_new' in code or 
+            'vips_array_double_get' in code or 
+            'withVipsBlob' in code or 'shim_vips_area' in code):
             has_buffer_operations = True
             break
     

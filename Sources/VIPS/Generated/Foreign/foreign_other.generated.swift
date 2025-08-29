@@ -389,7 +389,11 @@ extension VIPSImage {
     ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
-        var out: UnsafeMutablePointer<VipsBlob>! = nil
+        let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)
+        out.initialize(to: nil)
+        defer {
+            out.deallocate()
+        }
 
         opt.set("in", value: self.image)
         if let imagename = imagename {
@@ -446,11 +450,11 @@ extension VIPSImage {
         if let profile = profile {
             opt.set("profile", value: profile)
         }
-        opt.set("buffer", value: &out)
+        opt.set("buffer", value: out)
 
         try VIPSImage.call("dzsave_buffer", options: &opt)
 
-        guard let vipsBlob = out else {
+        guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from dzsave_buffer")
         }
 
@@ -724,19 +728,17 @@ extension VIPSImage {
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
     public static func jp2kload(
-        buffer: some Collection<UInt8>,
+        buffer: VIPSBlob,
         page: Int? = nil,
         memory: Bool? = nil,
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
-            return try VIPSImage(nil) { out in
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try VIPSImage(nil) { out in
                 var opt = VIPSOption()
-
-                let blob = vips_blob_new(nil, buffer.baseAddress, buffer.count)
-                defer { vips_area_unref(shim_vips_area(blob)) }
 
                 opt.set("buffer", value: blob)
                 if let page = page {
@@ -759,18 +761,36 @@ extension VIPSImage {
                 try VIPSImage.call("jp2kload_buffer", options: &opt)
             }
         }
-        if let maybeImage {
-            return maybeImage
-        } else {
-            return try jp2kload(
-                buffer: Array(buffer),
-                page: page,
-                memory: memory,
-                access: access,
-                failOn: failOn,
-                revalidate: revalidate
-            )
-        }
+    }
+
+    /// Load jpeg2000 image without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - page: Load this page from the image
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func jp2kload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        page: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try jp2kload(
+            buffer: blob,
+            page: page,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
     }
 
     /// Load jpeg2000 image
@@ -900,7 +920,11 @@ extension VIPSImage {
     ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
-        var out: UnsafeMutablePointer<VipsBlob>! = nil
+        let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)
+        out.initialize(to: nil)
+        defer {
+            out.deallocate()
+        }
 
         opt.set("in", value: self.image)
         if let tileWidth = tileWidth {
@@ -930,11 +954,11 @@ extension VIPSImage {
         if let profile = profile {
             opt.set("profile", value: profile)
         }
-        opt.set("buffer", value: &out)
+        opt.set("buffer", value: out)
 
         try VIPSImage.call("jp2ksave_buffer", options: &opt)
 
-        guard let vipsBlob = out else {
+        guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from jp2ksave_buffer")
         }
 
@@ -1060,7 +1084,7 @@ extension VIPSImage {
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
     public static func jxlload(
-        buffer: some Collection<UInt8>,
+        buffer: VIPSBlob,
         page: Int? = nil,
         n: Int? = nil,
         memory: Bool? = nil,
@@ -1068,12 +1092,10 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
-            return try VIPSImage(nil) { out in
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try VIPSImage(nil) { out in
                 var opt = VIPSOption()
-
-                let blob = vips_blob_new(nil, buffer.baseAddress, buffer.count)
-                defer { vips_area_unref(shim_vips_area(blob)) }
 
                 opt.set("buffer", value: blob)
                 if let page = page {
@@ -1099,19 +1121,39 @@ extension VIPSImage {
                 try VIPSImage.call("jxlload_buffer", options: &opt)
             }
         }
-        if let maybeImage {
-            return maybeImage
-        } else {
-            return try jxlload(
-                buffer: Array(buffer),
-                page: page,
-                n: n,
-                memory: memory,
-                access: access,
-                failOn: failOn,
-                revalidate: revalidate
-            )
-        }
+    }
+
+    /// Load jpeg-xl image without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - page: First page to load
+    ///   - n: Number of pages to load, -1 for all
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func jxlload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        page: Int? = nil,
+        n: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try jxlload(
+            buffer: blob,
+            page: page,
+            n: n,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
     }
 
     /// Load jpeg-xl image
@@ -1246,7 +1288,11 @@ extension VIPSImage {
     ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
-        var out: UnsafeMutablePointer<VipsBlob>! = nil
+        let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)
+        out.initialize(to: nil)
+        defer {
+            out.deallocate()
+        }
 
         opt.set("in", value: self.image)
         if let tier = tier {
@@ -1276,11 +1322,11 @@ extension VIPSImage {
         if let profile = profile {
             opt.set("profile", value: profile)
         }
-        opt.set("buffer", value: &out)
+        opt.set("buffer", value: out)
 
         try VIPSImage.call("jxlsave_buffer", options: &opt)
 
-        guard let vipsBlob = out else {
+        guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from jxlsave_buffer")
         }
 
@@ -1412,7 +1458,7 @@ extension VIPSImage {
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
     public static func magickload(
-        buffer: some Collection<UInt8>,
+        buffer: VIPSBlob,
         density: String? = nil,
         page: Int? = nil,
         n: Int? = nil,
@@ -1421,12 +1467,10 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
-            return try VIPSImage(nil) { out in
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try VIPSImage(nil) { out in
                 var opt = VIPSOption()
-
-                let blob = vips_blob_new(nil, buffer.baseAddress, buffer.count)
-                defer { vips_area_unref(shim_vips_area(blob)) }
 
                 opt.set("buffer", value: blob)
                 if let density = density {
@@ -1455,20 +1499,42 @@ extension VIPSImage {
                 try VIPSImage.call("magickload_buffer", options: &opt)
             }
         }
-        if let maybeImage {
-            return maybeImage
-        } else {
-            return try magickload(
-                buffer: Array(buffer),
-                density: density,
-                page: page,
-                n: n,
-                memory: memory,
-                access: access,
-                failOn: failOn,
-                revalidate: revalidate
-            )
-        }
+    }
+
+    /// Load buffer with imagemagick7 without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - density: Canvas resolution for rendering vector formats like SVG
+    ///   - page: First page to load
+    ///   - n: Number of pages to load, -1 for all
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func magickload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        density: String? = nil,
+        page: Int? = nil,
+        n: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try magickload(
+            buffer: blob,
+            density: density,
+            page: page,
+            n: n,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
     }
 
     /// Save file with imagemagick
@@ -1556,7 +1622,11 @@ extension VIPSImage {
     ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
-        var out: UnsafeMutablePointer<VipsBlob>! = nil
+        let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)
+        out.initialize(to: nil)
+        defer {
+            out.deallocate()
+        }
 
         opt.set("in", value: self.image)
         if let format = format {
@@ -1586,11 +1656,11 @@ extension VIPSImage {
         if let profile = profile {
             opt.set("profile", value: profile)
         }
-        opt.set("buffer", value: &out)
+        opt.set("buffer", value: out)
 
         try VIPSImage.call("magicksave_buffer", options: &opt)
 
-        guard let vipsBlob = out else {
+        guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from magicksave_buffer")
         }
 
@@ -2120,14 +2190,18 @@ extension VIPSImage {
     public static func profileLoad(name: String) throws -> VIPSBlob {
         var opt = VIPSOption()
 
-        var out: UnsafeMutablePointer<VipsBlob>! = nil
+        let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)
+        out.initialize(to: nil)
+        defer {
+            out.deallocate()
+        }
 
         opt.set("name", value: name)
-        opt.set("profile", value: &out)
+        opt.set("profile", value: out)
 
         try VIPSImage.call("profile_load", options: &opt)
 
-        guard let vipsBlob = out else {
+        guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from profile_load")
         }
 
@@ -2181,18 +2255,16 @@ extension VIPSImage {
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
     public static func radload(
-        buffer: some Collection<UInt8>,
+        buffer: VIPSBlob,
         memory: Bool? = nil,
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
-            return try VIPSImage(nil) { out in
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try VIPSImage(nil) { out in
                 var opt = VIPSOption()
-
-                let blob = vips_blob_new(nil, buffer.baseAddress, buffer.count)
-                defer { vips_area_unref(shim_vips_area(blob)) }
 
                 opt.set("buffer", value: blob)
                 if let memory = memory {
@@ -2212,17 +2284,33 @@ extension VIPSImage {
                 try VIPSImage.call("radload_buffer", options: &opt)
             }
         }
-        if let maybeImage {
-            return maybeImage
-        } else {
-            return try radload(
-                buffer: Array(buffer),
-                memory: memory,
-                access: access,
-                failOn: failOn,
-                revalidate: revalidate
-            )
-        }
+    }
+
+    /// Load rad from buffer without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func radload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try radload(
+            buffer: blob,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
     }
 
     /// Load rad from source
@@ -2312,7 +2400,11 @@ extension VIPSImage {
     ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
-        var out: UnsafeMutablePointer<VipsBlob>! = nil
+        let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)
+        out.initialize(to: nil)
+        defer {
+            out.deallocate()
+        }
 
         opt.set("in", value: self.image)
         if let keep = keep {
@@ -2327,11 +2419,11 @@ extension VIPSImage {
         if let profile = profile {
             opt.set("profile", value: profile)
         }
-        opt.set("buffer", value: &out)
+        opt.set("buffer", value: out)
 
         try VIPSImage.call("radsave_buffer", options: &opt)
 
-        guard let vipsBlob = out else {
+        guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from radsave_buffer")
         }
 
@@ -2484,7 +2576,11 @@ extension VIPSImage {
     ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
-        var out: UnsafeMutablePointer<VipsBlob>! = nil
+        let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)
+        out.initialize(to: nil)
+        defer {
+            out.deallocate()
+        }
 
         opt.set("in", value: self.image)
         if let keep = keep {
@@ -2499,11 +2595,11 @@ extension VIPSImage {
         if let profile = profile {
             opt.set("profile", value: profile)
         }
-        opt.set("buffer", value: &out)
+        opt.set("buffer", value: out)
 
         try VIPSImage.call("rawsave_buffer", options: &opt)
 
-        guard let vipsBlob = out else {
+        guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from rawsave_buffer")
         }
 

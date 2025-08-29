@@ -20,7 +20,7 @@ extension VIPSImage {
             throw VIPSError()
         }
         
-        let outBuf = UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>>.allocate(capacity: 1)
+        let outBuf = UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?>.allocate(capacity: 1)
         defer {
             outBuf.deallocate()
         }
@@ -50,7 +50,7 @@ extension VIPSImage {
             throw VIPSError()
         }
         
-        let outBuf = UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>>.allocate(capacity: 1)
+        let outBuf = UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?>.allocate(capacity: 1)
         defer {
             outBuf.deallocate()
         }
@@ -72,7 +72,7 @@ extension VIPSImage {
     }
     
     public func exportedHeif(quality: Int? = nil, lossless: Bool = false) throws -> [UInt8] {
-        let outBuf = UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>>.allocate(capacity: 1)
+        let outBuf = UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?>.allocate(capacity: 1)
         defer {
             outBuf.deallocate()
         }
@@ -112,7 +112,7 @@ extension VIPSImage {
         stripMetadata strip: Bool? = nil,
         profile: String? = nil
     ) throws -> [UInt8] {
-        let outBuf = UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>>.allocate(capacity: 1)
+        let outBuf = UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?>.allocate(capacity: 1)
         defer {
             outBuf.deallocate()
         }
@@ -177,7 +177,7 @@ extension VIPSImage {
         subsampleMode: ForeignSubsample? = nil,
         encoder: HeifEncoder? = nil
     ) throws -> [UInt8] {
-        let outBuf = UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>>.allocate(capacity: 1)
+        let outBuf = UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?>.allocate(capacity: 1)
         defer {
             outBuf.deallocate()
         }
@@ -221,7 +221,7 @@ extension VIPSImage {
         
     
     public func exportedPNG() throws -> [UInt8] {
-        let outBuf = UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>>.allocate(capacity: 1)
+        let outBuf = UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?>.allocate(capacity: 1)
         defer {
             outBuf.deallocate()
         }

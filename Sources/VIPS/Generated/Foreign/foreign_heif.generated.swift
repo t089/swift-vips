@@ -81,7 +81,7 @@ extension VIPSImage {
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
     public static func heifload(
-        buffer: some Collection<UInt8>,
+        buffer: VIPSBlob,
         page: Int? = nil,
         n: Int? = nil,
         thumbnail: Bool? = nil,
@@ -91,12 +91,10 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        let maybeImage = try buffer.withContiguousStorageIfAvailable { buffer in
-            return try VIPSImage(nil) { out in
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try VIPSImage(nil) { out in
                 var opt = VIPSOption()
-
-                let blob = vips_blob_new(nil, buffer.baseAddress, buffer.count)
-                defer { vips_area_unref(shim_vips_area(blob)) }
 
                 opt.set("buffer", value: blob)
                 if let page = page {
@@ -128,21 +126,45 @@ extension VIPSImage {
                 try VIPSImage.call("heifload_buffer", options: &opt)
             }
         }
-        if let maybeImage {
-            return maybeImage
-        } else {
-            return try heifload(
-                buffer: Array(buffer),
-                page: page,
-                n: n,
-                thumbnail: thumbnail,
-                unlimited: unlimited,
-                memory: memory,
-                access: access,
-                failOn: failOn,
-                revalidate: revalidate
-            )
-        }
+    }
+
+    /// Load a heif image without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - page: First page to load
+    ///   - n: Number of pages to load, -1 for all
+    ///   - thumbnail: Fetch thumbnail image
+    ///   - unlimited: Remove all denial of service limits
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func heifload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        page: Int? = nil,
+        n: Int? = nil,
+        thumbnail: Bool? = nil,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try heifload(
+            buffer: blob,
+            page: page,
+            n: n,
+            thumbnail: thumbnail,
+            unlimited: unlimited,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
     }
 
     /// Load a heif image
@@ -301,7 +323,11 @@ extension VIPSImage {
     ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
-        var out: UnsafeMutablePointer<VipsBlob>! = nil
+        let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)
+        out.initialize(to: nil)
+        defer {
+            out.deallocate()
+        }
 
         opt.set("in", value: self.image)
         if let Q = Q {
@@ -337,11 +363,11 @@ extension VIPSImage {
         if let profile = profile {
             opt.set("profile", value: profile)
         }
-        opt.set("buffer", value: &out)
+        opt.set("buffer", value: out)
 
         try VIPSImage.call("heifsave_buffer", options: &opt)
 
-        guard let vipsBlob = out else {
+        guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from heifsave_buffer")
         }
 
