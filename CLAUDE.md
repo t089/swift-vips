@@ -43,6 +43,23 @@ python3 tools/generate-swift-wrappers.py
 
 Depending on the environment, swift might be installed in `$HOME/.local/share/swiftly/bin/swift`.
 
+## Linux Development (Docker)
+
+For Linux compatibility testing, use the pre-built Docker container:
+
+```bash
+# Build for Linux
+docker run --rm -v $(pwd):/app -w /app ghcr.io/t089/swift-vips-builder:swift-6.1.2-vips-8.17.1 swift build
+
+# Run tests on Linux
+docker run --rm -v $(pwd):/app -w /app ghcr.io/t089/swift-vips-builder:swift-6.1.2-vips-8.17.1 swift test
+
+# Build for release on Linux
+docker run --rm -v $(pwd):/app -w /app ghcr.io/t089/swift-vips-builder:swift-6.1.2-vips-8.17.1 swift build -c release
+```
+
+This provides immediate feedback on Linux compatibility without waiting for CI.
+
 
 ## Architecture
 
