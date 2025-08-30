@@ -352,11 +352,11 @@ open class VIPSTarget: VIPSObject {
     /// - Throws: VIPSError if seeking fails or is not supported
     @discardableResult
     public func seek(offset: Int64, whence: Whence) throws -> Int64 {
-        let result = vips_target_seek(self.target, offset, whence.rawValue)
+        let result = vips_target_seek(self.target, gint64(offset), whence.rawValue)
         guard result >= 0 else {
             throw VIPSError()
         }
-        return result
+        return Int64(result)
     }
 
     /// Sets the current position to an absolute position from the start.

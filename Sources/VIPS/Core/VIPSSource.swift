@@ -242,7 +242,7 @@ public class VIPSSource: VIPSObject {
     /// - Returns: New absolute position in the source
     /// - Throws: VIPSError if the seek operation fails or is not supported
     public func seek(offset: Int64, whence: Whence) throws -> Int64 {
-        let result = vips_source_seek(self.source, offset, whence.rawValue)
+        let result = vips_source_seek(self.source, gint64(offset), whence.rawValue)
         if result == -1 {
             throw VIPSError()
         }
@@ -342,7 +342,7 @@ public class VIPSSource: VIPSObject {
     /// For pipe sources, this may not reflect the actual amount
     /// of data consumed if buffering is involved.
     public var readPosition: Int64 {
-        return shim_vips_source_read_position(self.source)
+        return Int64(shim_vips_source_read_position(self.source))
     }
 
     /// The total length of the source in bytes.
@@ -353,7 +353,7 @@ public class VIPSSource: VIPSObject {
     /// stream has been read.
     public var length: Int64 {
         let result = vips_source_length(self.source)
-        return result == -1 ? shim_vips_source_length_internal(self.source) : result
+        return result == -1 ? Int64(shim_vips_source_length_internal(self.source)) : Int64(result)
     }
 
     /// Whether this source is in decode phase.
