@@ -293,18 +293,18 @@ public class VIPSSource: VIPSObject {
         return Array(UnsafeRawBufferPointer(start: dataPtr!, count: Int(actualLength)))
     }
 
-    /// Creates a VipsBlob by mapping the entire source.
+    /// Creates a VIPSBlob by mapping the entire source.
     ///
     /// This is useful when you need to pass the source data to libvips
-    /// functions that expect a VipsBlob.
+    /// functions that expect a VIPSBlob.
     ///
-    /// - Returns: A VipsBlob containing the source data
+    /// - Returns: A VIPSBlob containing the source data
     /// - Throws: VIPSError if the source cannot be mapped to a blob
-    public func mapBlob() throws -> UnsafeMutablePointer<VipsBlob> {
+    public func mapBlob() throws -> VIPSBlob {
         guard let blob = vips_source_map_blob(self.source) else {
             throw VIPSError()
         }
-        return blob
+        return VIPSBlob(blob)
     }
 
     // MARK: - Stream State and Capabilities
