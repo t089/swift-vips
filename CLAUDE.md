@@ -8,11 +8,19 @@ SwiftVIPS is a Swift wrapper around libvips, a fast C image processing library. 
 
 ## Requirements
 
-Requires installation of system libraries of libvips. For example on ubuntu:
+Requires installation of system libraries of libvips. For example:
 
+**macOS:**
+```bash
+brew install vips
+```
+
+**Ubuntu/Debian:**
 ```bash
 apt-get update -y && apt-get install -y libvips-dev
 ```
+
+**Container:** Ready-to-use development containers available at `ghcr.io/t089/swift-vips-builder`
 
 ## Development Commands
 
@@ -28,6 +36,9 @@ swift run vips-tool
 
 # Build for release
 swift build -c release
+
+# Generate Swift wrappers from libvips operations (requires PyVIPS)
+python3 tools/generate-swift-wrappers.py
 ```
 
 Depending on the environment, swift might be installed in `$HOME/.local/share/swiftly/bin/swift`.
@@ -37,14 +48,19 @@ Depending on the environment, swift might be installed in `$HOME/.local/share/sw
 
 The Swift wrapper mirrors libvips' modular structure in `Sources/VIPS/`:
 
-- **Core/**: Main initialization, error handling, fundamental types
-- **Arithmetic/**: Mathematical operations, trigonometric functions, operators
+- **Core/**: Main initialization (`VIPS.swift`), error handling (`VIPSError.swift`), fundamental types (`VIPSImage.swift`, `VIPSBlob.swift`, `VIPSOperation.swift`)
+- **Arithmetic/**: Mathematical operations, trigonometric functions, operators with full operator overloading support
 - **Colour/**: Color space conversions and management
-- **Foreign/**: File format support (organized by format: JPEG, PNG, WebP, etc.)
-- **Conversion/**: Image format and geometric conversions
+- **Foreign/**: File format support organized by format (JPEG, PNG, WebP, TIFF, HEIF, etc.)
+- **Conversion/**: Image format and geometric conversions (resize, rotate, flip, etc.)  
 - **Create/**: Image creation and generation functions
 - **Draw/**: Drawing operations and compositing
-- **CvipsShim/**: C interop layer for functionality not directly accessible from Swift
+- **Generated/**: Auto-generated Swift wrappers for libvips operations (updated via `tools/generate-swift-wrappers.py`)
+- **Convolution/**: Convolution and filtering operations
+- **Histogram/**: Histogram analysis operations
+- **Morphology/**: Morphological image processing operations
+- **Resample/**: Image resampling and interpolation
+- **CvipsShim/**: C interop layer for functionality not directly accessible from Swift (uses C macros and GObject methods)
 
 ## Key Development Patterns
 
@@ -59,12 +75,43 @@ The Swift wrapper mirrors libvips' modular structure in `Sources/VIPS/`:
 - `@dynamicMemberLookup` for accessing libvips operations not yet wrapped
 - Vips enum values are imported directly into swift by adding a public typealias and providing convenience properties for the different values. See eg Sources/VIPS/Colour/Enums/VipsIntent.swift.
 - Since Swift cannot call c functions with variadic arguments and the C api of vips mostly contains of those, we are calling the "operations" directly using the `VIPSOperation` class.
-- For some of the gobject type and oop methods, which heavily use c macors, we need to provide c function wrappers in CvipsShim module.
+- For some of the gobject type and oop methods, which heavily use c macros, we need to provide c function wrappers in CvipsShim module.
+
+## Code Generation
+
+The project uses automated code generation to create Swift wrappers:
+
+- **Generator**: `tools/generate-swift-wrappers.py` uses PyVIPS to introspect libvips operations
+- **Generated Files**: Located in `Sources/VIPS/Generated/` directory, organized by operation category
+- **Requirements**: Requires `pip install pyvips` to run the generator
+- **Usage**: Run `python3 tools/generate-swift-wrappers.py` to regenerate wrappers
+- **Convention**: Generated code follows Swift naming conventions while preserving libvips operation names for searchability
+
+## Testing Framework
+
+- **Framework**: Uses Swift Testing (not XCTest) for modern Swift testing infrastructure
+- **Serialization**: Tests run with `@Suite(.serialized)` to prevent resource conflicts
+- **Test Data**: Test images located in `Tests/VIPSTests/data/` directory
+- **Categories**: Tests organized by operation category (Arithmetic, Conversion, Foreign, etc.)
+- **Helpers**: Common test utilities in `TestHelpers.swift` and setup in `TestSetup.swift`
+
+## Memory Management
+
+Careful C memory management with proper cleanup in deinit. Uses libvips reference counting (g_object_ref/unref) and handles VIPS-allocated memory appropriately.
+
+### Performance Considerations
+
+- **VIPSBlob**: Use `VIPSBlob` for efficient memory handling without copies
+- **Unsafe APIs**: `VIPSImage(unsafeData:)` for zero-copy operations (data must not escape closure)
+- **Memory Safety**: Automatic reference counting with Swift's ARC and libvips' GObject system
+- **Demand-driven**: Inherits libvips' lazy evaluation and streaming capabilities
 
 ## Implementation Status
 
 Check `docs/operations_todo.md` for current implementation roadmap. Arithmetic operations are well-implemented, while draw operations and complex number operations are not yet implemented.
 
-## Memory Management
+## Swift 6 Compatibility
 
-Careful C memory management with proper cleanup in deinit. Uses libvips reference counting (g_object_ref/unref) and handles VIPS-allocated memory appropriately.
+- **Language Mode**: Built with Swift 6 language mode enabled (`swiftLanguageModes: [.v6]`)
+- **Concurrency**: Ready for strict concurrency checking
+- **Dependencies**: Uses swift-log for logging functionality
