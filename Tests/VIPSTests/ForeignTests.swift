@@ -37,7 +37,7 @@ struct ForeignTests {
         var previousSize = Int.max
         
         for quality in qualities {
-            let jpegData = try testImage.jpegsave(Q: quality)
+            let jpegData = try testImage.jpegsave(quality:quality)
             let loaded = try VIPSImage.jpegload(buffer: jpegData)
             
             #expect(loaded.width == testImage.width)
@@ -197,7 +197,7 @@ struct ForeignTests {
         let testImage = try VIPSImage(fromFilePath: TestImages.colour.path)
         
         // Test lossy WebP
-        let lossyData = try testImage.webpsave(Q: 80, lossless: false)
+        let lossyData = try testImage.webpsave(quality:80, lossless: false)
         let lossyLoaded = try VIPSImage.webpload(buffer: lossyData)
         
         // Test lossless WebP
@@ -226,7 +226,7 @@ struct ForeignTests {
         var previousSize = 0
         
         for quality in qualities {
-            let webpData = try testImage.webpsave(Q: quality, lossless: false)
+            let webpData = try testImage.webpsave(quality:quality, lossless: false)
             let loaded = try VIPSImage.webpload(buffer: webpData)
             
             #expect(loaded.width == testImage.width)
@@ -340,9 +340,9 @@ struct ForeignTests {
         let original = try VIPSImage(fromFilePath: TestImages.colour.path)
         
         // Convert between formats
-        let jpegData = try original.jpegsave(Q: 90)
+        let jpegData = try original.jpegsave(quality:90)
         let pngData = try original.pngsave()
-        let webpData = try original.webpsave(Q: 90, lossless: false)
+        let webpData = try original.webpsave(quality:90, lossless: false)
         
         let fromJpeg = try VIPSImage.jpegload(buffer: jpegData)
         let fromPng = try VIPSImage.pngload(buffer: pngData)
@@ -376,8 +376,8 @@ struct ForeignTests {
         }
         
         // Save to buffer and file
-        let bufferData : VIPSBlob = try testImage.jpegsave(Q: 85)
-        try testImage.jpegsave(filename: tempFile.path, Q: 85)
+        let bufferData : VIPSBlob = try testImage.jpegsave(quality:85)
+        try testImage.jpegsave(filename: tempFile.path, quality:85)
         
         // Load from both
         let fromBuffer = try VIPSImage.jpegload(buffer: bufferData)
@@ -416,7 +416,7 @@ struct ForeignTests {
         let largeImage = try VIPSImage(fromFilePath: TestImages.mythicalGiant.path)
         
         // Test JPEG compression of large image
-        let jpegData = try largeImage.jpegsave(Q: 80)
+        let jpegData = try largeImage.jpegsave(quality:80)
         let loaded = try VIPSImage.jpegload(buffer: jpegData)
         
         #expect(loaded.width == largeImage.width)
@@ -437,9 +437,9 @@ struct ForeignTests {
         
         // Convert to multiple formats
         let formats: [(String, () throws -> VIPSBlob)] = [
-            ("JPEG", { try testImage.colourspace(space: .srgb).jpegsave(Q: 85) }),
+            ("JPEG", { try testImage.colourspace(space: .srgb).jpegsave(quality:85) }),
             ("PNG", { try testImage.pngsave() }),
-            ("WebP", { try testImage.colourspace(space: .srgb).webpsave(Q: 85) }),
+            ("WebP", { try testImage.colourspace(space: .srgb).webpsave(quality:85) }),
             ("TIFF", { try testImage.tiffsave() })
         ]
         
@@ -487,12 +487,12 @@ struct ForeignTests {
         
         for quality in qualities {
             // JPEG round-trip
-            let jpegData = try originalImage.jpegsave(Q: quality)
+            let jpegData = try originalImage.jpegsave(quality:quality)
             let jpegLoaded = try VIPSImage.jpegload(buffer: jpegData)
             let jpegError = try (originalImage - jpegLoaded).abs().avg()
             
             // WebP round-trip
-            let webpData = try originalImage.webpsave(Q: quality, lossless: false)
+            let webpData = try originalImage.webpsave(quality:quality, lossless: false)
             let webpLoaded = try VIPSImage.webpload(buffer: webpData)
             let webpError = try (originalImage - webpLoaded).abs().avg()
             
@@ -519,11 +519,11 @@ struct ForeignTests {
         
         // Test various JPEG-specific options
         let options: [(String, () throws -> VIPSBlob)] = [
-            ("baseline", { try testImage.jpegsave(Q: 80, interlace: false) }),
-            ("progressive", { try testImage.jpegsave(Q: 80, interlace: true) }),
-            ("optimized", { try testImage.jpegsave(Q: 80, optimizeCoding: true) }),
-            ("high_quality", { try testImage.jpegsave(Q: 95) }),
-            ("low_quality", { try testImage.jpegsave(Q: 30) })
+            ("baseline", { try testImage.jpegsave(quality:80, interlace: false) }),
+            ("progressive", { try testImage.jpegsave(quality:80, interlace: true) }),
+            ("optimized", { try testImage.jpegsave(quality:80, optimizeCoding: true) }),
+            ("high_quality", { try testImage.jpegsave(quality:95) }),
+            ("low_quality", { try testImage.jpegsave(quality:30) })
         ]
         
         for (optionName, saveFunc) in options {

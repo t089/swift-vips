@@ -210,7 +210,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - filename: Filename to save to
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - optimizeCoding: Compute optimal Huffman coding tables
     ///   - interlace: Generate an interlaced (progressive) jpeg
     ///   - trellisQuant: Apply trellis quantisation to each 8x8 block
@@ -225,7 +225,7 @@ extension VIPSImage {
     ///   - profile: Filename of ICC profile to embed
     public func jpegsave(
         filename: String,
-        Q: Int? = nil,
+        quality: Int? = nil,
         optimizeCoding: Bool? = nil,
         interlace: Bool? = nil,
         trellisQuant: Bool? = nil,
@@ -243,8 +243,8 @@ extension VIPSImage {
 
         opt.set("in", value: self)
         opt.set("filename", value: filename)
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let optimizeCoding = optimizeCoding {
             opt.set("optimize_coding", value: optimizeCoding)
@@ -289,7 +289,7 @@ extension VIPSImage {
     /// Save image to jpeg buffer
     ///
     /// - Parameters:
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - optimizeCoding: Compute optimal Huffman coding tables
     ///   - interlace: Generate an interlaced (progressive) jpeg
     ///   - trellisQuant: Apply trellis quantisation to each 8x8 block
@@ -303,7 +303,7 @@ extension VIPSImage {
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
     public func jpegsave(
-        Q: Int? = nil,
+        quality: Int? = nil,
         optimizeCoding: Bool? = nil,
         interlace: Bool? = nil,
         trellisQuant: Bool? = nil,
@@ -326,8 +326,8 @@ extension VIPSImage {
         }
 
         opt.set("in", value: self.image)
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let optimizeCoding = optimizeCoding {
             opt.set("optimize_coding", value: optimizeCoding)
@@ -379,7 +379,7 @@ extension VIPSImage {
     /// Save image to jpeg mime
     ///
     /// - Parameters:
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - optimizeCoding: Compute optimal Huffman coding tables
     ///   - interlace: Generate an interlaced (progressive) jpeg
     ///   - trellisQuant: Apply trellis quantisation to each 8x8 block
@@ -393,7 +393,7 @@ extension VIPSImage {
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
     public func jpegsaveMime(
-        Q: Int? = nil,
+        quality: Int? = nil,
         optimizeCoding: Bool? = nil,
         interlace: Bool? = nil,
         trellisQuant: Bool? = nil,
@@ -410,8 +410,8 @@ extension VIPSImage {
         var opt = VIPSOption()
 
         opt.set("in", value: self)
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let optimizeCoding = optimizeCoding {
             opt.set("optimize_coding", value: optimizeCoding)
@@ -457,7 +457,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - target: Target to save to
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - optimizeCoding: Compute optimal Huffman coding tables
     ///   - interlace: Generate an interlaced (progressive) jpeg
     ///   - trellisQuant: Apply trellis quantisation to each 8x8 block
@@ -472,7 +472,7 @@ extension VIPSImage {
     ///   - profile: Filename of ICC profile to embed
     public func jpegsave(
         target: VIPSTarget,
-        Q: Int? = nil,
+        quality: Int? = nil,
         optimizeCoding: Bool? = nil,
         interlace: Bool? = nil,
         trellisQuant: Bool? = nil,
@@ -490,8 +490,8 @@ extension VIPSImage {
 
         opt.set("in", value: self)
         opt.set("target", value: target)
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let optimizeCoding = optimizeCoding {
             opt.set("optimize_coding", value: optimizeCoding)

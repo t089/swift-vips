@@ -30,3 +30,17 @@ public enum VIPS {
         vips_shutdown()
     }
 }
+
+extension gboolean {
+    static var `true`: gboolean {
+        return 1
+    }
+
+    static var `false`: gboolean {
+        return 0
+    }
+
+    init(_ value: Bool) {
+        self = value ? 1 : 0
+    }
+}

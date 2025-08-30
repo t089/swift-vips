@@ -114,6 +114,10 @@ def snake_to_camel(name):
 
 def swiftize_param(name):
     """Convert parameter name to Swift-safe version."""
+    # Handle special parameter name mappings
+    if name == 'Q':
+        return 'quality'
+    
     # Replace hyphens with underscores
     name = name.replace('-', '_')
     # Convert to camelCase

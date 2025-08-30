@@ -209,6 +209,45 @@ public struct VIPSOption {
         g_value_set_int(&pair.value, gint(value.rawValue))
         self.pairs.append(pair)
     }
+
+    public mutating func setAny(_ name: String, value: Any) throws {
+        switch value {
+        case let boolValue as Bool:
+            self.set(name, value: boolValue)
+        case let stringValue as String:
+            self.set(name, value: stringValue)
+        case let doubleValue as Double:
+            self.set(name, value: doubleValue)
+        case let intValue as Int:
+            self.set(name, value: intValue)
+        case let imageValue as VIPSImage:
+            self.set(name, value: imageValue)
+        case let targetValue as VIPSTarget:
+            self.set(name, value: targetValue)
+        case let interpolateValue as VIPSInterpolate:
+            self.set(name, value: interpolateValue)
+        case let bandFormatValue as VipsBandFormat:
+            self.set(name, value: bandFormatValue)
+        case let imageArray as [VIPSImage]:
+            self.set(name, value: imageArray)
+        case let doubleArray as [Double]:
+            self.set(name, value: doubleArray)
+        case let intArray as [Int]:
+            self.set(name, value: intArray)
+        case let blendModeArray as [VipsBlendMode]:
+            self.set(name, value: blendModeArray)
+        case let objectValue as VIPSObject:
+            self.set(name, value: objectValue)
+        default:
+            // Try to handle raw representable enums
+            let mirror = Mirror(reflecting: value)
+            if let rawValue = mirror.children.first(where: { $0.label == "rawValue" })?.value as? any BinaryInteger {
+                self.set(name, value: rawValue)
+            } else {
+                throw VIPSError("Unsupported option type: \(type(of: value)) for parameter '\(name)'")
+            }
+        }
+    }
 }
 
 final class Pair {

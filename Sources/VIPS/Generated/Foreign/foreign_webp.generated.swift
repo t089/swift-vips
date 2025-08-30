@@ -210,7 +210,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - filename: Filename to save to
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - lossless: Enable lossless compression
     ///   - preset: Preset for lossy compression
     ///   - smartSubsample: Enable high quality chroma subsampling
@@ -230,7 +230,7 @@ extension VIPSImage {
     ///   - profile: Filename of ICC profile to embed
     public func webpsave(
         filename: String,
-        Q: Int? = nil,
+        quality: Int? = nil,
         lossless: Bool? = nil,
         preset: VipsForeignWebpPreset? = nil,
         smartSubsample: Bool? = nil,
@@ -253,8 +253,8 @@ extension VIPSImage {
 
         opt.set("in", value: self)
         opt.set("filename", value: filename)
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let lossless = lossless {
             opt.set("lossless", value: lossless)
@@ -314,7 +314,7 @@ extension VIPSImage {
     /// Save as webp
     ///
     /// - Parameters:
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - lossless: Enable lossless compression
     ///   - preset: Preset for lossy compression
     ///   - smartSubsample: Enable high quality chroma subsampling
@@ -333,7 +333,7 @@ extension VIPSImage {
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
     public func webpsave(
-        Q: Int? = nil,
+        quality: Int? = nil,
         lossless: Bool? = nil,
         preset: VipsForeignWebpPreset? = nil,
         smartSubsample: Bool? = nil,
@@ -361,8 +361,8 @@ extension VIPSImage {
         }
 
         opt.set("in", value: self.image)
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let lossless = lossless {
             opt.set("lossless", value: lossless)
@@ -429,7 +429,7 @@ extension VIPSImage {
     /// Save image to webp mime
     ///
     /// - Parameters:
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - lossless: Enable lossless compression
     ///   - preset: Preset for lossy compression
     ///   - smartSubsample: Enable high quality chroma subsampling
@@ -448,7 +448,7 @@ extension VIPSImage {
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
     public func webpsaveMime(
-        Q: Int? = nil,
+        quality: Int? = nil,
         lossless: Bool? = nil,
         preset: VipsForeignWebpPreset? = nil,
         smartSubsample: Bool? = nil,
@@ -470,8 +470,8 @@ extension VIPSImage {
         var opt = VIPSOption()
 
         opt.set("in", value: self)
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let lossless = lossless {
             opt.set("lossless", value: lossless)
@@ -532,7 +532,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - target: Target to save to
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - lossless: Enable lossless compression
     ///   - preset: Preset for lossy compression
     ///   - smartSubsample: Enable high quality chroma subsampling
@@ -552,7 +552,7 @@ extension VIPSImage {
     ///   - profile: Filename of ICC profile to embed
     public func webpsave(
         target: VIPSTarget,
-        Q: Int? = nil,
+        quality: Int? = nil,
         lossless: Bool? = nil,
         preset: VipsForeignWebpPreset? = nil,
         smartSubsample: Bool? = nil,
@@ -575,8 +575,8 @@ extension VIPSImage {
 
         opt.set("in", value: self)
         opt.set("target", value: target)
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let lossless = lossless {
             opt.set("lossless", value: lossless)

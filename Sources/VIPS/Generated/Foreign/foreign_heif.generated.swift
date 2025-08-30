@@ -228,7 +228,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - filename: Filename to save to
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - bitdepth: Number of bits per pixel
     ///   - lossless: Enable lossless compression
     ///   - compression: Compression format
@@ -241,7 +241,7 @@ extension VIPSImage {
     ///   - profile: Filename of ICC profile to embed
     public func heifsave(
         filename: String,
-        Q: Int? = nil,
+        quality: Int? = nil,
         bitdepth: Int? = nil,
         lossless: Bool? = nil,
         compression: VipsForeignHeifCompression? = nil,
@@ -257,8 +257,8 @@ extension VIPSImage {
 
         opt.set("in", value: self)
         opt.set("filename", value: filename)
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let bitdepth = bitdepth {
             opt.set("bitdepth", value: bitdepth)
@@ -297,7 +297,7 @@ extension VIPSImage {
     /// Save image in heif format
     ///
     /// - Parameters:
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - bitdepth: Number of bits per pixel
     ///   - lossless: Enable lossless compression
     ///   - compression: Compression format
@@ -309,7 +309,7 @@ extension VIPSImage {
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
     public func heifsave(
-        Q: Int? = nil,
+        quality: Int? = nil,
         bitdepth: Int? = nil,
         lossless: Bool? = nil,
         compression: VipsForeignHeifCompression? = nil,
@@ -330,8 +330,8 @@ extension VIPSImage {
         }
 
         opt.set("in", value: self.image)
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let bitdepth = bitdepth {
             opt.set("bitdepth", value: bitdepth)
@@ -378,7 +378,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - target: Target to save to
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - bitdepth: Number of bits per pixel
     ///   - lossless: Enable lossless compression
     ///   - compression: Compression format
@@ -391,7 +391,7 @@ extension VIPSImage {
     ///   - profile: Filename of ICC profile to embed
     public func heifsave(
         target: VIPSTarget,
-        Q: Int? = nil,
+        quality: Int? = nil,
         bitdepth: Int? = nil,
         lossless: Bool? = nil,
         compression: VipsForeignHeifCompression? = nil,
@@ -407,8 +407,8 @@ extension VIPSImage {
 
         opt.set("in", value: self)
         opt.set("target", value: target)
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let bitdepth = bitdepth {
             opt.set("bitdepth", value: bitdepth)

@@ -258,7 +258,7 @@ extension VIPSImage {
     ///   - regionShrink: Method to shrink regions
     ///   - skipBlanks: Skip tiles which are nearly equal to the background
     ///   - id: Resource ID
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - keep: Which metadata to retain
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
@@ -278,7 +278,7 @@ extension VIPSImage {
         regionShrink: VipsRegionShrink? = nil,
         skipBlanks: Int? = nil,
         id: String? = nil,
-        Q: Int? = nil,
+        quality: Int? = nil,
         keep: VipsForeignKeep? = nil,
         background: [Double]? = nil,
         pageHeight: Int? = nil,
@@ -327,8 +327,8 @@ extension VIPSImage {
         if let id = id {
             opt.set("id", value: id)
         }
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let keep = keep {
             opt.set("keep", value: keep)
@@ -362,7 +362,7 @@ extension VIPSImage {
     ///   - regionShrink: Method to shrink regions
     ///   - skipBlanks: Skip tiles which are nearly equal to the background
     ///   - id: Resource ID
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - keep: Which metadata to retain
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
@@ -381,7 +381,7 @@ extension VIPSImage {
         regionShrink: VipsRegionShrink? = nil,
         skipBlanks: Int? = nil,
         id: String? = nil,
-        Q: Int? = nil,
+        quality: Int? = nil,
         keep: VipsForeignKeep? = nil,
         background: [Double]? = nil,
         pageHeight: Int? = nil,
@@ -435,8 +435,8 @@ extension VIPSImage {
         if let id = id {
             opt.set("id", value: id)
         }
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let keep = keep {
             opt.set("keep", value: keep)
@@ -478,7 +478,7 @@ extension VIPSImage {
     ///   - regionShrink: Method to shrink regions
     ///   - skipBlanks: Skip tiles which are nearly equal to the background
     ///   - id: Resource ID
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - keep: Which metadata to retain
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
@@ -498,7 +498,7 @@ extension VIPSImage {
         regionShrink: VipsRegionShrink? = nil,
         skipBlanks: Int? = nil,
         id: String? = nil,
-        Q: Int? = nil,
+        quality: Int? = nil,
         keep: VipsForeignKeep? = nil,
         background: [Double]? = nil,
         pageHeight: Int? = nil,
@@ -547,8 +547,8 @@ extension VIPSImage {
         if let id = id {
             opt.set("id", value: id)
         }
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let keep = keep {
             opt.set("keep", value: keep)
@@ -842,7 +842,7 @@ extension VIPSImage {
     ///   - tileWidth: Tile width in pixels
     ///   - tileHeight: Tile height in pixels
     ///   - lossless: Enable lossless compression
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - subsampleMode: Select chroma subsample operation mode
     ///   - keep: Which metadata to retain
     ///   - background: Background value
@@ -853,7 +853,7 @@ extension VIPSImage {
         tileWidth: Int? = nil,
         tileHeight: Int? = nil,
         lossless: Bool? = nil,
-        Q: Int? = nil,
+        quality: Int? = nil,
         subsampleMode: VipsForeignSubsample? = nil,
         keep: VipsForeignKeep? = nil,
         background: [Double]? = nil,
@@ -873,8 +873,8 @@ extension VIPSImage {
         if let lossless = lossless {
             opt.set("lossless", value: lossless)
         }
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let subsampleMode = subsampleMode {
             opt.set("subsample_mode", value: subsampleMode)
@@ -901,7 +901,7 @@ extension VIPSImage {
     ///   - tileWidth: Tile width in pixels
     ///   - tileHeight: Tile height in pixels
     ///   - lossless: Enable lossless compression
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - subsampleMode: Select chroma subsample operation mode
     ///   - keep: Which metadata to retain
     ///   - background: Background value
@@ -911,7 +911,7 @@ extension VIPSImage {
         tileWidth: Int? = nil,
         tileHeight: Int? = nil,
         lossless: Bool? = nil,
-        Q: Int? = nil,
+        quality: Int? = nil,
         subsampleMode: VipsForeignSubsample? = nil,
         keep: VipsForeignKeep? = nil,
         background: [Double]? = nil,
@@ -936,8 +936,8 @@ extension VIPSImage {
         if let lossless = lossless {
             opt.set("lossless", value: lossless)
         }
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let subsampleMode = subsampleMode {
             opt.set("subsample_mode", value: subsampleMode)
@@ -972,7 +972,7 @@ extension VIPSImage {
     ///   - tileWidth: Tile width in pixels
     ///   - tileHeight: Tile height in pixels
     ///   - lossless: Enable lossless compression
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - subsampleMode: Select chroma subsample operation mode
     ///   - keep: Which metadata to retain
     ///   - background: Background value
@@ -983,7 +983,7 @@ extension VIPSImage {
         tileWidth: Int? = nil,
         tileHeight: Int? = nil,
         lossless: Bool? = nil,
-        Q: Int? = nil,
+        quality: Int? = nil,
         subsampleMode: VipsForeignSubsample? = nil,
         keep: VipsForeignKeep? = nil,
         background: [Double]? = nil,
@@ -1003,8 +1003,8 @@ extension VIPSImage {
         if let lossless = lossless {
             opt.set("lossless", value: lossless)
         }
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let subsampleMode = subsampleMode {
             opt.set("subsample_mode", value: subsampleMode)
@@ -1211,7 +1211,7 @@ extension VIPSImage {
     ///   - distance: Target butteraugli distance
     ///   - effort: Encoding effort
     ///   - lossless: Enable lossless compression
-    ///   - Q: Quality factor
+    ///   - quality: Quality factor
     ///   - keep: Which metadata to retain
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
@@ -1222,7 +1222,7 @@ extension VIPSImage {
         distance: Double? = nil,
         effort: Int? = nil,
         lossless: Bool? = nil,
-        Q: Int? = nil,
+        quality: Int? = nil,
         keep: VipsForeignKeep? = nil,
         background: [Double]? = nil,
         pageHeight: Int? = nil,
@@ -1244,8 +1244,8 @@ extension VIPSImage {
         if let lossless = lossless {
             opt.set("lossless", value: lossless)
         }
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let keep = keep {
             opt.set("keep", value: keep)
@@ -1270,7 +1270,7 @@ extension VIPSImage {
     ///   - distance: Target butteraugli distance
     ///   - effort: Encoding effort
     ///   - lossless: Enable lossless compression
-    ///   - Q: Quality factor
+    ///   - quality: Quality factor
     ///   - keep: Which metadata to retain
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
@@ -1280,7 +1280,7 @@ extension VIPSImage {
         distance: Double? = nil,
         effort: Int? = nil,
         lossless: Bool? = nil,
-        Q: Int? = nil,
+        quality: Int? = nil,
         keep: VipsForeignKeep? = nil,
         background: [Double]? = nil,
         pageHeight: Int? = nil,
@@ -1307,8 +1307,8 @@ extension VIPSImage {
         if let lossless = lossless {
             opt.set("lossless", value: lossless)
         }
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let keep = keep {
             opt.set("keep", value: keep)
@@ -1341,7 +1341,7 @@ extension VIPSImage {
     ///   - distance: Target butteraugli distance
     ///   - effort: Encoding effort
     ///   - lossless: Enable lossless compression
-    ///   - Q: Quality factor
+    ///   - quality: Quality factor
     ///   - keep: Which metadata to retain
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
@@ -1352,7 +1352,7 @@ extension VIPSImage {
         distance: Double? = nil,
         effort: Int? = nil,
         lossless: Bool? = nil,
-        Q: Int? = nil,
+        quality: Int? = nil,
         keep: VipsForeignKeep? = nil,
         background: [Double]? = nil,
         pageHeight: Int? = nil,
@@ -1374,8 +1374,8 @@ extension VIPSImage {
         if let lossless = lossless {
             opt.set("lossless", value: lossless)
         }
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let keep = keep {
             opt.set("keep", value: keep)

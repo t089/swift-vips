@@ -178,7 +178,7 @@ extension VIPSImage {
     ///   - interlace: Interlace image
     ///   - filter: libspng row filter flag(s)
     ///   - palette: Quantise to 8bpp palette
-    ///   - Q: Quantisation quality
+    ///   - quality: Quantisation quality
     ///   - dither: Amount of dithering
     ///   - bitdepth: Write as a 1, 2, 4, 8 or 16 bit image
     ///   - effort: Quantisation CPU effort
@@ -192,7 +192,7 @@ extension VIPSImage {
         interlace: Bool? = nil,
         filter: VipsForeignPngFilter? = nil,
         palette: Bool? = nil,
-        Q: Int? = nil,
+        quality: Int? = nil,
         dither: Double? = nil,
         bitdepth: Int? = nil,
         effort: Int? = nil,
@@ -217,8 +217,8 @@ extension VIPSImage {
         if let palette = palette {
             opt.set("palette", value: palette)
         }
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let dither = dither {
             opt.set("dither", value: dither)
@@ -252,7 +252,7 @@ extension VIPSImage {
     ///   - interlace: Interlace image
     ///   - filter: libspng row filter flag(s)
     ///   - palette: Quantise to 8bpp palette
-    ///   - Q: Quantisation quality
+    ///   - quality: Quantisation quality
     ///   - dither: Amount of dithering
     ///   - bitdepth: Write as a 1, 2, 4, 8 or 16 bit image
     ///   - effort: Quantisation CPU effort
@@ -265,7 +265,7 @@ extension VIPSImage {
         interlace: Bool? = nil,
         filter: VipsForeignPngFilter? = nil,
         palette: Bool? = nil,
-        Q: Int? = nil,
+        quality: Int? = nil,
         dither: Double? = nil,
         bitdepth: Int? = nil,
         effort: Int? = nil,
@@ -295,8 +295,8 @@ extension VIPSImage {
         if let palette = palette {
             opt.set("palette", value: palette)
         }
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let dither = dither {
             opt.set("dither", value: dither)
@@ -338,7 +338,7 @@ extension VIPSImage {
     ///   - interlace: Interlace image
     ///   - filter: libspng row filter flag(s)
     ///   - palette: Quantise to 8bpp palette
-    ///   - Q: Quantisation quality
+    ///   - quality: Quantisation quality
     ///   - dither: Amount of dithering
     ///   - bitdepth: Write as a 1, 2, 4, 8 or 16 bit image
     ///   - effort: Quantisation CPU effort
@@ -352,7 +352,7 @@ extension VIPSImage {
         interlace: Bool? = nil,
         filter: VipsForeignPngFilter? = nil,
         palette: Bool? = nil,
-        Q: Int? = nil,
+        quality: Int? = nil,
         dither: Double? = nil,
         bitdepth: Int? = nil,
         effort: Int? = nil,
@@ -377,8 +377,8 @@ extension VIPSImage {
         if let palette = palette {
             opt.set("palette", value: palette)
         }
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let dither = dither {
             opt.set("dither", value: dither)

@@ -16,7 +16,7 @@ print(text.size)
 
 
 text = try (text * 0.4).cast(format: .uchar)
-try Data(try text.exportedPNG()).write(to: URL(fileURLWithPath: "/tmp/swift-vips/out_text_test.png"))
+try Data(try text.pngsave()).write(to: URL(fileURLWithPath: "/tmp/swift-vips/out_text_test.png"))
 text = try text
             .rotate(angle: -45)
             .gravity(direction: .centre, width: 300, height: 300)
@@ -29,6 +29,6 @@ let overlay = try text.new([255, 128, 128])
 
 let out = try im.composite2(overlay: overlay, mode: .over)
 
-let jpeg = try out.exportedPNG()
+let jpeg = try out.pngsave()
 try Data(jpeg).write(to: URL(fileURLWithPath: "/tmp/swift-vips/out_text_exported.jpg"))
 

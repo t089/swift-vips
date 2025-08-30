@@ -118,8 +118,8 @@ int shim_vips_copy_interpretation(VipsImage *in, VipsImage **out, VipsInterpreta
 
 
 VipsImage *
-shim_vips_image_new_from_file( const char *name, VipsAccess access ) {
-    return vips_image_new_from_file(name, "access", access, NULL);
+shim_vips_image_new_from_file( const char *name, VipsAccess access, gboolean in_memory ) {
+    return vips_image_new_from_file(name, "access", access, "memory", in_memory, NULL);
 }
 
 int shim_vips_getpoint(void *image, double **values, int *n, int x, int y) {

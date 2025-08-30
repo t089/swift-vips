@@ -8,6 +8,7 @@
 #ifndef C_vips_shim_h
 #define C_vips_shim_h
 
+#include "glib.h"
 #include <termios.h>
 #include <vips/vips.h>
 
@@ -65,7 +66,7 @@ static const char *EXIF_IFD0_ORIENTATION = "exif-ifd0-Orientation";
 int shim_vips_copy_interpretation(VipsImage *in, VipsImage **out, VipsInterpretation interpretation);
 
 VipsImage *
-shim_vips_image_new_from_file( const char *name, VipsAccess access );
+shim_vips_image_new_from_file( const char *name, VipsAccess access, gboolean inMemory);
 
 
 int shim_vips_major_version();

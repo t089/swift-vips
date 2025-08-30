@@ -3,7 +3,7 @@ import Cvips
 import Testing
 import Foundation
 
-@Suite(.serialized, VIPSTestTrait())
+@Suite(.vips)
 struct VIPSTests {
     
     var testPath: String {
@@ -31,7 +31,7 @@ struct VIPSTests {
         
         let jpeg = try VIPSImage(data: Array(data))
             .thumbnailImage(width: 100)
-            .exportedJpeg(quality: 80)
+            .jpegsave(quality: 80)
         try Data(jpeg).write(to: URL(fileURLWithPath: "/tmp/swift-vips/test_out.jpg"))
         #expect(FileManager.default.fileExists(atPath: "/tmp/swift-vips/test_out.jpg"))
     }
@@ -43,7 +43,7 @@ struct VIPSTests {
         let image = try VIPSImage(fromFilePath: testPath)
         
         let resized = try image.resize(scale: 0.5)
-        try resized.write(toFilePath: "/tmp/swift-vips/test_out_0.5.jpg")
+        try resized.writeToFile("/tmp/swift-vips/test_out_0.5.jpg")
         #expect(FileManager.default.fileExists(atPath: "/tmp/swift-vips/test_out_0.5.jpg"))
     }
     
@@ -52,7 +52,7 @@ struct VIPSTests {
         let image = try VIPSImage(fromFilePath: testPath)
         
         let resized = try image.thumbnailImage(width: 100, height: 100, crop: .attention)
-        try resized.write(toFilePath: "/tmp/swift-vips/out_w200.jpg")
+        try resized.writeToFile("/tmp/swift-vips/out_w200.jpg")
         #expect(FileManager.default.fileExists(atPath: "/tmp/swift-vips/out_w200.jpg"))
     }
     
@@ -73,7 +73,7 @@ struct VIPSTests {
     @Test
     func exportJpeg() throws {
         let image = try VIPSImage(fromFilePath: testPath)
-        let jpeg = try image.exportedJpeg(quality: 80)
+        let jpeg = try image.jpegsave(quality: 80)
         try Data(jpeg).write(to: URL(fileURLWithPath: "/tmp/swift-vips/out_exported.jpg"))
     }
 
@@ -81,7 +81,7 @@ struct VIPSTests {
     func text() throws {
         let text = try (try VIPSImage.text("hello world") * 0.3)
             .cast(VIPS_FORMAT_UCHAR)
-        let jpeg = try text.exportedPNG()
+        let jpeg = try text.pngsave()
         try Data(jpeg).write(to: URL(fileURLWithPath: "/tmp/swift-vips/out_text_exported.jpg"))
     }
     
@@ -236,20 +236,21 @@ struct VIPSTests {
         #expect(try constLess.avg() == 255.0)
         #expect(try constMore.avg() == 255.0)
     }
-    
-    @Test(.disabled())
+
+    @Test()
     func webp() throws {
         let image = try VIPSImage(fromFilePath: mythicalGiantPath)
+            .thumbnailImage(width: 512)
         let full = try image
-            .webp()
+            .webpsave()
         
         let stripped = try image
-            .webp(stripMetadata: true)
+            .webpsave(keep: VipsForeignKeep.none)
         
         #expect(full.count > stripped.count)
-        
-        let jpeg = try image.exportedJpeg(strip: true)
-        
+
+        let jpeg = try image.jpegsave(keep: VipsForeignKeep.none)
+
         #expect(jpeg.count > stripped.count)
     }
 
@@ -269,7 +270,7 @@ struct VIPSTests {
     @Test
     func loadImageFromFile() throws {
         let image = try VIPSImage(fromFilePath: testPath)
-        try image.write(toFilePath: "/tmp/swift-vips/test_out.jpg")
+        try image.writeToFile("/tmp/swift-vips/test_out.jpg")
     }
     
     @Test
@@ -286,7 +287,7 @@ struct VIPSTests {
         }
         
         let image = try VIPSImage(fromSource: source)
-        let exported = Data(try image.resize(scale: 0.5).exportedJpeg())
+        let exported = Data(try image.resize(scale: 0.5).jpegsave())
         try exported.write(to: URL(fileURLWithPath: "/tmp/swift-vips/example-source_0.5.jpg"))
         
     }

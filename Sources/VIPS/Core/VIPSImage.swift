@@ -783,8 +783,52 @@ open class VIPSImage {
         }
     }
 
-    public init(fromFilePath path: String, access: VipsAccess = .random) throws {
-        guard let image = shim_vips_image_new_from_file(path, access) else {
+    /// Creates a VIPSImage by loading from a file.
+    ///
+    /// Opens the specified file for reading. It can load files in many image formats,
+    /// including VIPS, TIFF, PNG, JPEG, FITS, Matlab, OpenEXR, CSV, WebP, Radiance, RAW, PPM and others.
+    ///
+    /// Load options may be appended to the filename as `[name=value,...]`. Many loaders add extra options,
+    /// see the individual loader documentation for details.
+    ///
+    /// This initializer always returns immediately with the header fields filled in. No pixels are
+    /// actually read until you first access them.
+    ///
+    /// The `access` parameter lets you set an access hint giving the expected access pattern for this file:
+    /// - `.random` means you can fetch pixels randomly from the image. This is the default mode.
+    /// - `.sequential` means you will read the whole image exactly once, top-to-bottom. In this mode,
+    ///   libvips can avoid converting the whole image in one go, for a large memory saving. You are
+    ///   allowed to make small non-local references, so area operations like convolution will work.
+    ///
+    /// In `.random` mode, small images are decompressed to memory and then processed from there.
+    /// Large images are decompressed to temporary random-access files on disc and then processed from there.
+    ///
+    /// Set `inMemory` to `true` to force loading via memory. The default is to load large random access
+    /// images via temporary disc files. The disc threshold can be set with the `--vips-disc-threshold`
+    /// command-line argument, or the `VIPS_DISC_THRESHOLD` environment variable. The default threshold is 100 MB.
+    ///
+    /// Examples:
+    /// ```swift
+    /// // Basic usage
+    /// let image = try VIPSImage(fromFilePath: "fred.tif")
+    /// 
+    /// // With access pattern hint
+    /// let image = try VIPSImage(fromFilePath: "large.tif", access: .sequential)
+    /// 
+    /// // Force memory loading
+    /// let image = try VIPSImage(fromFilePath: "image.png", inMemory: true)
+    /// 
+    /// // Load options can be embedded in filename
+    /// let image = try VIPSImage(fromFilePath: "fred.jpg[shrink=2]")
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - path: Path to the file to open
+    ///   - access: Access pattern hint (`.random` or `.sequential`)
+    ///   - inMemory: Force loading via memory instead of temporary files
+    /// - Throws: VIPSError if the file cannot be opened or read
+    public init(fromFilePath path: String, access: VipsAccess = .random, inMemory: Bool = false) throws {
+        guard let image = shim_vips_image_new_from_file(path, access, inMemory ? .true : .false) else {
             throw VIPSError(vips_error_buffer())
         }
 
@@ -860,26 +904,6 @@ open class VIPSImage {
         }
 
         op.get(option: &options)
-    }
-
-    public func write(toFilePath path: String, quality: Int? = nil) throws {
-        guard let opName = vips_foreign_find_save(path) else {
-            throw VIPSError()
-        }
-
-        var option = VIPSOption()
-
-        option.set("filename", value: path)
-        if let q = quality {
-            option.set("Q", value: q)
-        }
-        option.set("in", value: self.image)
-
-        try VIPSImage.call(opName, options: &option)
-    }
-
-    public func gamma(_ exponent: Double) throws -> VIPSImage {
-        try self.gamma(exponent: exponent)
     }
 }
 

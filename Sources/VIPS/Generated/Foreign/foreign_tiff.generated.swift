@@ -229,7 +229,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - filename: Filename to save to
     ///   - compression: Compression for this file
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - predictor: Compression prediction
     ///   - tile: Write a tiled tiff
     ///   - tileWidth: Tile width in pixels
@@ -255,7 +255,7 @@ extension VIPSImage {
     public func tiffsave(
         filename: String,
         compression: VipsForeignTiffCompression? = nil,
-        Q: Int? = nil,
+        quality: Int? = nil,
         predictor: VipsForeignTiffPredictor? = nil,
         tile: Bool? = nil,
         tileWidth: Int? = nil,
@@ -286,8 +286,8 @@ extension VIPSImage {
         if let compression = compression {
             opt.set("compression", value: compression)
         }
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let predictor = predictor {
             opt.set("predictor", value: predictor)
@@ -363,7 +363,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - compression: Compression for this file
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - predictor: Compression prediction
     ///   - tile: Write a tiled tiff
     ///   - tileWidth: Tile width in pixels
@@ -388,7 +388,7 @@ extension VIPSImage {
     ///   - profile: Filename of ICC profile to embed
     public func tiffsave(
         compression: VipsForeignTiffCompression? = nil,
-        Q: Int? = nil,
+        quality: Int? = nil,
         predictor: VipsForeignTiffPredictor? = nil,
         tile: Bool? = nil,
         tileWidth: Int? = nil,
@@ -424,8 +424,8 @@ extension VIPSImage {
         if let compression = compression {
             opt.set("compression", value: compression)
         }
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let predictor = predictor {
             opt.set("predictor", value: predictor)
@@ -509,7 +509,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - target: Target to save to
     ///   - compression: Compression for this file
-    ///   - Q: Q factor
+    ///   - quality: Q factor
     ///   - predictor: Compression prediction
     ///   - tile: Write a tiled tiff
     ///   - tileWidth: Tile width in pixels
@@ -535,7 +535,7 @@ extension VIPSImage {
     public func tiffsave(
         target: VIPSTarget,
         compression: VipsForeignTiffCompression? = nil,
-        Q: Int? = nil,
+        quality: Int? = nil,
         predictor: VipsForeignTiffPredictor? = nil,
         tile: Bool? = nil,
         tileWidth: Int? = nil,
@@ -566,8 +566,8 @@ extension VIPSImage {
         if let compression = compression {
             opt.set("compression", value: compression)
         }
-        if let Q = Q {
-            opt.set("Q", value: Q)
+        if let quality = quality {
+            opt.set("Q", value: quality)
         }
         if let predictor = predictor {
             opt.set("predictor", value: predictor)
