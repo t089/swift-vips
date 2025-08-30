@@ -313,6 +313,6 @@ SwiftVIPS inherits libvips' performance characteristics:
 - **Demand-driven**: Only processes pixels when needed
 - **Streaming**: Can handle images larger than available RAM
 - **Multithreaded**: Automatic parallelization across CPU cores
-- **Minimal copying**: Efficient memory usage with copy-on-write semantics
+- **Minimal copying**: Efficient memory usage
 
 Copyright 2025 Tobias Haeberle
