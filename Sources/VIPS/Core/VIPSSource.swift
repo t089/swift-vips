@@ -246,7 +246,7 @@ public class VIPSSource: VIPSObject {
         if result == -1 {
             throw VIPSError()
         }
-        return result
+        return Int64(result)
     }
 
     /// Seeks to an absolute position in the source.
