@@ -90,6 +90,14 @@ const char* shim_vips_version();
 #endif
 #if VIPS_MINOR_VERSION >= 13
 #define SHIM_VIPS_VERSION_8_13
+// VipsSource helper functions
+const char* shim_vips_connection_filename(VipsSource *source);
+const char* shim_vips_connection_nick(VipsSource *source);
+gint64 shim_vips_source_read_position(VipsSource *source);
+gint64 shim_vips_source_length_internal(VipsSource *source);
+gboolean shim_vips_source_decode_status(VipsSource *source);
+gboolean shim_vips_source_is_pipe(VipsSource *source);
+
 #endif
 #endif
 
