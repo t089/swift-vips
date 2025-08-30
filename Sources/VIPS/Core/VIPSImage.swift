@@ -783,6 +783,74 @@ open class VIPSImage {
         }
     }
 
+    /// Creates a new image by loading the given data
+    ///
+    /// The image will NOT copy the data into its own memory. You must
+    /// ensure that the data remain valid for the lifetime of the image
+    /// and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - unsafeData: The image data to load
+    ///   - loader: The loader to use (optional)
+    ///   - options: The options to use (optional)
+    @inlinable
+    convenience public init(
+        unsafeData: UnsafeRawBufferPointer,
+        loader: String? = nil,
+        options: String? = nil
+    ) throws {
+
+        guard
+            let loader = loader
+                ?? vips_foreign_find_load_buffer(unsafeData.baseAddress, unsafeData.count)
+                .flatMap(String.init(cString:))
+                else {
+                    throw VIPSError()
+                }
+
+        let blob = vips_blob_new(nil, unsafeData.baseAddress, unsafeData.count)
+        defer {
+            vips_area_unref(shim_vips_area(blob))
+        }
+
+        try self.init(nil) { out in
+            var option = VIPSOption()
+            option.set("buffer", value: blob)
+            option.set("out", value: &out)
+            try VIPSImage.call(loader, optionsString: options, options: &option)
+        }
+    }
+
+    /// Creates a new image by loading the given data
+    ///
+    /// The image will reference the data from the blob.
+    ///
+    /// - Parameters:
+    ///   - blob: The image data to load
+    ///   - loader: The loader to use (optional)
+    ///   - options: The options to use (optional)
+    @inlinable
+    convenience public init(
+        blob: VIPSBlob,
+        loader: String? = nil,
+        options: String? = nil
+    ) throws {
+        guard
+            let loader = loader ?? blob.findLoader()
+        else {
+            throw VIPSError()
+        }
+        
+        try self.init(blob) { out in
+            var option = VIPSOption()
+            try blob.withVipsBlob { blob in
+                option.set("buffer", value: blob)
+                option.set("out", value: &out)
+                try VIPSImage.call(loader, optionsString: options, options: &option)
+            }
+        }
+    }
+
     /// Creates a VIPSImage by loading from a file.
     ///
     /// Opens the specified file for reading. It can load files in many image formats,

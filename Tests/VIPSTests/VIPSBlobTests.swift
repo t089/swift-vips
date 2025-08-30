@@ -1,6 +1,6 @@
+import Foundation
 import Testing
 import VIPS
-import Foundation
 
 @Suite(.vips)
 struct VIPSBlobTests {
@@ -14,16 +14,36 @@ struct VIPSBlobTests {
 
     @Test
     func testLifeTime() {
-        var data : SafeData! = SafeData([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-        let blob = VIPSBlob(noCopy: .init(data.raw), onDealloc: { [data] in
-            data!.free()
-        })
+        var data: SafeData! = SafeData([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+        let blob = VIPSBlob(
+            noCopy: .init(data.raw),
+            onDealloc: { [data] in
+                data!.free()
+            }
+        )
         data = nil
         #expect(blob.count == 10)
         #expect(blob == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
     }
-}
 
+    @Test func testZeroCopyToData() async throws {
+        var blob: VIPSBlob? = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        let data = blob!
+            .withUnsafeBytesAndStorageManagement { buffer, storageManagement in
+                _ = storageManagement.retain()
+                return Data(
+                    bytesNoCopy: .init(mutating: buffer.baseAddress!),
+                    count: buffer.count,
+                    deallocator: .custom { ptr, _ in
+                        storageManagement.release()
+                    }
+                )
+            }
+
+        blob = nil
+        #expect(data == Data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]))
+    }
+}
 
 struct SafeData {
     let raw: UnsafeMutableRawBufferPointer

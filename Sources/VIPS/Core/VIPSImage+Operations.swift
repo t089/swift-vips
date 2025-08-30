@@ -38,7 +38,9 @@ extension VIPSImage {
     }
     
     
-    
+    /// Same as `autorot()`
+    /// 
+    /// See: `VIPSImage.autorot()`
     public func autorotate() throws -> VIPSImage {
         return try self.autorot()
     }

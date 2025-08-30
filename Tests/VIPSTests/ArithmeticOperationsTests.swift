@@ -1040,4 +1040,81 @@ struct ArithmeticOperationsTests {
         #expect(abs(avg - 4.0) < 0.01)
     }
     
+    @Test
+    func testREADMEArithmeticExamples() throws {
+        let tempDir = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+            .appendingPathComponent("vips-arithmetic-test-\(UUID().uuidString)")
+        
+        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        
+        defer {
+            try? FileManager.default.removeItem(at: tempDir)
+        }
+
+        // Create two simple test images instead of loading from files to avoid compatibility issues
+        let image1 = try VIPSImage.black(width: 100, height: 100, bands: 3)
+            .linear([1.0, 1.0, 1.0], [100.0, 150.0, 200.0]) // RGB values: (100, 150, 200)
+        
+        let image2 = try VIPSImage.black(width: 100, height: 100, bands: 3)
+            .linear([1.0, 1.0, 1.0], [80.0, 120.0, 160.0])  // RGB values: (80, 120, 160)
+        
+        // Image arithmetic operations from README
+        let sum = try image1 + image2
+        let difference = try image1 - image2
+        let product = try image1 * image2
+        let quotient = try image1 / (image2 + 1) // Add 1 to avoid division by zero
+        
+        // Scalar operations from README
+        let brightened = try image1 + 50          // Add 50 to all pixels
+        let dimmed = try image1 * 0.8             // Scale all pixels by 0.8
+        let enhanced = try image1 * [1.2, 1.0, 0.9] // Per-channel scaling
+        
+        // Linear transformation: a * image + b
+        let linearized = try image1.linear([1.1, 1.0, 0.9], [10, 0, -5])
+        
+        // Save all results to temp directory for inspection
+        let results: [(VIPSImage, String)] = [
+            (image1, "image1.jpg"),
+            (image2, "image2.jpg"),
+            (sum, "sum.jpg"),
+            (difference, "difference.jpg"),
+            (product, "product.jpg"),
+            (quotient, "quotient.jpg"),
+            (brightened, "brightened.jpg"),
+            (dimmed, "dimmed.jpg"),
+            (enhanced, "enhanced.jpg"),
+            (linearized, "linearized.jpg")
+        ]
+        
+        for (resultImage, filename) in results {
+            let outputPath = tempDir.appendingPathComponent(filename).path
+            try resultImage.writeToFile(outputPath)
+            
+            // Verify the file was created and has content
+            let fileSize = try FileManager.default.attributesOfItem(atPath: outputPath)[.size] as! Int64
+            #expect(fileSize > 0, "Output file \(filename) should not be empty")
+            
+            // Verify we can read it back
+            let verifyImage = try VIPSImage(fromFilePath: outputPath)
+            #expect(verifyImage.width > 0)
+            #expect(verifyImage.height > 0)
+        }
+        
+        // Verify some arithmetic results are as expected
+        let sumAvg = try sum.avg()
+        let expectedSumAvg = (100 + 80 + 150 + 120 + 200 + 160) / 3.0 // Average of all channels
+        assertAlmostEqual(sumAvg, expectedSumAvg, threshold: 1.0)
+        
+        let brightenedAvg = try brightened.avg()
+        let expectedBrightenedAvg = (100 + 50 + 150 + 50 + 200 + 50) / 3.0
+        assertAlmostEqual(brightenedAvg, expectedBrightenedAvg, threshold: 1.0)
+        
+        print("All arithmetic operations completed successfully!")
+        print("Results written to: \(tempDir.path)")
+        print("Files created:")
+        for (_, filename) in results {
+            print("  - \(filename)")
+        }
+    }
+    
 }

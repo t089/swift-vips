@@ -94,6 +94,18 @@ public final class VIPSBlob: @unchecked Sendable, Equatable, CustomDebugStringCo
         return try body(buffer)
     }
 
+    /// Access the raw bytes of the blob.
+    ///
+    /// If you escape the pointer from the closure, you _must_ call `storageManagement.retain()` to get ownership to
+    /// the bytes and you also must call `storageManagement.release()` if you no longer require those bytes. Calls to
+    /// `retain` and `release` must be balanced.
+    public func withUnsafeBytesAndStorageManagement<R>(_ body: (UnsafeRawBufferPointer, Unmanaged<AnyObject>) throws -> R) rethrows -> R {
+        let data = blob.pointee.area.data
+        let length = blob.pointee.area.length
+        let buffer = UnsafeRawBufferPointer(start: data, count: length)
+        return try body(buffer, Unmanaged.passUnretained(self))
+    }
+
     public func withVipsBlob<R>(_ body: (UnsafeMutablePointer<VipsBlob>) throws -> R) rethrows -> R
     {
         return try body(self.blob)
@@ -114,6 +126,13 @@ public final class VIPSBlob: @unchecked Sendable, Equatable, CustomDebugStringCo
                 }
             }
         }
+    }
+
+    public func findLoader() -> String? {
+        guard let name = vips_foreign_find_load_buffer(blob.pointee.area.data, blob.pointee.area.length) else {
+            return nil
+        }
+        return String(cString: name)
     }
 
     public var debugDescription: String {
