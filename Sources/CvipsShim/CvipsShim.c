@@ -12,6 +12,10 @@ GObject* shim_g_object(const void * p) {
     return G_OBJECT(p);
 }
 
+GType shim_g_object_type(const void * p) {
+    return G_OBJECT_TYPE(p);
+}
+
 VipsImage* shim_vips_image(const void * p) {
     return VIPS_IMAGE(p);
 }
@@ -47,6 +51,10 @@ GType shim_VIPS_TYPE_BLOB() {
 
 GType shim_VIPS_TYPE_ARRAY_DOUBLE() {
     return VIPS_TYPE_ARRAY_DOUBLE;
+}
+
+double* shim_vips_array_double(void *p, int n) {
+    return VIPS_ARRAY(p, n, double);
 }
 
 GType shim_VIPS_TYPE_ARRAY_INT() {
@@ -110,6 +118,44 @@ int shim_vips_copy_interpretation(VipsImage *in, VipsImage **out, VipsInterpreta
 
 
 VipsImage *
-shim_vips_image_new_from_file( const char *name, VipsAccess access ) {
-    return vips_image_new_from_file(name, "access", access, NULL);
+shim_vips_image_new_from_file( const char *name, VipsAccess access, gboolean in_memory ) {
+    return vips_image_new_from_file(name, "access", access, "memory", in_memory, NULL);
+}
+
+int shim_vips_getpoint(void *image, double **values, int *n, int x, int y) {
+    return vips_getpoint(image, values, n, x, y, NULL);
+}
+
+int shim_vips_major_version() {
+    return VIPS_MAJOR_VERSION;
+}
+
+
+const char* shim_vips_version() {
+    return VIPS_VERSION;
+}
+
+// VipsSource helper function implementations
+const char* shim_vips_connection_filename(VipsSource *source) {
+    return vips_connection_filename(VIPS_CONNECTION(source));
+}
+
+const char* shim_vips_connection_nick(VipsSource *source) {
+    return vips_connection_nick(VIPS_CONNECTION(source));
+}
+
+gint64 shim_vips_source_read_position(VipsSource *source) {
+    return source->read_position;
+}
+
+gint64 shim_vips_source_length_internal(VipsSource *source) {
+    return source->length;
+}
+
+gboolean shim_vips_source_decode_status(VipsSource *source) {
+    return source->decode;
+}
+
+gboolean shim_vips_source_is_pipe(VipsSource *source) {
+    return source->is_pipe;
 }

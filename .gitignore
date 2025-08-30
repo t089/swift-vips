@@ -2,4 +2,9 @@
 /.build
 /Packages
 /*.xcodeproj
+/Examples/*/.build
+/Examples/*/Packages
+/Examples/*/*.xcodeproj
 .swiftpm
+swiftly
+swiftly-*.tar.gz

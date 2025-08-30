@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:NIOCompat}",
+            "name": "Debug NIOCompat",
+            "program": "${workspaceFolder:NIOCompat}/.build/debug/NIOCompat",
+            "preLaunchTask": "swift: Build Debug NIOCompat"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:NIOCompat}",
+            "name": "Release NIOCompat",
+            "program": "${workspaceFolder:NIOCompat}/.build/release/NIOCompat",
+            "preLaunchTask": "swift: Build Release NIOCompat"
+        }
+    ]
+}

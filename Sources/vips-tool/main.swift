@@ -15,20 +15,20 @@ var text = try VIPSImage.text(CommandLine.arguments[2], font: "sans bold 12", al
 print(text.size)
 
 
-text = try (text * 0.4).cast(VIPS_FORMAT_UCHAR)
-try Data(try text.exportedPNG()).write(to: URL(fileURLWithPath: "/tmp/swift-vips/out_text_test.png"))
+text = try (text * 0.4).cast(format: .uchar)
+try Data(try text.pngsave()).write(to: URL(fileURLWithPath: "/tmp/swift-vips/out_text_test.png"))
 text = try text
-            .rotate(-45)
-            .gravity(direction: VIPS_COMPASS_DIRECTION_CENTRE, width: 300, height: 300)
+            .rotate(angle: -45)
+            .gravity(direction: .centre, width: 300, height: 300)
             .replicate(across: 1 + im.size.width / text.size.width, down: 1 + im.size.height / text.size.height)
             .crop(left: 0, top: 0, width: im.size.width, height: im.size.height)
 
 let overlay = try text.new([255, 128, 128])
-    .copy(interpretation: VIPS_INTERPRETATION_sRGB)
-    .bandjoin([text])
+    .copy(interpretation: .srgb)
+    
 
-let out = try im.composite(overlay: overlay, mode: VIPS_BLEND_MODE_OVER)
+let out = try im.composite2(overlay: overlay, mode: .over)
 
-let jpeg = try out.exportedPNG()
+let jpeg = try out.pngsave()
 try Data(jpeg).write(to: URL(fileURLWithPath: "/tmp/swift-vips/out_text_exported.jpg"))
 

@@ -1,0 +1,25 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    # Runs on pull requests to any branch
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/t089/swift-vips-builder:swift-6.1.2-vips-8.17.1
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build
+      run: swift build --build-tests
+    
+    - name: Run tests
+      run: swift test
+    
+    - name: Build release
+      run: swift build -c release
