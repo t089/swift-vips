@@ -92,13 +92,12 @@ open class VIPSTarget: VIPSObject {
     /// Use steal() or stealText() to retrieve the accumulated data.
     ///
     /// - Throws: VIPSError if the target cannot be created
-    public init(toMemory: ()) throws {
+    public static func toMemory() throws -> VIPSTarget {
         guard let target = vips_target_new_to_memory() else {
             throw VIPSError()
         }
 
-        self.target = target
-        super.init(shim_vips_object(target))
+        return VIPSTarget(target)
     }
 
     /// Creates a temporary target based on another target.

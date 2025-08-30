@@ -267,18 +267,3 @@ extension VIPSImage {
         try self.getpoint(x: x, y: y)
     }
 }
-
-extension VipsBandFormat {
-    /// The maximum numeric value possible for this band format.
-    /// 
-    /// Returns the largest value that can be represented in this format.
-    /// For example:
-    /// - `VIPS_FORMAT_UCHAR` returns 255
-    /// - `VIPS_FORMAT_USHORT` returns 65535
-    /// - `VIPS_FORMAT_FLOAT` returns 1.0
-    /// 
-    /// - Returns: The maximum value for this format
-    public var max: Double {
-        return vips_image_get_format_max(self)
-    }
-}
