@@ -7,9 +7,8 @@ A modern Swift wrapper around [libvips](https://github.com/libvips/libvips), the
 - 🚀 **Fast & Memory Efficient**: Built on libvips' demand-driven, horizontally threaded architecture
 - 🔢 **Operator Overloading**: Intuitive arithmetic operations (`+`, `-`, `*`, `/`)
 - 📁 **Format Support**: JPEG, PNG, TIFF, WebP, HEIF, GIF, PDF, SVG and more
-- 🐧 **Linux Compatible**: No Foundation dependencies for cross-platform support
+- 🐧 **Linux Compatible**: Cross-platform support
 - 🧠 **Memory Safe**: Automatic memory management with proper reference counting
-- ⚡ **Swift 6 Ready**: Built with modern Swift concurrency and strict concurrency checking
 
 ## Installation
 
