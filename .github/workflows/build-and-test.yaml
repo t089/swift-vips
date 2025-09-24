@@ -8,9 +8,15 @@ on:
 
 jobs:
   build-and-test:
+    name: Swift ${{ matrix.swift-version }}, VIPS ${{ matrix.vips-version }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        swift-version: ["6.2.0", "6.1.3", "6.0.3"]
+        vips-version: ["8.15.5", "8.16.1", "8.17.2"]
     container:
-      image: ghcr.io/t089/swift-vips-builder:swift-6.1.2-vips-8.17.1
+      image: ghcr.io/t089/swift-vips-builder:swift-${{ matrix.swift-version }}-vips-${{ matrix.vips-version }}
     
     steps:
     - uses: actions/checkout@v4
