@@ -437,7 +437,7 @@ public final class VIPSTargetCustom: VIPSTarget {
     private var customTarget: UnsafeMutablePointer<VipsTargetCustom>!
     
     /// The write handler that processes data written to this target
-    var writer: ([UInt8]) -> Int = { _ in return 0 }
+    var writer: (UnsafeRawBufferPointer) -> Int = { _ in return 0 }
     
     /// The finish handler called when the target is finalized (deprecated, use ender instead)
     var finisher: () -> () = {  }
@@ -494,23 +494,18 @@ public final class VIPSTargetCustom: VIPSTarget {
     /// return the actual number of bytes written.
     ///
     /// - Parameter handler: A closure that receives data and returns bytes written
-    ///   - Parameter data: Array of bytes to write
+    ///   - Parameter data: Buffer to write
     ///   - Returns: Number of bytes actually written (should be <= data.count)
-    public func onWrite(_ handler: @escaping ([UInt8]) -> Int) {
+    public func onWrite(_ handler: @escaping (UnsafeRawBufferPointer) -> Int) {
         self.writer = handler
         
         let data = Unmanaged<VIPSTargetCustom>.passUnretained(self).toOpaque()
         
         self._onWrite({ _, buf, len, data in
             let me = Unmanaged<VIPSTargetCustom>.fromOpaque(data).takeUnretainedValue()
-            
-            let bufferPtr = buf.assumingMemoryBound(to: UInt8.self)
-            let buffer = UnsafeMutableBufferPointer(start: bufferPtr, count: Int(len))
-            
-            let bytes = Array(buffer)
-            
-            return Int64(me.writer(bytes))
-            
+            let buffer = UnsafeRawBufferPointer(start: buf, count: Int(len))
+            return Int64(me.writer(buffer))
+
         }, userInfo: data)
     }
     
