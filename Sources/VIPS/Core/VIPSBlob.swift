@@ -196,3 +196,33 @@ extension Array where Element == UInt8 {
         self = blob.copyData()
     }
 }
+
+
+#if FoundationSupport
+#if canImport(FoundationEssentials)
+import FoundationEssentials
+#else
+import Foundation   
+#endif
+extension Data {
+    /// Create a Data from a VIPSBlob that shares the same underlying storage.
+    /// The Data will retain the VIPSBlob until the Data is deallocated.
+    public init(_ blob: VIPSBlob) {
+        blob.withUnsafeBytesAndStorageManagement { rawBuffer, storageManagement in
+            self.init(
+                bytesNoCopy: UnsafeMutableRawPointer(mutating: rawBuffer.baseAddress!),
+                count: rawBuffer.count,
+                deallocator: .custom { _, _ in
+                    storageManagement.release()
+                }
+            )
+        }
+    }
+}
+
+extension VIPSBlob {
+    public func asData() -> Data {
+        return Data(self)
+    }
+}
+#endif
