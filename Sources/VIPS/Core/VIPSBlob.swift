@@ -208,8 +208,9 @@ extension Data {
     /// Create a Data from a VIPSBlob that shares the same underlying storage.
     /// The Data will retain the VIPSBlob until the Data is deallocated.
     public init(_ blob: VIPSBlob) {
-        blob.withUnsafeBytesAndStorageManagement { rawBuffer, storageManagement in
-            self.init(
+        self = blob.withUnsafeBytesAndStorageManagement { rawBuffer, storageManagement in
+            storageManagement.retain()
+            return Data(
                 bytesNoCopy: UnsafeMutableRawPointer(mutating: rawBuffer.baseAddress!),
                 count: rawBuffer.count,
                 deallocator: .custom { _, _ in
