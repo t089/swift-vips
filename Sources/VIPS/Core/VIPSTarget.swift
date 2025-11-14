@@ -41,7 +41,13 @@ import CvipsShim
 /// VIPSTarget instances are not thread-safe. Each target should be used
 /// from a single thread, or access should be synchronized externally.
 open class VIPSTarget: VIPSObject {
-    private(set) var target: UnsafeMutablePointer<VipsTarget>!
+    public required init(_ ptr: UnsafeMutableRawPointer) {
+        super.init(ptr)
+    }
+
+    var target: UnsafeMutablePointer<VipsTarget>! {
+        return self.ptr.assumingMemoryBound(to: VipsTarget.self)
+    }
 
     /// Creates a VIPSTarget from an existing VipsTarget pointer.
     ///
@@ -51,7 +57,6 @@ open class VIPSTarget: VIPSObject {
     /// - Parameter target: A pointer to an existing VipsTarget
     public init(_ target: UnsafeMutablePointer<VipsTarget>!) {
         super.init(shim_vips_object(target))
-        self.target = target
     }
 
     /// Creates a target that will write to the named file.
@@ -66,7 +71,6 @@ open class VIPSTarget: VIPSObject {
             throw VIPSError()
         }
 
-        self.target = target
         super.init(shim_vips_object(target))
     }
 
@@ -82,7 +86,6 @@ open class VIPSTarget: VIPSObject {
             throw VIPSError()
         }
 
-        self.target = target
         super.init(shim_vips_object(target))
     }
 
@@ -112,7 +115,6 @@ open class VIPSTarget: VIPSObject {
             throw VIPSError()
         }
 
-        self.target = target
         super.init(shim_vips_object(target))
     }
 
@@ -205,19 +207,6 @@ open class VIPSTarget: VIPSObject {
         }
     }
 
-    /// Flushes any buffered data to the underlying destination.
-    ///
-    /// This forces any data that has been written to the target but not yet
-    /// sent to the underlying destination (file, descriptor, etc.) to be written.
-    ///
-    /// - Throws: VIPSError if the flush operation fails
-    public func flush() throws {
-        // vips_target_flush is not exposed in the public API, but is called internally
-        // by other operations. We can trigger a flush by calling end() which includes flush.
-        // However, end() also marks the target as ended, so we avoid calling it here.
-        // Instead, we rely on libvips' internal buffering and flushing.
-    }
-
     /// Ends the target and flushes all remaining data.
     ///
     /// This finalizes the target, ensuring all buffered data is written
@@ -251,7 +240,10 @@ open class VIPSTarget: VIPSObject {
 
         defer { g_free(data) }
         let buffer = UnsafeBufferPointer(start: data, count: length)
-        return withUnsafeTemporaryAllocation(byteCount: length, alignment: MemoryLayout<UInt8>.alignment) { tempBuffer in
+        return withUnsafeTemporaryAllocation(
+            byteCount: length,
+            alignment: MemoryLayout<UInt8>.alignment
+        ) { tempBuffer in
             tempBuffer.copyBytes(from: buffer)
             return Array(tempBuffer)
         }
@@ -317,6 +309,18 @@ open class VIPSTarget: VIPSObject {
         return Int(result)
     }
 
+    public func read(into span: inout OutputRawSpan) throws {
+        try span.withUnsafeMutableBytes { buffer, initialized in 
+            let destBuffer = UnsafeMutableRawBufferPointer(
+                start: buffer.baseAddress!.advanced(by: initialized),
+                count: buffer.count - initialized
+            )
+
+            let bytesRead = try self.unsafeRead(into: destBuffer)
+            initialized += bytesRead
+        }
+    }
+
     /// Reads data from the target into the provided buffer.
     ///
     /// This operation is only supported on seekable targets (like files).
@@ -327,7 +331,7 @@ open class VIPSTarget: VIPSObject {
     /// - Returns: Number of bytes actually read
     /// - Throws: VIPSError if the read operation fails or is not supported
     @discardableResult
-    public func read(into buffer: UnsafeMutableRawBufferPointer) throws -> Int {
+    public func unsafeRead(into buffer: UnsafeMutableRawBufferPointer) throws -> Int {
         let result = vips_target_read(self.target, buffer.baseAddress, buffer.count)
         guard result >= 0 else {
             throw VIPSError()
@@ -434,23 +438,10 @@ open class VIPSTarget: VIPSObject {
 /// - **Seek callback**: Should change position and return new absolute position (-1 for error)
 /// - **Read callback**: Should read up to the requested bytes and return actual data read
 public final class VIPSTargetCustom: VIPSTarget {
-    private var customTarget: UnsafeMutablePointer<VipsTargetCustom>!
-    
-    /// The write handler that processes data written to this target
-    var writer: (UnsafeRawBufferPointer) -> Int = { _ in return 0 }
-    
-    /// The finish handler called when the target is finalized (deprecated, use ender instead)
-    var finisher: () -> () = {  }
-    
-    /// The end handler called when the target is ended (replaces finish)
-    var ender: () -> Int = { return 0 }
-    
-    /// The seek handler for seekable custom targets
-    var seeker: (Int64, Int32) -> Int64 = { _, _ in return -1 }
-    
-    /// The read handler for readable custom targets
-    var reader: (Int) -> [UInt8] = { _ in return [] }
-    
+    var customTarget: UnsafeMutablePointer<VipsTargetCustom>! {
+        self.ptr.assumingMemoryBound(to: VipsTargetCustom.self)
+    }
+
     /// Creates a new custom target with default (no-op) implementations.
     ///
     /// After creation, set up the appropriate callback handlers using
@@ -458,35 +449,12 @@ public final class VIPSTargetCustom: VIPSTarget {
     public init() {
         let customTarget = vips_target_custom_new()
         super.init(shim_VIPS_TARGET(customTarget))
-        self.customTarget = customTarget
     }
-    
-    typealias WriteHandle = @convention(c) (UnsafeMutablePointer<VipsTargetCustom>?, gpointer, Int64, gpointer ) -> Int64
-    typealias FinishHandle = @convention(c) (UnsafeMutablePointer<VipsTargetCustom>?, gpointer) -> Void
-    typealias EndHandle = @convention(c) (UnsafeMutablePointer<VipsTargetCustom>?, gpointer) -> Int32
-    typealias SeekHandle = @convention(c) (UnsafeMutablePointer<VipsTargetCustom>?, Int64, Int32, gpointer) -> Int64
-    typealias ReadHandle = @convention(c) (UnsafeMutablePointer<VipsTargetCustom>?, gpointer, Int64, gpointer) -> Int64
-    
-    private func _onWrite(_ handle: @escaping WriteHandle, userInfo: UnsafeMutableRawPointer? = nil) {
-        shim_g_signal_connect(self.customTarget, "write", shim_G_CALLBACK(unsafeBitCast(handle, to: UnsafeMutableRawPointer.self)), userInfo);
+
+    public required init(_ ptr: UnsafeMutableRawPointer) {
+        super.init(ptr)
     }
-    
-    private func _onFinish(_ handle: @escaping FinishHandle, userInfo: UnsafeMutableRawPointer? = nil) {
-        shim_g_signal_connect(self.customTarget, "finish", shim_G_CALLBACK(unsafeBitCast(handle, to: UnsafeMutableRawPointer.self)), userInfo);
-    }
-    
-    private func _onEnd(_ handle: @escaping EndHandle, userInfo: UnsafeMutableRawPointer? = nil) {
-        shim_g_signal_connect(self.customTarget, "end", shim_G_CALLBACK(unsafeBitCast(handle, to: UnsafeMutableRawPointer.self)), userInfo);
-    }
-    
-    private func _onSeek(_ handle: @escaping SeekHandle, userInfo: UnsafeMutableRawPointer? = nil) {
-        shim_g_signal_connect(self.customTarget, "seek", shim_G_CALLBACK(unsafeBitCast(handle, to: UnsafeMutableRawPointer.self)), userInfo);
-    }
-    
-    private func _onRead(_ handle: @escaping ReadHandle, userInfo: UnsafeMutableRawPointer? = nil) {
-        shim_g_signal_connect(self.customTarget, "read", shim_G_CALLBACK(unsafeBitCast(handle, to: UnsafeMutableRawPointer.self)), userInfo);
-    }
-    
+
     /// Sets the write handler for this custom target.
     ///
     /// The write handler will be called whenever data needs to be written
@@ -496,37 +464,41 @@ public final class VIPSTargetCustom: VIPSTarget {
     /// - Parameter handler: A closure that receives data and returns bytes written
     ///   - Parameter data: Buffer to write
     ///   - Returns: Number of bytes actually written (should be <= data.count)
-    public func onWrite(_ handler: @escaping (UnsafeRawBufferPointer) -> Int) {
-        self.writer = handler
-        
-        let data = Unmanaged<VIPSTargetCustom>.passUnretained(self).toOpaque()
-        
-        self._onWrite({ _, buf, len, data in
-            let me = Unmanaged<VIPSTargetCustom>.fromOpaque(data).takeUnretainedValue()
-            let buffer = UnsafeRawBufferPointer(start: buf, count: Int(len))
-            return Int64(me.writer(buffer))
+    @discardableResult
+    public func onUnsafeWrite(_ handler: @escaping (UnsafeRawBufferPointer) -> Int) -> Int {
+        let holder = ClosureHolder(handler)
 
-        }, userInfo: data)
+        let data = Unmanaged.passRetained(holder).toOpaque()
+        let cCallback:
+            @convention(c) (
+                UnsafeMutablePointer<VipsTargetCustom>?, UnsafeRawPointer?, Int64, gpointer?
+            ) -> Int64 = { _, buf, len, data in
+                let holder = Unmanaged<ClosureHolder<(UnsafeRawBufferPointer), Int>>
+                    .fromOpaque(data!)
+                    .takeUnretainedValue()
+
+                return Int64(holder.closure(UnsafeRawBufferPointer(start: buf, count: Int(len))))
+            }
+
+        return self.connect(
+            signal: "write",
+            callback: unsafeBitCast(cCallback, to: GCallback.self),
+            userData: data,
+            destroyData: { data, _ in
+                guard let data else { return }
+                Unmanaged<ClosureHolder<(UnsafeRawBufferPointer), Int>>.fromOpaque(data).release()
+            }
+        )
     }
-    
-    /// Sets the finish handler for this custom target.
-    ///
-    /// ⚠️ **Deprecated**: This method is deprecated in favor of onEnd().
-    /// The finish handler will be called when the target is being finalized.
-    /// Use this for cleanup operations like closing files or network connections.
-    ///
-    /// - Parameter handler: A closure called when the target is finished
-    @available(*, deprecated, message: "Use onEnd(_:) instead")
-    public func onFinish(_ handler: @escaping () -> ()) {
-        self.finisher = handler
-        let data = Unmanaged<VIPSTargetCustom>.passUnretained(self).toOpaque()
-        
-        self._onFinish({ _, data in
-            let me = Unmanaged<VIPSTargetCustom>.fromOpaque(data).takeUnretainedValue()
-            me.finisher()
-        }, userInfo: data)
+
+    @discardableResult
+    public func onWrite(_ handler: @escaping (RawSpan) -> Int) -> Int {
+        return self.onUnsafeWrite { buffer in
+            let span = buffer.bytes
+            return handler(span)
+        }
     }
-    
+
     /// Sets the end handler for this custom target.
     ///
     /// The end handler will be called when the target is being ended.
@@ -535,16 +507,30 @@ public final class VIPSTargetCustom: VIPSTarget {
     ///
     /// - Parameter handler: A closure called when the target is ended
     ///   - Returns: 0 for success, non-zero for error
-    public func onEnd(_ handler: @escaping () -> Int) {
-        self.ender = handler
-        let data = Unmanaged<VIPSTargetCustom>.passUnretained(self).toOpaque()
-        
-        self._onEnd({ _, data in
-            let me = Unmanaged<VIPSTargetCustom>.fromOpaque(data).takeUnretainedValue()
-            return Int32(me.ender())
-        }, userInfo: data)
+    @discardableResult
+    public func onEnd(_ handler: @escaping () -> Int) -> Int {
+        let holder = ClosureHolder(handler)
+        let data = Unmanaged.passRetained(holder).toOpaque()
+
+        let cCallback:
+            @convention(c) (UnsafeMutablePointer<VipsTargetCustom>?, gpointer?) -> Int32 = {
+                _,
+                data in
+                let me = Unmanaged<ClosureHolder<(), Int>>.fromOpaque(data!).takeUnretainedValue()
+                return Int32(me.closure(()))
+            }
+
+        return self.connect(
+            signal: "end",
+            callback: unsafeBitCast(cCallback, to: GCallback.self),
+            userData: data,
+            destroyData: { data, _ in
+                guard let data else { return }
+                Unmanaged<ClosureHolder<(), Int>>.fromOpaque(data).release()
+            }
+        )
     }
-    
+
     /// Sets the seek handler for this custom target.
     ///
     /// The seek handler enables random access within the target, which is
@@ -555,44 +541,83 @@ public final class VIPSTargetCustom: VIPSTarget {
     ///   - Parameter offset: Byte offset for the seek operation
     ///   - Parameter whence: How to interpret offset (SEEK_SET=0, SEEK_CUR=1, SEEK_END=2)
     ///   - Returns: New absolute position, or -1 for error
-    public func onSeek(_ handler: @escaping (Int64, Int32) -> Int64) {
-        self.seeker = handler
-        let data = Unmanaged<VIPSTargetCustom>.passUnretained(self).toOpaque()
-        
-        self._onSeek({ _, offset, whence, data in
-            let me = Unmanaged<VIPSTargetCustom>.fromOpaque(data).takeUnretainedValue()
-            return me.seeker(offset, whence)
-        }, userInfo: data)
+    @discardableResult
+    public func onSeek(_ handler: @escaping (Int64, Whence) -> Int64) -> Int {
+        let holder = ClosureHolder(handler)
+        let data = Unmanaged.passRetained(holder).toOpaque()
+
+        let cCallback:
+            @convention(c) (
+                UnsafeMutablePointer<VipsTargetCustom>?, Int64, Int32, gpointer?
+            ) -> Int64 = { _, offset, whence, data in
+                let me = Unmanaged<ClosureHolder<(Int64, Whence), Int64>>.fromOpaque(data!)
+                    .takeUnretainedValue()
+                return me.closure((offset, Whence(rawValue: whence)!))
+            }
+
+        return self.connect(
+            signal: "seek",
+            callback: unsafeBitCast(cCallback, to: GCallback.self),
+            userData: data,
+            destroyData: { data, _ in
+                guard let data else { return }
+                Unmanaged<ClosureHolder<(Int64, Int32), Int64>>.fromOpaque(data).release()
+            }
+        )
     }
-    
-    /// Sets the read handler for this custom target.
+
+    /// Adds a read handler to this custom target.
     ///
     /// The read handler enables reading back data that was previously written,
     /// which is required by some image formats (like TIFF). If your custom
     /// target doesn't support reading, don't set this handler.
     ///
     /// - Parameter handler: A closure that handles read operations
-    ///   - Parameter length: Maximum number of bytes to read
-    ///   - Returns: Array of bytes actually read (can be shorter than requested)
-    public func onRead(_ handler: @escaping (Int) -> [UInt8]) {
-        self.reader = handler
-        let data = Unmanaged<VIPSTargetCustom>.passUnretained(self).toOpaque()
-        
-        self._onRead({ _, buffer, length, data in
-            let me = Unmanaged<VIPSTargetCustom>.fromOpaque(data).takeUnretainedValue()
-            
-            let readData = me.reader(Int(length))
-            let bytesToCopy = min(readData.count, Int(length))
-            
-            if bytesToCopy > 0 {
-                let bufferPtr = buffer.assumingMemoryBound(to: UInt8.self)
-                readData.withUnsafeBufferPointer { readBuffer in
-                    bufferPtr.update(from: readBuffer.baseAddress!, count: bytesToCopy)
-                }
+    ///   - Parameter buffer: The destination buffer to read bytes into.
+    ///   - Returns: The actual number of bytes written to buffer.
+    @discardableResult
+    public func onUnsafeRead(_ handler: @escaping (UnsafeMutableRawBufferPointer) -> (Int)) -> Int {
+        let holder = ClosureHolder(handler)
+        let data = Unmanaged.passRetained(holder).toOpaque()
+
+        let cCallback:
+            @convention(c) (
+                UnsafeMutablePointer<VipsTargetCustom>?, gpointer?, Int64, gpointer?
+            ) -> Int64 = { _, buf, len, data in
+                let me = Unmanaged<ClosureHolder<UnsafeMutableRawBufferPointer, Int>>
+                    .fromOpaque(data!)
+                    .takeUnretainedValue()
+                let destBuf = UnsafeMutableRawBufferPointer(start: buf, count: Int(len))
+                return Int64(me.closure(destBuf))
             }
-            
-            return Int64(bytesToCopy)
-        }, userInfo: data)
+
+        return self.connect(
+            signal: "read",
+            callback: unsafeBitCast(cCallback, to: GCallback.self),
+            userData: data,
+            destroyData: { data, _ in
+                guard let data else { return }
+                Unmanaged<AnyObject>.fromOpaque(data).release()
+            }
+        )
+    }
+
+    /// Adds a read handler to this custom target.
+    ///
+    /// The read handler enables reading back data that was previously written,
+    /// which is required by some image formats (like TIFF). If your custom
+    /// target doesn't support reading, don't set this handler.
+    ///
+    /// - Parameter handler: A closure that handles read operations
+    ///   - Parameter outputSpan: The destination span to read bytes into.
+    @discardableResult
+    public func onRead(_ handler: @escaping (inout OutputRawSpan) -> Void) -> Int {
+        return self.onUnsafeRead { buffer in
+            var span = OutputRawSpan(buffer: buffer, initializedCount: 0)
+            handler(&span)
+            let bytesInitialized = span.finalize(for: buffer)
+            return bytesInitialized
+        }
     }
 
     /// Provides safe access to the underlying VipsTargetCustom pointer.
@@ -603,7 +628,9 @@ public final class VIPSTargetCustom: VIPSTarget {
     /// - Parameter body: Closure that receives the VipsTargetCustom pointer
     /// - Returns: The result of the closure
     /// - Throws: Any error thrown by the closure
-    func withVipsTargetCustom<R>(_ body: (UnsafeMutablePointer<VipsTargetCustom>) throws -> R) rethrows -> R {
+    func withVipsTargetCustom<R>(_ body: (UnsafeMutablePointer<VipsTargetCustom>) throws -> R)
+        rethrows -> R
+    {
         return try body(self.customTarget)
     }
 }

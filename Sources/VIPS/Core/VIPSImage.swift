@@ -1,12 +1,23 @@
 import Cvips
 import CvipsShim
 
-open class VIPSImage {
+public typealias VIPSProgress = Cvips.VipsProgress
+
+open class VIPSImage: VIPSObject, VIPSImageProtocol {
 
     internal var other: Any? = nil
 
-    @usableFromInline
-    private(set) var image: UnsafeMutablePointer<VipsImage>
+    public var image: UnsafeMutablePointer<VipsImage>!
+
+    public required init(_ ptr: UnsafeMutableRawPointer) {
+        self.image = ptr.assumingMemoryBound(to: VipsImage.self)
+        super.init(ptr)
+    }
+
+    public init(_ image: UnsafeMutablePointer<VipsImage>!) {
+        self.image = image
+        super.init(shim_vips_object(image))
+    }
 
     func withVipsImage<R>(_ body: (UnsafeMutablePointer<VipsImage>) -> R) -> R {
         return body(self.image)
@@ -48,11 +59,14 @@ open class VIPSImage {
 
         if let maybe = maybe {
             self.image = maybe
+            super.init(shim_vips_object(maybe))
         } else {
-            self.image = try Array(data)
+            let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
+            self.image = image
+            super.init(shim_vips_object(image))
         }
     }
 
@@ -98,11 +112,14 @@ open class VIPSImage {
 
         if let maybe = maybe {
             self.image = maybe
+            super.init(shim_vips_object(maybe))
         } else {
-            self.image = try Array(data)
+            let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
+            self.image = image
+            super.init(shim_vips_object(image))
         }
     }
 
@@ -148,11 +165,14 @@ open class VIPSImage {
 
         if let maybe = maybe {
             self.image = maybe
+            super.init(shim_vips_object(maybe))
         } else {
-            self.image = try Array(data)
+            let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
+            self.image = image
+            super.init(shim_vips_object(image))
         }
     }
 
@@ -198,11 +218,14 @@ open class VIPSImage {
 
         if let maybe = maybe {
             self.image = maybe
+            super.init(shim_vips_object(maybe))
         } else {
-            self.image = try Array(data)
+            let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
+            self.image = image
+            super.init(shim_vips_object(image))
         }
     }
 
@@ -248,11 +271,14 @@ open class VIPSImage {
 
         if let maybe = maybe {
             self.image = maybe
+            super.init(shim_vips_object(maybe))
         } else {
-            self.image = try Array(data)
+            let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
+            self.image = image
+            super.init(shim_vips_object(image))
         }
     }
 
@@ -298,11 +324,14 @@ open class VIPSImage {
 
         if let maybe = maybe {
             self.image = maybe
+            super.init(shim_vips_object(maybe))
         } else {
-            self.image = try Array(data)
+            let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
+            self.image = image
+            super.init(shim_vips_object(image))
         }
     }
 
@@ -348,11 +377,14 @@ open class VIPSImage {
 
         if let maybe = maybe {
             self.image = maybe
+            super.init(shim_vips_object(maybe))
         } else {
-            self.image = try Array(data)
+            let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
+            self.image = image
+            super.init(shim_vips_object(image))
         }
     }
 
@@ -398,11 +430,14 @@ open class VIPSImage {
 
         if let maybe = maybe {
             self.image = maybe
+            super.init(shim_vips_object(maybe))
         } else {
-            self.image = try Array(data)
+            let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
+            self.image = image
+            super.init(shim_vips_object(image))
         }
     }
 
@@ -441,6 +476,7 @@ open class VIPSImage {
         }
 
         self.image = image
+        super.init(shim_vips_object(image))
     }
 
     /// Creates a VIPSImage from a memory area containing signed 8-bit integer data.
@@ -478,6 +514,7 @@ open class VIPSImage {
         }
 
         self.image = image
+        super.init(shim_vips_object(image))
     }
 
     /// Creates a VIPSImage from a memory area containing unsigned 16-bit integer data.
@@ -515,6 +552,7 @@ open class VIPSImage {
         }
 
         self.image = image
+        super.init(shim_vips_object(image))
     }
 
     /// Creates a VIPSImage from a memory area containing signed 16-bit integer data.
@@ -552,6 +590,7 @@ open class VIPSImage {
         }
 
         self.image = image
+        super.init(shim_vips_object(image))
     }
 
     /// Creates a VIPSImage from a memory area containing unsigned 32-bit integer data.
@@ -589,6 +628,7 @@ open class VIPSImage {
         }
 
         self.image = image
+        super.init(shim_vips_object(image))
     }
 
     /// Creates a VIPSImage from a memory area containing signed 32-bit integer data.
@@ -626,6 +666,7 @@ open class VIPSImage {
         }
 
         self.image = image
+        super.init(shim_vips_object(image))
     }
 
     /// Creates a VIPSImage from a memory area containing 32-bit floating point data.
@@ -663,6 +704,7 @@ open class VIPSImage {
         }
 
         self.image = image
+        super.init(shim_vips_object(image))
     }
 
     /// Creates a VIPSImage from a memory area containing 64-bit floating point data.
@@ -700,6 +742,7 @@ open class VIPSImage {
         }
 
         self.image = image
+        super.init(shim_vips_object(image))
     }
 
     /// Creates a new image by loading the given data.
@@ -804,9 +847,9 @@ open class VIPSImage {
             let loader = loader
                 ?? vips_foreign_find_load_buffer(unsafeData.baseAddress, unsafeData.count)
                 .flatMap(String.init(cString:))
-                else {
-                    throw VIPSError()
-                }
+        else {
+            throw VIPSError()
+        }
 
         let blob = vips_blob_new(nil, unsafeData.baseAddress, unsafeData.count)
         defer {
@@ -840,7 +883,7 @@ open class VIPSImage {
         else {
             throw VIPSError()
         }
-        
+
         try self.init(blob) { out in
             var option = VIPSOption()
             try blob.withVipsBlob { blob in
@@ -879,13 +922,13 @@ open class VIPSImage {
     /// ```swift
     /// // Basic usage
     /// let image = try VIPSImage(fromFilePath: "fred.tif")
-    /// 
+    ///
     /// // With access pattern hint
     /// let image = try VIPSImage(fromFilePath: "large.tif", access: .sequential)
-    /// 
+    ///
     /// // Force memory loading
     /// let image = try VIPSImage(fromFilePath: "image.png", inMemory: true)
-    /// 
+    ///
     /// // Load options can be embedded in filename
     /// let image = try VIPSImage(fromFilePath: "fred.jpg[shrink=2]")
     /// ```
@@ -895,12 +938,16 @@ open class VIPSImage {
     ///   - access: Access pattern hint (`.random` or `.sequential`)
     ///   - inMemory: Force loading via memory instead of temporary files
     /// - Throws: VIPSError if the file cannot be opened or read
-    public init(fromFilePath path: String, access: VipsAccess = .random, inMemory: Bool = false) throws {
-        guard let image = shim_vips_image_new_from_file(path, access, inMemory ? .true : .false) else {
+    public init(fromFilePath path: String, access: VipsAccess = .random, inMemory: Bool = false)
+        throws
+    {
+        guard let image = shim_vips_image_new_from_file(path, access, inMemory ? .true : .false)
+        else {
             throw VIPSError(vips_error_buffer())
         }
 
         self.image = image
+        super.init(shim_vips_object(image))
     }
 
     public convenience init(
@@ -919,11 +966,6 @@ open class VIPSImage {
         }
     }
 
-    /// Wraps a VipsImage pointer taking ownership of the pointer
-    public init(_ image: UnsafeMutablePointer<VipsImage>) {
-        self.image = image
-    }
-
     @usableFromInline
     init(_ other: Any?, _ block: (inout UnsafeMutablePointer<VipsImage>?) throws -> Void) rethrows {
         let image: UnsafeMutablePointer<UnsafeMutablePointer<VipsImage>?> = .allocate(capacity: 1)
@@ -935,16 +977,13 @@ open class VIPSImage {
         precondition(image.pointee != nil, "Image pointer cannot be nil after init.")
         self.image = image.pointee!
         self.other = other
+        super.init(shim_vips_object(self.image))
     }
 
     func withUnsafeMutablePointer<T>(_ block: (inout UnsafeMutablePointer<VipsImage>) throws -> (T))
         rethrows -> T
     {
         return try block(&self.image)
-    }
-
-    deinit {
-        g_object_unref(self.image)
     }
 
     @usableFromInline
@@ -1039,5 +1078,108 @@ extension VIPSImage {
             out = vips_image_copy_memory(self.image)
             if out == nil { throw VIPSError() }
         }
+    }
+
+}
+
+public protocol VIPSImageProtocol: VIPSObjectProtocol {
+    var image: UnsafeMutablePointer<VipsImage>! { get }
+}
+
+extension VIPSImageProtocol {
+    @inlinable
+    public var width: Int {
+        return Int(vips_image_get_width(self.image))
+    }
+
+    @inlinable
+    public var height: Int {
+        return Int(vips_image_get_height(self.image))
+    }
+
+    @inlinable
+    public var bands: Int {
+        return Int(vips_image_get_bands(self.image))
+    }
+
+    var kill: Bool {
+        get {
+            return vips_image_iskilled(self.image) != 0
+        }
+        set {
+            vips_image_set_kill(self.image, newValue ? .true : .false)
+        }
+    }
+
+    func setProgressReportingEnabled(_ enabled: Bool) {
+        vips_image_set_progress(self.image, enabled ? .true : .false)
+    }
+
+    @discardableResult
+    public func onPreeval(_ handler: @escaping (VIPSImageRef, VIPSProgress) -> Void) -> Int {
+        self.onProgress(signal: "preeval", handler: handler)
+    }
+
+    @discardableResult
+    public func onEval(_ handler: @escaping (VIPSImageRef, VIPSProgress) -> Void) -> Int {
+        self.onProgress(signal: "eval", handler: handler)
+    }
+
+    @discardableResult
+    public func onPosteval(_ handler: @escaping (VIPSImageRef, VIPSProgress) -> Void) -> Int {
+        self.onProgress(signal: "posteval", handler: handler)
+    }
+
+    private func onProgress(signal: String, handler: @escaping (VIPSImageRef, VIPSProgress) -> Void)
+        -> Int
+    {
+        let cHandler:
+            @convention(c) (
+                UnsafeMutablePointer<VipsImage>?, UnsafeMutablePointer<VipsProgress>?,
+                UnsafeMutableRawPointer?
+            ) -> Void = { imagePtr, progressPtr, userData in
+                guard
+                    let imagePtr,
+                    let progressPtr,
+                    let userData
+                else {
+                    return
+                }
+
+                let holder = Unmanaged<
+                    ClosureHolder<(VIPSImageRef, VIPSProgress), Void>
+                >
+                .fromOpaque(userData).takeUnretainedValue()
+                holder.closure((VIPSImageRef(imagePtr), progressPtr.pointee))
+            }
+        let closureHolder = ClosureHolder<(VIPSImageRef, VIPSProgress), Void>(handler)
+        let userData = Unmanaged.passRetained(closureHolder).toOpaque()
+
+        return self.connect(
+            signal: signal,
+            callback: unsafeBitCast(cHandler, to: GCallback.self),
+            userData: userData,
+            destroyData: { userData, _ in
+                if let userData {
+                    Unmanaged<
+                        ClosureHolder<(VIPSImageRef, VIPSProgress), Void>
+                    >
+                    .fromOpaque(userData)
+                    .release()
+                }
+            }
+        )
+    }
+}
+
+public struct VIPSImageRef: VIPSImageProtocol {
+    public var ptr: UnsafeMutableRawPointer!
+
+    public init(_ ptr: UnsafeMutableRawPointer) {
+        self.ptr = ptr
+    }
+
+    public var image: UnsafeMutablePointer<VipsImage>! {
+        return ptr.assumingMemoryBound(to: VipsImage.self)
     }
 }

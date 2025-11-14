@@ -4,19 +4,21 @@
             "type": "swift",
             "request": "launch",
             "name": "Debug vips-tool",
-            "program": "${workspaceFolder:swift-vips}/.build/debug/vips-tool",
             "args": [],
             "cwd": "${workspaceFolder:swift-vips}",
-            "preLaunchTask": "swift: Build Debug vips-tool"
+            "preLaunchTask": "swift: Build Debug vips-tool",
+            "target": "vips-tool",
+            "configuration": "debug"
         },
         {
             "type": "swift",
             "request": "launch",
             "name": "Release vips-tool",
-            "program": "${workspaceFolder:swift-vips}/.build/release/vips-tool",
             "args": [],
             "cwd": "${workspaceFolder:swift-vips}",
-            "preLaunchTask": "swift: Build Release vips-tool"
+            "preLaunchTask": "swift: Build Release vips-tool",
+            "target": "vips-tool",
+            "configuration": "release"
         }
     ]
 }

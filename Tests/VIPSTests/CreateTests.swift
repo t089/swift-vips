@@ -3,8 +3,9 @@ import Cvips
 import Testing
 import Foundation
 
-@Suite(.vips)
-struct CreateGeneratedTests {
+extension VIPSTests {
+@Suite(.vips, .serialized)
+struct CreateTests {
     
     // MARK: - Basic Image Creation
     
@@ -429,4 +430,4 @@ struct CreateGeneratedTests {
         let deviate = try perlin.deviate()
         #expect(deviate > 0.0)
     }
-}
+}}

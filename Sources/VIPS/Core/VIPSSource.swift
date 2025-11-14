@@ -40,7 +40,9 @@ import CvipsShim
 /// VIPSSource instances are not thread-safe. Each source should be used
 /// from a single thread, or access should be synchronized externally.
 public class VIPSSource: VIPSObject {
-    var source: UnsafeMutablePointer<VipsSource>!
+    var source: UnsafeMutablePointer<VipsSource>! {
+        return self.ptr.assumingMemoryBound(to: VipsSource.self)
+    }
 
     /// Creates a VIPSSource from an existing VipsSource pointer.
     ///
@@ -50,7 +52,10 @@ public class VIPSSource: VIPSObject {
     /// - Parameter source: A pointer to an existing VipsSource
     public init(_ source: UnsafeMutablePointer<VipsSource>!) {
         super.init(shim_vips_object(source))
-        self.source = source
+    }
+
+    public required init(_ ptr: UnsafeMutableRawPointer) {
+        super.init(ptr)
     }
 
     /// Creates a source that will read from the named file.
@@ -65,8 +70,6 @@ public class VIPSSource: VIPSObject {
         guard let source = vips_source_new_from_file(path) else {
             throw VIPSError()
         }
-
-        self.source = source
         super.init(shim_vips_object(source))
     }
 
@@ -81,8 +84,6 @@ public class VIPSSource: VIPSObject {
         guard let source = vips_source_new_from_descriptor(descriptor) else {
             throw VIPSError()
         }
-
-        self.source = source
         super.init(shim_vips_object(source))
     }
 
@@ -99,8 +100,6 @@ public class VIPSSource: VIPSObject {
         guard let source = vips_source_new_from_memory(data, length) else {
             throw VIPSError()
         }
-
-        self.source = source
         super.init(shim_vips_object(source))
     }
 
@@ -114,8 +113,6 @@ public class VIPSSource: VIPSObject {
         guard let source = blob.withVipsBlob({ vips_source_new_from_blob($0) }) else {
             throw VIPSError()
         }
-
-        self.source = source
         super.init(shim_vips_object(source))
     }
 
@@ -130,8 +127,6 @@ public class VIPSSource: VIPSObject {
         guard let source = vips_source_new_from_options(options) else {
             throw VIPSError()
         }
-
-        self.source = source
         super.init(shim_vips_object(source))
     }
 
@@ -182,11 +177,28 @@ public class VIPSSource: VIPSObject {
     /// - Throws: VIPSError if the source cannot be mapped, or any error from the closure
     public func withMappedMemory<T>(_ work: (UnsafeRawBufferPointer) throws -> T) throws -> T {
         var length: Int = 0
-        let ptr = vips_source_map(self.source, &length)
-        if ptr == nil {
+        guard let ptr = vips_source_map(self.source, &length) else {
             throw VIPSError()
         }
         return try work(UnsafeRawBufferPointer(start: ptr, count: length))
+    }
+
+    /// Maps the entire source into memory and provides safe access.
+    /// 
+    /// This operation can take a long time. Use `isMappable` to 
+    /// check if a source can be mapped efficiently.
+    ///
+    /// - Returns: The mapped memory buffer
+    /// - Throws: VIPSError if the source cannot be mapped
+    public var mappedMemory: RawSpan {
+        @_lifetime(borrow self) get throws {
+            var length: Int = 0
+            guard let ptr = vips_source_map(self.source, &length) else {
+                throw VIPSError()
+            }
+            let buffer = UnsafeRawBufferPointer(start: ptr, count: length)
+            return _overrideLifetime(buffer.bytes, borrowing: self)
+        }
     }
 
     // MARK: - Stream Operations
@@ -199,15 +211,39 @@ public class VIPSSource: VIPSObject {
     ///
     /// - Parameters:
     ///   - buffer: Buffer to read data into
-    ///   - length: Maximum number of bytes to read
-    /// - Returns: Number of bytes actually read, or -1 on error
+    /// - Returns: Number of bytes actually read
     /// - Throws: VIPSError if the read operation fails
-    public func read(into buffer: UnsafeMutableRawPointer, length: Int) throws -> Int {
-        let result = vips_source_read(self.source, buffer, length)
+    public func unsafeRead(into buffer: UnsafeMutableRawBufferPointer) throws -> Int {
+        let result = vips_source_read(self.source, buffer.baseAddress, buffer.count)
         if result == -1 {
             throw VIPSError()
         }
         return Int(result)
+    }
+
+    /// Reads data from the source into the provided buffer.
+    ///
+    /// This is the fundamental read operation for sources. For seekable sources,
+    /// this reads from the current read position. For pipe sources, this
+    /// reads the next available data.
+    ///
+    /// - Parameters:
+    ///   - outputSpan: Span to read data into
+    /// - Returns: Number of bytes actually read
+    /// - Throws: VIPSError if the read operation fails
+    public func read(into span: inout OutputRawSpan) throws -> Int {
+        return try span.withUnsafeMutableBytes { buffer, initializedCount in
+            precondition(initializedCount <= buffer.count, "Buffer overflow")
+
+            let dest = UnsafeMutableRawBufferPointer(
+                start: buffer.baseAddress!.advanced(by: initializedCount),
+                count: buffer.count - initializedCount
+            )
+
+            let bytesRead = try unsafeRead(into: dest)
+            initializedCount += bytesRead
+            return bytesRead
+        }
     }
 
     /// Reads data from the source into a byte array.
@@ -219,28 +255,25 @@ public class VIPSSource: VIPSObject {
     /// - Returns: Byte array containing the read bytes
     /// - Throws: VIPSError if the read operation fails
     public func read(length: Int) throws -> [UInt8] {
-        try withUnsafeTemporaryAllocation(
-            byteCount: length,
-            alignment: MemoryLayout<UInt8>.alignment
-        ) { buffer in
-            let bytesRead = try read(into: buffer.baseAddress!, length: length)
-            return Array(buffer.prefix(bytesRead))
-        }
+        try Array(unsafeUninitializedCapacity: length, initializingWith: { buffer, initializedCount in
+            let bytesRead = try unsafeRead(into: UnsafeMutableRawBufferPointer(buffer))
+            initializedCount = bytesRead
+        })
     }
 
     /// Seeks to a specific position in the source.
     ///
     /// This changes the current read position. The whence parameter
     /// determines how the offset is interpreted:
-    /// - SEEK_SET (0): Absolute position from start
-    /// - SEEK_CUR (1): Relative to current position
-    /// - SEEK_END (2): Relative to end of source
+    /// - .set: Absolute position from start
+    /// - .current: Relative to current position
+    /// - .end: Relative to end of source
     ///
     /// - Parameters:
     ///   - offset: Byte offset for the seek operation
-    ///   - whence: How to interpret the offset (SEEK_SET, SEEK_CUR, SEEK_END)
+    ///   - whence: How to interpret the offset (`.set`, `.current`, `.end`)
     /// - Returns: New absolute position in the source
-    /// - Throws: VIPSError if the seek operation fails or is not supported
+    /// - Throws: `VIPSError` if the seek operation fails or is not supported
     public func seek(offset: Int64, whence: Whence) throws -> Int64 {
         let result = vips_source_seek(self.source, gint64(offset), whence.rawValue)
         if result == -1 {
@@ -266,14 +299,17 @@ public class VIPSSource: VIPSObject {
     /// and returns it for format detection. The source position is not
     /// permanently changed by this operation.
     ///
-    /// - Parameter length: Maximum number of bytes to sniff
-    /// - Returns: Byte array from the beginning of the source
+    /// - Parameter length: Number of bytes to sniff
+    /// - Returns: Byte array from the beginning of the source or `null` if source is too short
     /// - Throws: VIPSError if the sniff operation fails
-    public func sniff(length: Int) throws -> [UInt8] {
+    @_lifetime(borrow self)
+    public func sniff(length: Int) throws -> RawSpan? {
         guard let ptr = vips_source_sniff(self.source, length) else {
-            throw VIPSError()
+            return nil
         }
-        return Array(UnsafeRawBufferPointer(start: ptr, count: length))
+        let buffer = UnsafeRawBufferPointer(start: ptr, count: length)
+        let span = buffer.bytes
+        return _overrideLifetime(span, borrowing: self)
     }
 
     /// Sniffs at most the specified number of bytes from the source.
@@ -282,15 +318,18 @@ public class VIPSSource: VIPSObject {
     /// if the source is shorter than requested.
     ///
     /// - Parameter maxLength: Maximum number of bytes to sniff
-    /// - Returns: Tuple of (data pointer, actual length)
+    /// - Returns: Read data as a byte array
     /// - Throws: VIPSError if the sniff operation fails
-    public func sniffAtMost(maxLength: Int) throws -> [UInt8] {
+    @_lifetime(borrow self)
+    public func sniffAtMost(maxLength: Int) throws -> RawSpan {
         var dataPtr: UnsafeMutablePointer<UInt8>?
         let actualLength = vips_source_sniff_at_most(self.source, &dataPtr, maxLength)
         if actualLength == -1 || dataPtr == nil {
             throw VIPSError()
         }
-        return Array(UnsafeRawBufferPointer(start: dataPtr!, count: Int(actualLength)))
+        let buffer = UnsafeRawBufferPointer(start: dataPtr!, count: Int(actualLength))
+        let span = buffer.bytes
+        return _overrideLifetime(span, borrowing: self)
     }
 
     /// Creates a VIPSBlob by mapping the entire source.
@@ -480,12 +519,9 @@ public class VIPSSource: VIPSObject {
 /// Custom sources and their callbacks are not inherently thread-safe.
 /// Ensure proper synchronization if the source will be accessed from multiple threads.
 public final class VIPSSourceCustom: VIPSSource {
-    private var customSource: UnsafeMutablePointer<VipsSourceCustom>!
-
-    var reader: (Int, inout [UInt8]) -> Void = { _, _ in }
-    var unsafeReader: (UnsafeMutableRawBufferPointer) -> Int = { _ in 0 }
-
-    var _onDeinit: () -> Void = {}
+    private var customSource: UnsafeMutablePointer<VipsSourceCustom>! {
+        return self.ptr.assumingMemoryBound(to: VipsSourceCustom.self)
+    }
 
     /// Creates a new custom source.
     ///
@@ -495,26 +531,20 @@ public final class VIPSSourceCustom: VIPSSource {
     public init() {
         let source = vips_source_custom_new()
         super.init(shim_VIPS_SOURCE(source))
-        self.customSource = source
     }
 
-    typealias ReadHandle = @convention(c) (
-        UnsafeMutablePointer<VipsSourceCustom>?, UnsafeMutableRawPointer, Int64, gpointer
-    ) -> Int64
-
-    private func _onRead(_ handle: @escaping ReadHandle, userInfo: UnsafeMutableRawPointer? = nil) {
-        shim_g_signal_connect(
-            self.source,
-            "read",
-            shim_G_CALLBACK(unsafeBitCast(handle, to: UnsafeMutableRawPointer.self)),
-            userInfo
-        )
+    public required init(_ ptr: UnsafeMutableRawPointer) {
+        super.init(ptr)
     }
 
-    /// Sets a high-performance read callback that works with raw memory buffers.
+    typealias ReadHandle =
+        @convention(c) (
+            UnsafeMutablePointer<VipsSourceCustom>?, UnsafeMutableRawPointer, Int64, gpointer
+        ) -> Int64
+
+    /// Sets a read callback that works with raw memory buffers.
     ///
-    /// This is the more efficient callback option for custom sources. Your callback
-    /// should read data into the provided buffer and return the number of bytes
+    /// Your callback should read data into the provided buffer and return the number of bytes
     /// actually read. Return 0 to indicate end-of-stream.
     ///
     /// - Parameter handle: Callback that fills a buffer with data and returns bytes read
@@ -540,88 +570,50 @@ public final class VIPSSourceCustom: VIPSSource {
     ///     return bytesToRead
     /// }
     /// ```
-    public func onUnsafeRead(_ handle: @escaping (UnsafeMutableRawBufferPointer) -> Int) {
-        self.unsafeReader = handle
-        let selfptr = Unmanaged<VIPSSourceCustom>.passUnretained(self).toOpaque()
+    @discardableResult
+    public func onUnsafeRead(_ handle: @escaping (UnsafeMutableRawBufferPointer) -> Int) -> Int {
+        let holder = ClosureHolder(handle)
+        let data = Unmanaged.passRetained(holder).toOpaque()
 
-        self._onRead(
-            { _, buf, length, obj in
-                let me = Unmanaged<VIPSSourceCustom>.fromOpaque(obj).takeUnretainedValue()
+        let cCallback: ReadHandle = {
+            _,
+            buf,
+            len,
+            data in
+            let me = Unmanaged<ClosureHolder<UnsafeMutableRawBufferPointer, Int>>.fromOpaque(data)
+                .takeUnretainedValue()
+            let buffer = UnsafeMutableRawBufferPointer(start: buf, count: Int(len))
+            let bytesRead = me.closure(buffer)
+            return Int64(bytesRead)
+        }
 
-                let buffer = UnsafeMutableRawBufferPointer.init(start: buf, count: Int(length))
-                return Int64(me.unsafeReader(buffer))
-            },
-            userInfo: selfptr
+        return self.connect(
+            signal: "read",
+            callback: unsafeBitCast(cCallback, to: GCallback.self),
+            userData: data,
+            destroyData: { data, _ in
+                data.flatMap { Unmanaged<AnyObject>.fromOpaque($0).release() }
+            }
         )
     }
 
-    /// Sets a simple read callback that works with Swift arrays.
+    /// Sets a read callback that works with raw memory buffers.
     ///
-    /// This is the simpler but less efficient callback option. Your callback
-    /// receives the requested number of bytes to read and should populate
-    /// the provided array with the actual data read.
+    /// Your callback should read data into the provided output span. Do not write anything to
+    /// indicate end-of-stream.
     ///
-    /// For better performance with large data, use onUnsafeRead(_:) instead.
+    /// - Parameter handle: Callback that fills an output span with data
     ///
-    /// - Parameter handle: Callback that receives byte count and fills an array
-    ///
-    /// # Example
-    ///
-    /// ```swift
-    /// var data: [UInt8] = // your image data
-    /// var position = 0
-    ///
-    /// customSource.onRead { requestedBytes, buffer in
-    ///     let remainingBytes = data.count - position
-    ///     let bytesToRead = min(requestedBytes, remainingBytes)
-    ///
-    ///     if bytesToRead > 0 {
-    ///         let range = position..<(position + bytesToRead)
-    ///         buffer = Array(data[range])
-    ///         position += bytesToRead
-    ///     }
-    /// }
-    /// ```
-    public func onRead(_ handle: @escaping (Int, inout [UInt8]) -> Void) {
-        self.reader = handle
-
-        let selfptr = Unmanaged<VIPSSourceCustom>.passUnretained(self).toOpaque()
-
-        _onRead(
-            { _, buf, length, obj in
-                var buffer = [UInt8]()
-
-                let me = Unmanaged<VIPSSourceCustom>.fromOpaque(obj).takeUnretainedValue()
-
-                me.reader(Int(length), &buffer)
-
-                guard buffer.count <= length else {
-                    fatalError("Trying to copy too much data")
-                }
-
-                buf.copyMemory(from: buffer, byteCount: buffer.count)
-                return Int64(buffer.count)
-            },
-            userInfo: selfptr
-        )
-    }
-
-    /// Sets a cleanup callback that will be called when the source is destroyed.
-    ///
-    /// Use this to perform any necessary cleanup when the source is no longer needed.
-    /// This might include closing files, releasing resources, or notifying other
-    /// components that the source is being destroyed.
-    ///
-    /// - Parameter work: Cleanup callback to execute during deinitialization
-    public func onDeinit(_ work: @escaping () -> Void) {
-        self._onDeinit = work
-    }
-
-    deinit {
-        self._onDeinit()
+    @discardableResult
+    public func onRead(_ handler: @escaping (inout OutputRawSpan) -> ()) -> Int {
+        return self.onUnsafeRead { buffer in
+            var span = OutputRawSpan(buffer: buffer, initializedCount: 0)
+            handler(&span)
+            let bytesInitialized = span.finalize(for: buffer)
+            return bytesInitialized
+        }
     }
 }
-
 
 public struct Whence: RawRepresentable, Equatable, Hashable, Sendable {
     public var rawValue: Int32
