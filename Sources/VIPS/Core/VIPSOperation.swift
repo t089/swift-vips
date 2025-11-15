@@ -1,19 +1,24 @@
 import Cvips
 import CvipsShim
 
-final class VIPSOperation {
+struct VIPSOperation: ~Copyable {
+    init(_ op: UnsafeMutablePointer<VipsOperation>!) {
+        self.op = op
+    }
+
     var op: UnsafeMutablePointer<VipsOperation>!
-    
+
+
     init(name: String) throws {
         let op = vips_operation_new(name)
         guard op != nil else { throw VIPSError() }
-        self.op = op
+        self.init(op)
     }
     
     init(name: UnsafePointer<CChar>!) throws {
         let op = vips_operation_new(name)
         guard op != nil else { throw VIPSError() }
-        self.op = op
+        self.init(op)
     }
     
     func setFromString(options: String) throws {

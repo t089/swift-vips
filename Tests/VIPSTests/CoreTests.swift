@@ -56,5 +56,34 @@ extension VIPSTests {
                 #expect(post.percent == 100, "Post-eval progress is 100%")
             }
         }
+
+        @Test()
+        func cancellation() async throws {
+            do {
+                let image = try VIPSImage(fromFilePath: mythicalGiantPath)
+                
+                image.onEval { imageRef, progress in
+                    if Task.isCancelled {
+                        imageRef.setKill(true)
+                    }
+                }
+
+                image.setProgressReportingEnabled(true)
+
+                let task = Task {
+                    try? await Task.sleep(for: .milliseconds(50))
+                    return try image.writeToBuffer(suffix: ".jpg")
+                }
+                task.cancel()
+                do {
+                    _ = try await task.value
+                    Issue.record("Expected cancellation to throw")
+                } catch {
+                    let message = "\(error)"
+                    #expect(message.starts(with: "VipsImage: "), "Cancellation error from VIPS")
+                }
+                
+            }
+        }
     }
 }

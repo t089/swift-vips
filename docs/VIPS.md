@@ -11,12 +11,17 @@
 | class | `VIPSInterpolate` |
 | class | `VIPSTarget` |
 | class | `VIPSTargetCustom` |
-| struct | `UnownedVIPSObject` |
+| struct | `UnownedVIPSObjectRef` |
 | struct | `VIPSError` |
+| struct | `VIPSImageRef` |
+| struct | `VIPSObjectRef` |
 | struct | `VIPSOption` |
 | struct | `Whence` |
 | enum | `VIPS` |
+| protocol | `PointerWrapper` |
+| protocol | `VIPSImageProtocol` |
 | protocol | `VIPSLoggingDelegate` |
+| protocol | `VIPSObjectProtocol` |
 | func | `vipsFindLoader(path:)` |
 | typealias | `VIPSProgress` |
 | typealias | `VipsAccess` |
@@ -44,10 +49,14 @@
 #### class VIPSObject
 
 ```swift
-public class VIPSObject {
+public class VIPSObject: PointerWrapper, VIPSObjectProtocol {
+  public var ptr: UnsafeMutableRawPointer!
+
   public var type: GType { get }
 
-  public @discardableResult func connectPreClose(_ handler: @escaping (UnownedVIPSObject) -> Void) -> Int
+  public required init(_ ptr: UnsafeMutableRawPointer)
+
+  public func unref()
 }
 ```
 
@@ -165,7 +174,7 @@ public final class VIPSBlob: Collection, ExpressibleByArrayLiteral, Sendable, Se
 #### class VIPSImage
 
 ```swift
-public class VIPSImage: VIPSObject {
+public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjectProtocol {
   /// A structure representing the dimensions of an image.
   public struct Size {
     /// The height of the image in pixels.
@@ -794,6 +803,8 @@ public class VIPSImage: VIPSObject {
   /// Extract imaginary part of complex image
   public func imag() throws -> VIPSImage
 
+  public required init(_ ptr: UnsafeMutableRawPointer)
+
   /// Creates a new image by loading the given data
   /// 
   /// The image will reference the data from the blob.
@@ -1040,8 +1051,6 @@ public class VIPSImage: VIPSObject {
   /// 
   public func sequential(tileHeight: Int? = nil) throws -> VIPSImage
 
-  public func setProgressReportingEnabled(_ enabled: Bool)
-
   /// Unsharp masking for print
   /// 
   public func sharpen(sigma: Double? = nil, x1: Double? = nil, y2: Double? = nil, y3: Double? = nil, m1: Double? = nil, m2: Double? = nil) throws -> VIPSImage
@@ -1151,7 +1160,7 @@ public class VIPSImage: VIPSObject {
 #### class VIPSInterpolate
 
 ```swift
-public class VIPSInterpolate: VIPSObject {
+public class VIPSInterpolate: VIPSObject, PointerWrapper, VIPSObjectProtocol {
   public var bilinear: VIPSInterpolate { get }
 
   public var nearest: VIPSInterpolate { get }
@@ -1202,7 +1211,7 @@ public class VIPSInterpolate: VIPSObject {
 /// 
 /// VIPSTarget instances are not thread-safe. Each target should be used
 /// from a single thread, or access should be synchronized externally.
-public class VIPSTarget: VIPSObject {
+public class VIPSTarget: VIPSObject, PointerWrapper, VIPSObjectProtocol {
   /// Returns true if the target has been ended.
   /// 
   /// Once a target is ended, no further write operations should be performed.
@@ -1234,13 +1243,7 @@ public class VIPSTarget: VIPSObject {
   /// - Throws: VIPSError if the end operation fails
   public func end() throws
 
-  /// Flushes any buffered data to the underlying destination.
-  /// 
-  /// This forces any data that has been written to the target but not yet
-  /// sent to the underlying destination (file, descriptor, etc.) to be written.
-  /// 
-  /// - Throws: VIPSError if the flush operation fails
-  public func flush() throws
+  public required init(_ ptr: UnsafeMutableRawPointer)
 
   /// Creates a temporary target based on another target.
   /// 
@@ -1275,16 +1278,7 @@ public class VIPSTarget: VIPSObject {
   /// - Throws: VIPSError if the write operation fails
   public func putc(_ character: Int) throws
 
-  /// Reads data from the target into the provided buffer.
-  /// 
-  /// This operation is only supported on seekable targets (like files).
-  /// Some formats (like TIFF) require the ability to read back data
-  /// that has been written.
-  /// 
-  /// - Parameter buffer: Buffer to read data into
-  /// - Returns: Number of bytes actually read
-  /// - Throws: VIPSError if the read operation fails or is not supported
-  public @discardableResult func read(into buffer: UnsafeMutableRawBufferPointer) throws -> Int
+  public func read(into span: inout OutputRawSpan) throws
 
   /// Changes the current position within the target.
   /// 
@@ -1339,6 +1333,17 @@ public class VIPSTarget: VIPSObject {
   /// - Returns: String containing all the written data
   /// - Throws: VIPSError if the target is not a memory target or steal fails
   public func stealText() throws -> String
+
+  /// Reads data from the target into the provided buffer.
+  /// 
+  /// This operation is only supported on seekable targets (like files).
+  /// Some formats (like TIFF) require the ability to read back data
+  /// that has been written.
+  /// 
+  /// - Parameter buffer: Buffer to read data into
+  /// - Returns: Number of bytes actually read
+  /// - Throws: VIPSError if the read operation fails or is not supported
+  public @discardableResult func unsafeRead(into buffer: UnsafeMutableRawBufferPointer) throws -> Int
 
   /// Writes raw data from a pointer to the target.
   /// 
@@ -1410,12 +1415,14 @@ public class VIPSTarget: VIPSObject {
 /// - **End callback**: Should finalize the destination and release resources
 /// - **Seek callback**: Should change position and return new absolute position (-1 for error)
 /// - **Read callback**: Should read up to the requested bytes and return actual data read
-public final class VIPSTargetCustom: VIPSTarget {
+public final class VIPSTargetCustom: VIPSTarget, PointerWrapper, VIPSObjectProtocol {
   /// Creates a new custom target with default (no-op) implementations.
   /// 
   /// After creation, set up the appropriate callback handlers using
   /// onWrite(), onEnd(), onSeek(), and onRead() methods.
   public init()
+
+  public required init(_ ptr: UnsafeMutableRawPointer)
 
   /// Sets the end handler for this custom target.
   /// 
@@ -1425,18 +1432,17 @@ public final class VIPSTargetCustom: VIPSTarget {
   /// 
   /// - Parameter handler: A closure called when the target is ended
   ///   - Returns: 0 for success, non-zero for error
-  public func onEnd(_ handler: @escaping () -> Int)
+  public @discardableResult func onEnd(_ handler: @escaping () -> Int) -> Int
 
-  /// Sets the read handler for this custom target.
+  /// Adds a read handler to this custom target.
   /// 
   /// The read handler enables reading back data that was previously written,
   /// which is required by some image formats (like TIFF). If your custom
   /// target doesn't support reading, don't set this handler.
   /// 
   /// - Parameter handler: A closure that handles read operations
-  ///   - Parameter length: Maximum number of bytes to read
-  ///   - Returns: Array of bytes actually read (can be shorter than requested)
-  public func onRead(_ handler: @escaping (Int) -> [UInt8])
+  ///   - Parameter outputSpan: The destination span to read bytes into.
+  public @discardableResult func onRead(_ handler: @escaping (inout OutputRawSpan) -> Void) -> Int
 
   /// Sets the seek handler for this custom target.
   /// 
@@ -1448,7 +1454,18 @@ public final class VIPSTargetCustom: VIPSTarget {
   ///   - Parameter offset: Byte offset for the seek operation
   ///   - Parameter whence: How to interpret offset (SEEK_SET=0, SEEK_CUR=1, SEEK_END=2)
   ///   - Returns: New absolute position, or -1 for error
-  public func onSeek(_ handler: @escaping (Int64, Int32) -> Int64)
+  public @discardableResult func onSeek(_ handler: @escaping (Int64, Whence) -> Int64) -> Int
+
+  /// Adds a read handler to this custom target.
+  /// 
+  /// The read handler enables reading back data that was previously written,
+  /// which is required by some image formats (like TIFF). If your custom
+  /// target doesn't support reading, don't set this handler.
+  /// 
+  /// - Parameter handler: A closure that handles read operations
+  ///   - Parameter buffer: The destination buffer to read bytes into.
+  ///   - Returns: The actual number of bytes written to buffer.
+  public @discardableResult func onUnsafeRead(_ handler: @escaping (UnsafeMutableRawBufferPointer) -> (Int)) -> Int
 
   /// Sets the write handler for this custom target.
   /// 
@@ -1459,14 +1476,23 @@ public final class VIPSTargetCustom: VIPSTarget {
   /// - Parameter handler: A closure that receives data and returns bytes written
   ///   - Parameter data: Buffer to write
   ///   - Returns: Number of bytes actually written (should be <= data.count)
-  public func onWrite(_ handler: @escaping (UnsafeRawBufferPointer) -> Int)
+  public @discardableResult func onUnsafeWrite(_ handler: @escaping (UnsafeRawBufferPointer) -> Int) -> Int
+
+  public @discardableResult func onWrite(_ handler: @escaping (RawSpan) -> Int) -> Int
 }
 ```
 
-#### struct UnownedVIPSObject
+#### struct UnownedVIPSObjectRef
 
 ```swift
-public struct UnownedVIPSObject {
+public struct UnownedVIPSObjectRef: PointerWrapper, VIPSObjectProtocol {
+  public let ptr: UnsafeMutableRawPointer!
+
+  public init(_ ptr: UnsafeMutableRawPointer)
+
+  public func ref() -> UnownedVIPSObjectRef
+
+  public func unref()
 }
 ```
 
@@ -1500,6 +1526,28 @@ public struct VIPSError: Error, Sendable, SendableMetatype {
   public var description: String { get }
 
   public let message: String
+}
+```
+
+#### struct VIPSImageRef
+
+```swift
+public struct VIPSImageRef: PointerWrapper, VIPSImageProtocol, VIPSObjectProtocol {
+  public var ptr: UnsafeMutableRawPointer!
+
+  public init(_ ptr: UnsafeMutableRawPointer)
+}
+```
+
+#### struct VIPSObjectRef
+
+```swift
+public struct VIPSObjectRef: PointerWrapper, VIPSObjectProtocol {
+  public let ptr: UnsafeMutableRawPointer!
+
+  public init(_ ptr: UnsafeMutableRawPointer)
+
+  public consuming func unref()
 }
 ```
 
@@ -1576,6 +1624,28 @@ public enum VIPS {
 }
 ```
 
+#### protocol PointerWrapper
+
+```swift
+public protocol PointerWrapper : ~Copyable {
+  public var ptr: UnsafeMutableRawPointer! { get }
+
+  public init(_ ptr: UnsafeMutableRawPointer)
+}
+```
+
+#### protocol VIPSImageProtocol
+
+```swift
+public protocol VIPSImageProtocol : VIPSObjectProtocol {
+  public var bands: Int { get }
+
+  public var height: Int { get }
+
+  public var width: Int { get }
+}
+```
+
 #### protocol VIPSLoggingDelegate
 
 ```swift
@@ -1587,6 +1657,22 @@ public protocol VIPSLoggingDelegate : AnyObject {
   public func info(_ message: String)
 
   public func warning(_ message: String)
+}
+```
+
+#### protocol VIPSObjectProtocol
+
+```swift
+public protocol VIPSObjectProtocol : PointerWrapper, ~Copyable {
+  public var type: GType { get }
+
+  public func disconnect(signalHandler: Int)
+
+  public @discardableResult func onPreClose(_ handler: @escaping (UnownedVIPSObjectRef) -> Void) -> Int
+
+  public func ref() -> Self
+
+  public func unref()
 }
 ```
 
@@ -1647,4 +1733,4 @@ public typealias VipsPrecision = Cvips.VipsPrecision
 public typealias VipsSize = Cvips.VipsSize
 ```
 
-<!-- Generated by interfazzle.swift on 2025-11-10 21:23:22 +0100 -->
+<!-- Generated by interfazzle.swift on 2025-11-14 12:20:00 +0100 -->

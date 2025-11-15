@@ -10,10 +10,6 @@ final class ClosureHolder<Input, Output> where Input: ~Copyable, Input: ~Escapab
 }
 
 open class VIPSObject: VIPSObjectProtocol {
-    public func unref() {
-        g_object_unref(self.ptr)
-    }
-
     public required init(_ ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
     }
@@ -35,8 +31,6 @@ open class VIPSObject: VIPSObjectProtocol {
         return try body(self.object)
     }
 
-    
-
     deinit {
         guard let ptr = self.ptr else { return }
         g_object_unref(ptr)
@@ -44,19 +38,16 @@ open class VIPSObject: VIPSObjectProtocol {
     }
 }
 
-public protocol PointerWrapper: ~Copyable {
+public protocol PointerWrapper: ~Copyable, ~Escapable {
     init(_ ptr: UnsafeMutableRawPointer)
     var ptr: UnsafeMutableRawPointer! { get }
 }
 
-public protocol VIPSObjectProtocol: PointerWrapper, ~Copyable {
+public protocol VIPSObjectProtocol: PointerWrapper, ~Copyable, ~Escapable {
     var object: UnsafeMutablePointer<VipsObject>! { get }
-
-    func ref() -> Self
-    consuming func unref()
 }
 
-extension VIPSObjectProtocol where Self : ~Copyable {
+extension VIPSObjectProtocol where Self : ~Copyable, Self: ~Escapable {
     public var object: UnsafeMutablePointer<VipsObject>! {
         return self.ptr.assumingMemoryBound(to: VipsObject.self)
     }
@@ -136,15 +127,6 @@ extension VIPSObjectProtocol where Self : ~Copyable {
     public func disconnect(signalHandler: Int) {
         g_signal_handler_disconnect(self.ptr, gulong(signalHandler))
     }
-
-    public func ref() -> Self {
-        g_object_ref(self.ptr)
-        return Self(self.ptr)
-    }
-
-    public func unref() {
-        g_object_unref(self.ptr)
-    }
 }
 
 public struct VIPSObjectRef: VIPSObjectProtocol, ~Copyable {
@@ -154,9 +136,9 @@ public struct VIPSObjectRef: VIPSObjectProtocol, ~Copyable {
         self.ptr = ptr
     }
 
-    public consuming func unref() {
-        g_object_unref(self.ptr)
-        discard self
+    public init(borrowing ref: UnownedVIPSObjectRef) {
+        self.ptr = ref.ptr
+        g_object_ref(ref.ptr)
     }
 
     deinit {
@@ -164,19 +146,10 @@ public struct VIPSObjectRef: VIPSObjectProtocol, ~Copyable {
     }
 }
 
-public struct UnownedVIPSObjectRef: VIPSObjectProtocol {
+public struct UnownedVIPSObjectRef: VIPSObjectProtocol, ~Escapable {
     public let ptr: UnsafeMutableRawPointer!
 
     public init(_ ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
-    }
-
-    public func ref() -> UnownedVIPSObjectRef {
-        g_object_ref(self.ptr)
-        return self
-    }
-
-    public func unref() {
-        g_object_unref(self.ptr)
     }
 }
