@@ -11,9 +11,9 @@
 | class | `VIPSInterpolate` |
 | class | `VIPSTarget` |
 | class | `VIPSTargetCustom` |
+| struct | `UnownedVIPSImageRef` |
 | struct | `UnownedVIPSObjectRef` |
 | struct | `VIPSError` |
-| struct | `VIPSImageRef` |
 | struct | `VIPSObjectRef` |
 | struct | `VIPSOption` |
 | struct | `Whence` |
@@ -55,8 +55,6 @@ public class VIPSObject: PointerWrapper, VIPSObjectProtocol {
   public var type: GType { get }
 
   public required init(_ ptr: UnsafeMutableRawPointer)
-
-  public func unref()
 }
 ```
 
@@ -174,7 +172,7 @@ public final class VIPSBlob: Collection, ExpressibleByArrayLiteral, Sendable, Se
 #### class VIPSImage
 
 ```swift
-public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjectProtocol {
+public final class VIPSImage: PointerWrapper, VIPSImageProtocol, VIPSObjectProtocol {
   /// A structure representing the dimensions of an image.
   public struct Size {
     /// The height of the image in pixels.
@@ -280,6 +278,8 @@ public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjec
   /// - Returns: The height of each page in pixels
   public var pageHeight: Int { get }
 
+  public var ptr: UnsafeMutableRawPointer!
+
   /// The scale factor for matrix images.
   /// 
   /// Matrix images can have an optional scale field for use by integer
@@ -331,195 +331,14 @@ public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjec
   /// - Returns: The vertical resolution in pixels per millimeter
   public var yres: Double { get }
 
-  /// Bandwise join a set of images
-  /// 
-  public static func bandjoin(_ in: [VIPSImage]) throws -> VIPSImage
-
-  /// Band-wise rank of a set of images
-  /// 
-  public static func bandrank(_ in: [VIPSImage], index: Int? = nil) throws -> VIPSImage
-
-  /// Make a black image
-  /// 
-  public static func black(width: Int, height: Int, bands: Int? = nil) throws -> VIPSImage
-
-  /// Make an image showing the eye's spatial response
-  /// 
-  public static func eye(width: Int, height: Int, uchar: Bool? = nil, factor: Double? = nil) throws -> VIPSImage
-
-  /// Make a fractal surface
-  /// 
-  public static func fractsurf(width: Int, height: Int, fractalDimension: Double) throws -> VIPSImage
-
-  /// Make a gaussnoise image
-  /// 
-  public static func gaussnoise(width: Int, height: Int, sigma: Double? = nil, mean: Double? = nil, seed: Int? = nil) throws -> VIPSImage
-
-  /// Make a grey ramp image
-  /// 
-  public static func grey(width: Int, height: Int, uchar: Bool? = nil) throws -> VIPSImage
-
-  /// Make a 1d image where pixel values are indexes
-  /// 
-  public static func identity(bands: Int? = nil, ushort: Bool? = nil, size: Int? = nil) throws -> VIPSImage
-
-  /// Make a butterworth filter
-  /// 
-  public static func maskButterworth(width: Int, height: Int, order: Double, frequencyCutoff: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage
-
-  /// Make a butterworth_band filter
-  /// 
-  public static func maskButterworthBand(width: Int, height: Int, order: Double, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage
-
-  /// Make a butterworth ring filter
-  /// 
-  public static func maskButterworthRing(width: Int, height: Int, order: Double, frequencyCutoff: Double, amplitudeCutoff: Double, ringwidth: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage
-
-  /// Make fractal filter
-  /// 
-  public static func maskFractal(width: Int, height: Int, fractalDimension: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage
-
-  /// Make a gaussian filter
-  /// 
-  public static func maskGaussian(width: Int, height: Int, frequencyCutoff: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage
-
-  /// Make a gaussian filter
-  /// 
-  public static func maskGaussianBand(width: Int, height: Int, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage
-
-  /// Make a gaussian ring filter
-  /// 
-  public static func maskGaussianRing(width: Int, height: Int, frequencyCutoff: Double, amplitudeCutoff: Double, ringwidth: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage
-
-  /// Make an ideal filter
-  /// 
-  public static func maskIdeal(width: Int, height: Int, frequencyCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage
-
-  /// Make an ideal band filter
-  /// 
-  public static func maskIdealBand(width: Int, height: Int, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage
-
-  /// Make an ideal ring filter
-  /// 
-  public static func maskIdealRing(width: Int, height: Int, frequencyCutoff: Double, ringwidth: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> VIPSImage
-
-  /// Create an empty matrix image
-  public static func matrix(width: Int, height: Int) throws -> VIPSImage
-
-  /// Create a matrix image from a double array
-  public static func matrix(width: Int, height: Int, data: [Double]) throws -> VIPSImage
-
-  /// Make a perlin noise image
-  /// 
-  public static func perlin(width: Int, height: Int, cellSize: Int? = nil, uchar: Bool? = nil, seed: Int? = nil) throws -> VIPSImage
-
-  /// Load named icc profile
-  /// 
-  public static func profileLoad(name: String) throws -> VIPSBlob
-
-  /// Make a 2d sine wave
-  /// 
-  public static func sines(width: Int, height: Int, uchar: Bool? = nil, hfreq: Double? = nil, vfreq: Double? = nil) throws -> VIPSImage
-
-  /// Sum an array of images
-  /// 
-  public static func sum(_ in: [VIPSImage]) throws -> VIPSImage
-
-  /// Find the index of the first non-zero pixel in tests
-  /// 
-  public static func `switch`(tests: [VIPSImage]) throws -> VIPSImage
-
-  /// Build a look-up table
-  /// 
-  public static func tonelut(inMax: Int? = nil, outMax: Int? = nil, Lb: Double? = nil, Lw: Double? = nil, Ps: Double? = nil, Pm: Double? = nil, Ph: Double? = nil, S: Double? = nil, M: Double? = nil, H: Double? = nil) throws -> VIPSImage
-
-  /// Make a worley noise image
-  /// 
-  public static func worley(width: Int, height: Int, cellSize: Int? = nil, seed: Int? = nil) throws -> VIPSImage
-
-  /// Make an image where pixel values are coordinates
-  /// 
-  public static func xyz(width: Int, height: Int, csize: Int? = nil, dsize: Int? = nil, esize: Int? = nil) throws -> VIPSImage
-
-  /// Make a zone plate
-  /// 
-  public static func zone(width: Int, height: Int, uchar: Bool? = nil) throws -> VIPSImage
-
-  /// Transform lch to cmc
-  public func CMC2LCh() throws -> VIPSImage
-
-  /// Transform cmyk to xyz
-  public func CMYK2XYZ() throws -> VIPSImage
-
-  /// Transform hsv to srgb
-  public func HSV2sRGB() throws -> VIPSImage
-
-  /// Transform lch to cmc
-  public func LCh2CMC() throws -> VIPSImage
-
-  /// Transform lch to lab
-  public func LCh2Lab() throws -> VIPSImage
-
-  /// Transform lab to lch
-  public func Lab2LCh() throws -> VIPSImage
-
-  /// Transform float lab to labq coding
-  public func Lab2LabQ() throws -> VIPSImage
-
-  /// Transform float lab to signed short
-  public func Lab2LabS() throws -> VIPSImage
-
-  /// Transform cielab to xyz
-  /// 
-  public func Lab2XYZ(temp: [Double]? = nil) throws -> VIPSImage
-
-  /// Unpack a labq image to float lab
-  public func LabQ2Lab() throws -> VIPSImage
-
-  /// Unpack a labq image to short lab
-  public func LabQ2LabS() throws -> VIPSImage
-
-  /// Convert a labq image to srgb
-  public func LabQ2sRGB() throws -> VIPSImage
-
-  /// Transform signed short lab to float
-  public func LabS2Lab() throws -> VIPSImage
-
-  /// Transform short lab to labq coding
-  public func LabS2LabQ() throws -> VIPSImage
-
-  /// Transform xyz to cmyk
-  public func XYZ2CMYK() throws -> VIPSImage
-
-  /// Transform xyz to lab
-  /// 
-  public func XYZ2Lab(temp: [Double]? = nil) throws -> VIPSImage
-
-  /// Transform xyz to yxy
-  public func XYZ2Yxy() throws -> VIPSImage
-
-  /// Transform xyz to scrgb
-  public func XYZ2scRGB() throws -> VIPSImage
-
-  /// Transform yxy to xyz
-  public func Yxy2XYZ() throws -> VIPSImage
-
-  /// Absolute value of an image
-  public func abs() throws -> VIPSImage
-
   /// Calculate arccosine of image values (result in degrees)
   public func acos() throws -> VIPSImage
 
   /// Calculate inverse hyperbolic cosine of image values
   public func acosh() throws -> VIPSImage
 
-  /// Add two images
-  /// 
-  public func add(_ rhs: VIPSImage) throws -> VIPSImage
-
-  /// Bitwise AND of two images
-  /// 
-  public func andimage(_ rhs: VIPSImage) throws -> VIPSImage
+  /// Bitwise AND of image with a constant (integer overload)
+  public func andimage(_ value: Int) throws -> VIPSImage
 
   /// Calculate arcsine of image values (result in degrees)
   public func asin() throws -> VIPSImage
@@ -536,16 +355,10 @@ public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjec
   /// Calculate inverse hyperbolic tangent of image values
   public func atanh() throws -> VIPSImage
 
-  /// Autorotate image by exif tag
-  public func autorot() throws -> VIPSImage
-
   /// Same as `autorot()`
   /// 
   /// See: `VIPSImage.autorot()`
   public func autorotate() throws -> VIPSImage
-
-  /// Find image average
-  public func avg() throws -> Double
 
   /// Perform bitwise AND operation across bands.
   /// 
@@ -565,16 +378,8 @@ public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjec
   /// - Throws: `VIPSError` if the operation fails
   public func bandeor() throws -> VIPSImage
 
-  /// Fold up x axis into bands
-  /// 
-  public func bandfold(factor: Int? = nil) throws -> VIPSImage
-
-  /// Append a constant band to an image
-  /// 
-  public func bandjoinConst(c: [Double]) throws -> VIPSImage
-
-  /// Band-wise average
-  public func bandmean() throws -> VIPSImage
+  /// See VIPSImage.bandjoin(`in`:)
+  public func bandjoin(_ other: [VIPSImage]) throws -> VIPSImage
 
   /// Perform bitwise OR operation across bands.
   /// 
@@ -585,32 +390,10 @@ public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjec
   /// - Throws: `VIPSError` if the operation fails
   public func bandor() throws -> VIPSImage
 
-  /// Unfold image bands into x axis
-  /// 
-  public func bandunfold(factor: Int? = nil) throws -> VIPSImage
-
-  /// Build a look-up table
-  public func buildlut() throws -> VIPSImage
-
-  /// Byteswap an image
-  public func byteswap() throws -> VIPSImage
-
-  /// Use pixel values to pick cases from an array of images
-  /// 
-  public func `case`(cases: [VIPSImage]) throws -> VIPSImage
-
   public func ceil() throws -> VIPSImage
-
-  /// Clamp values of an image
-  /// 
-  public func clamp(min: Double? = nil, max: Double? = nil) throws -> VIPSImage
 
   /// Create a complex image from real and imaginary parts
   public func complex(_ imaginary: VIPSImage) throws -> VIPSImage
-
-  /// Form a complex image from two real images
-  /// 
-  public func complexform(_ rhs: VIPSImage) throws -> VIPSImage
 
   /// Get the concurrency hint for this image.
   /// 
@@ -625,65 +408,14 @@ public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjec
   /// Calculate complex conjugate
   public func conj() throws -> VIPSImage
 
-  /// Approximate integer convolution
-  /// 
-  public func conva(mask: VIPSImage, layers: Int? = nil, cluster: Int? = nil) throws -> VIPSImage
-
-  /// Approximate separable integer convolution
-  /// 
-  public func convasep(mask: VIPSImage, layers: Int? = nil) throws -> VIPSImage
-
-  /// Float convolution operation
-  /// 
-  public func convf(mask: VIPSImage) throws -> VIPSImage
-
-  /// Int convolution operation
-  /// 
-  public func convi(mask: VIPSImage) throws -> VIPSImage
-
-  /// This function allocates memory, renders image into it, builds a new image
-  /// around the memory area, and returns that.
-  /// 
-  /// If the image is already a simple area of memory, it just refs image and
-  /// returns it.
-  public func copyMemory() throws -> VIPSImage
-
   /// Calculate cosine of image values (in degrees)
   public func cos() throws -> VIPSImage
 
   /// Calculate hyperbolic cosine of image values
   public func cosh() throws -> VIPSImage
 
-  /// Extract an area from an image
-  /// 
-  public func crop(left: Int, top: Int, width: Int, height: Int) throws -> VIPSImage
-
-  /// Calculate de00
-  /// 
-  public func dE00(_ rhs: VIPSImage) throws -> VIPSImage
-
-  /// Calculate de76
-  /// 
-  public func dE76(_ rhs: VIPSImage) throws -> VIPSImage
-
-  /// Calculate decmc
-  /// 
-  public func dECMC(_ rhs: VIPSImage) throws -> VIPSImage
-
-  /// Find image standard deviation
-  public func deviate() throws -> Double
-
-  /// Divide two images
-  /// 
-  public func divide(_ rhs: VIPSImage) throws -> VIPSImage
-
-  /// Bitwise XOR of two images
-  /// 
-  public func eorimage(_ rhs: VIPSImage) throws -> VIPSImage
-
-  /// Test for equality
-  /// 
-  public func equal(_ value: Double) throws -> VIPSImage
+  /// Bitwise XOR of image with a constant (integer overload)
+  public func eorimage(_ value: Int) throws -> VIPSImage
 
   /// Calculate e^x for each pixel
   public func exp() throws -> VIPSImage
@@ -691,47 +423,7 @@ public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjec
   /// Calculate 10^x for each pixel
   public func exp10() throws -> VIPSImage
 
-  /// Extract an area from an image
-  /// 
-  public func extractArea(left: Int, top: Int, width: Int, height: Int) throws -> VIPSImage
-
-  /// Extract band from an image
-  /// 
-  public func extractBand(_ band: Int, n: Int? = nil) throws -> VIPSImage
-
-  /// False-color an image
-  public func falsecolour() throws -> VIPSImage
-
-  /// Fast correlation
-  /// 
-  public func fastcor(ref: VIPSImage) throws -> VIPSImage
-
-  /// Fill image zeros with nearest non-zero pixel
-  public func fillNearest() throws -> VIPSImage
-
-  /// Search an image for non-edge areas
-  /// 
-  public func findTrim(threshold: Double? = nil, background: [Double]? = nil, lineArt: Bool? = nil) throws -> Int
-
-  /// Flatten alpha out of an image
-  /// 
-  public func flatten(background: [Double]? = nil, maxAlpha: Double? = nil) throws -> VIPSImage
-
-  /// Transform float rgb to radiance coding
-  public func float2rad() throws -> VIPSImage
-
   public func floor() throws -> VIPSImage
-
-  /// Frequency-domain filtering
-  /// 
-  public func freqmult(mask: VIPSImage) throws -> VIPSImage
-
-  /// Forward fft
-  public func fwfft() throws -> VIPSImage
-
-  /// Gamma an image
-  /// 
-  public func gamma(exponent: Double? = nil) throws -> VIPSImage
 
   /// Get the value of the pixel at the specified coordinates.
   /// 
@@ -741,69 +433,10 @@ public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjec
   /// 
   public func getpoint(_ x: Int, _ y: Int) throws -> [Double]
 
-  /// Read a point from an image
-  /// 
-  public func getpoint(x: Int, y: Int, unpackComplex: Bool? = nil) throws -> [Double]
-
-  /// Global balance an image mosaic
-  /// 
-  public func globalbalance(gamma: Double? = nil, intOutput: Bool? = nil) throws -> VIPSImage
-
-  /// Grid an image
-  /// 
-  public func grid(tileHeight: Int, across: Int, down: Int) throws -> VIPSImage
-
-  /// Form cumulative histogram
-  public func histCum() throws -> VIPSImage
-
-  /// Estimate image entropy
-  public func histEntropy() throws -> Double
-
-  /// Histogram equalisation
-  /// 
-  public func histEqual(band: Int? = nil) throws -> VIPSImage
-
-  /// Find image histogram
-  /// 
-  public func histFind(band: Int? = nil) throws -> VIPSImage
-
-  /// Find n-dimensional image histogram
-  /// 
-  public func histFindNdim(bins: Int? = nil) throws -> VIPSImage
-
-  /// Test for monotonicity
-  public func histIsmonotonic() throws -> Bool
-
-  /// Local histogram equalisation
-  /// 
-  public func histLocal(width: Int, height: Int, maxSlope: Int? = nil) throws -> VIPSImage
-
-  /// Match two histograms
-  /// 
-  public func histMatch(ref: VIPSImage) throws -> VIPSImage
-
-  /// Normalise histogram
-  public func histNorm() throws -> VIPSImage
-
-  /// Plot histogram
-  public func histPlot() throws -> VIPSImage
-
-  /// Find hough circle transform
-  /// 
-  public func houghCircle(scale: Int? = nil, minRadius: Int? = nil, maxRadius: Int? = nil) throws -> VIPSImage
-
-  /// Find hough line transform
-  /// 
-  public func houghLine(width: Int? = nil, height: Int? = nil) throws -> VIPSImage
-
-  /// Ifthenelse an image
-  /// 
-  public func ifthenelse(in1: VIPSImage, in2: VIPSImage, blend: Bool? = nil) throws -> VIPSImage
-
   /// Extract imaginary part of complex image
   public func imag() throws -> VIPSImage
 
-  public required init(_ ptr: UnsafeMutableRawPointer)
+  public init(_ ptr: UnsafeMutableRawPointer)
 
   /// Creates a new image by loading the given data
   /// 
@@ -829,7 +462,9 @@ public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjec
   /// This function creates a VipsImage from a memory area. The memory area must be a simple array,
   /// for example RGBRGBRGB, left-to-right, top-to-bottom. The memory will be copied into the image.
   /// 
-  public init(data: some Collection<Double>, width: Int, height: Int, bands: Int) throws
+  public convenience init(data: some Collection<Double>, width: Int, height: Int, bands: Int) throws
+
+  public convenience init(takingOwnership imgRef: UnownedVIPSImageRef)
 
   /// Creates a new image by loading the given data
   /// 
@@ -848,33 +483,7 @@ public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjec
   /// into the image. You must ensure the memory remains valid for the lifetime of the image and all
   /// its descendants. Use the copy variant if you are unsure about memory management.
   /// 
-  public init(unsafeData buffer: UnsafeBufferPointer<Double>, width: Int, height: Int, bands: Int) throws
-
-  /// Insert image @sub into @main at @x, @y
-  /// 
-  public func insert(sub: VIPSImage, x: Int, y: Int, expand: Bool? = nil, background: [Double]? = nil) throws -> VIPSImage
-
-  /// Invert an image
-  public func invert() throws -> VIPSImage
-
-  /// Build an inverted look-up table
-  /// 
-  public func invertlut(size: Int? = nil) throws -> VIPSImage
-
-  /// Inverse fft
-  /// 
-  public func invfft(real: Bool? = nil) throws -> VIPSImage
-
-  /// Label regions in an image
-  public func labelregions() throws -> VIPSImage
-
-  /// Test for less than
-  /// 
-  public func less(_ value: Double) throws -> VIPSImage
-
-  /// Test for less than or equal
-  /// 
-  public func lesseq(_ value: Double) throws -> VIPSImage
+  public convenience init(unsafeData buffer: UnsafeBufferPointer<Double>, width: Int, height: Int, bands: Int) throws
 
   public func linear(_ a: [Double], _ b: [Double], uchar: Bool? = nil) throws -> VIPSImage
 
@@ -884,83 +493,17 @@ public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjec
   /// Calculate base-10 logarithm of each pixel
   public func log10() throws -> VIPSImage
 
-  /// Left shift
-  /// 
-  public func lshift(_ amount: Int) throws -> VIPSImage
+  /// Left shift with an image of shift amounts
+  public func lshift(_ shiftAmounts: VIPSImage) throws -> VIPSImage
 
-  /// Map an image though a lut
-  /// 
-  public func maplut(lut: VIPSImage, band: Int? = nil) throws -> VIPSImage
-
-  /// First-order match of two images
-  /// 
-  public func match(sec: VIPSImage, xr1: Int, yr1: Int, xs1: Int, ys1: Int, xr2: Int, yr2: Int, xs2: Int, ys2: Int, hwindow: Int? = nil, harea: Int? = nil, search: Bool? = nil, interpolate: VIPSInterpolate? = nil) throws -> VIPSImage
-
-  /// Invert an matrix
-  public func matrixinvert() throws -> VIPSImage
-
-  /// Find image maximum
-  /// 
-  public func max(size: Int? = nil) throws -> Double
-
-  /// Maximum of a pair of images
-  /// 
-  public func maxpair(_ rhs: VIPSImage) throws -> VIPSImage
-
-  /// Measure a set of patches on a color chart
-  /// 
-  public func measure(h: Int, v: Int, left: Int? = nil, top: Int? = nil, width: Int? = nil, height: Int? = nil) throws -> VIPSImage
-
-  /// Find image minimum
-  /// 
-  public func min(size: Int? = nil) throws -> Double
-
-  /// Minimum of a pair of images
-  /// 
-  public func minpair(_ rhs: VIPSImage) throws -> VIPSImage
-
-  /// Test for greater than
-  /// 
-  public func more(_ value: Double) throws -> VIPSImage
-
-  /// Test for greater than or equal
-  /// 
-  public func moreeq(_ value: Double) throws -> VIPSImage
-
-  /// Pick most-significant byte from an image
-  /// 
-  public func msb(band: Int? = nil) throws -> VIPSImage
-
-  /// Multiply two images
-  /// 
-  public func multiply(_ rhs: VIPSImage) throws -> VIPSImage
-
-  public func new(_ colors: [Double]) throws -> VIPSImage
-
-  /// Test for inequality
-  /// 
-  public func notequal(_ value: Double) throws -> VIPSImage
-
-  /// Bitwise OR of two images
-  /// 
-  public func orimage(_ rhs: VIPSImage) throws -> VIPSImage
-
-  /// Find threshold for percent of pixels
-  /// 
-  public func percent(_ percent: Double) throws -> Int
-
-  /// Calculate phase correlation
-  /// 
-  public func phasecor(in2: VIPSImage) throws -> VIPSImage
+  /// Bitwise OR of image with a constant (integer overload)
+  public func orimage(_ value: Int) throws -> VIPSImage
 
   /// Convert complex image to polar form
   public func polar() throws -> VIPSImage
 
   /// Raise image values to a constant power (integer overload)
   public func pow(_ exponent: Int) throws -> VIPSImage
-
-  /// Prewitt edge detector
-  public func prewitt() throws -> VIPSImage
 
   /// Extract profiles from an image.
   /// 
@@ -980,99 +523,16 @@ public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjec
   /// - Throws: `VIPSError` if the operation fails
   public func project() throws -> (rows: VIPSImage, columns: VIPSImage)
 
-  /// Resample an image with a quadratic transform
-  /// 
-  public func quadratic(coeff: VIPSImage, interpolate: VIPSInterpolate? = nil) throws -> VIPSImage
-
-  /// Unpack radiance coding to float rgb
-  public func rad2float() throws -> VIPSImage
-
-  /// Rank filter
-  /// 
-  public func rank(width: Int, height: Int, index: Int) throws -> VIPSImage
-
   /// Extract real part of complex image
   public func real() throws -> VIPSImage
-
-  /// Linear recombination with matrix
-  /// 
-  public func recomb(m: VIPSImage) throws -> VIPSImage
 
   /// Convert polar image to rectangular form
   public func rect() throws -> VIPSImage
 
-  /// Remainder after integer division of an image and a constant
-  /// 
-  public func remainder(_ value: Int) throws -> VIPSImage
-
-  /// Remainder after integer division of an image and a constant
-  /// 
-  public func remainderConst(c: [Double]) throws -> VIPSImage
-
-  /// Replicate an image
-  /// 
-  public func replicate(across: Int, down: Int) throws -> VIPSImage
-
-  /// Rotate an image by a number of degrees
-  /// 
-  public func rotate(angle: Double, interpolate: VIPSInterpolate? = nil, background: [Double]? = nil, odx: Double? = nil, ody: Double? = nil, idx: Double? = nil, idy: Double? = nil) throws -> VIPSImage
-
   public func round() throws -> VIPSImage
 
-  /// Right shift
-  /// 
-  public func rshift(_ amount: Int) throws -> VIPSImage
-
-  /// Transform srgb to hsv
-  public func sRGB2HSV() throws -> VIPSImage
-
-  /// Convert an srgb image to scrgb
-  public func sRGB2scRGB() throws -> VIPSImage
-
-  /// Convert scrgb to bw
-  /// 
-  public func scRGB2BW(depth: Int? = nil) throws -> VIPSImage
-
-  /// Transform scrgb to xyz
-  public func scRGB2XYZ() throws -> VIPSImage
-
-  /// Convert an scrgb image to srgb
-  /// 
-  public func scRGB2sRGB(depth: Int? = nil) throws -> VIPSImage
-
-  /// Scale an image to uchar
-  /// 
-  public func scale(exp: Double? = nil, log: Bool? = nil) throws -> VIPSImage
-
-  /// Scharr edge detector
-  public func scharr() throws -> VIPSImage
-
-  /// Check sequential access
-  /// 
-  public func sequential(tileHeight: Int? = nil) throws -> VIPSImage
-
-  /// Unsharp masking for print
-  /// 
-  public func sharpen(sigma: Double? = nil, x1: Double? = nil, y2: Double? = nil, y3: Double? = nil, m1: Double? = nil, m2: Double? = nil) throws -> VIPSImage
-
-  /// Shrink an image
-  /// 
-  public func shrink(hshrink: Double, vshrink: Double, ceil: Bool? = nil) throws -> VIPSImage
-
-  /// Shrink an image horizontally
-  /// 
-  public func shrinkh(hshrink: Int, ceil: Bool? = nil) throws -> VIPSImage
-
-  /// Shrink an image vertically
-  /// 
-  public func shrinkv(vshrink: Int, ceil: Bool? = nil) throws -> VIPSImage
-
-  /// Unit vector of pixel
-  public func sign() throws -> VIPSImage
-
-  /// Similarity transform of an image
-  /// 
-  public func similarity(scale: Double? = nil, angle: Double? = nil, interpolate: VIPSInterpolate? = nil, background: [Double]? = nil, odx: Double? = nil, ody: Double? = nil, idx: Double? = nil, idy: Double? = nil) throws -> VIPSImage
+  /// Right shift with an image of shift amounts  
+  public func rshift(_ shiftAmounts: VIPSImage) throws -> VIPSImage
 
   /// Calculate sine of image values (in degrees)
   public func sin() throws -> VIPSImage
@@ -1080,47 +540,14 @@ public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjec
   /// Calculate hyperbolic sine of image values
   public func sinh() throws -> VIPSImage
 
-  /// Sobel edge detector
-  public func sobel() throws -> VIPSImage
-
-  /// Spatial correlation
-  /// 
-  public func spcor(ref: VIPSImage) throws -> VIPSImage
-
-  /// Make displayable power spectrum
-  public func spectrum() throws -> VIPSImage
-
-  /// Find many image stats
-  public func stats() throws -> VIPSImage
-
-  /// Statistical difference
-  /// 
-  public func stdif(width: Int, height: Int, s0: Double? = nil, b: Double? = nil, m0: Double? = nil, a: Double? = nil) throws -> VIPSImage
-
-  /// Subsample an image
-  /// 
-  public func subsample(xfac: Int, yfac: Int, point: Bool? = nil) throws -> VIPSImage
-
-  /// Subtract two images
-  /// 
-  public func subtract(_ rhs: VIPSImage) throws -> VIPSImage
-
   /// Calculate tangent of image values (in degrees)
   public func tan() throws -> VIPSImage
 
   /// Calculate hyperbolic tangent of image values
   public func tanh() throws -> VIPSImage
 
-  /// Transpose3d an image
-  /// 
-  public func transpose3d(pageHeight: Int? = nil) throws -> VIPSImage
-
   /// Raise a constant to the power of this image (integer overload)
   public func wop(_ base: Int) throws -> VIPSImage
-
-  /// Wrap image origin
-  /// 
-  public func wrap(x: Int? = nil, y: Int? = nil) throws -> VIPSImage
 
   /// Writes the image to a memory buffer in the specified format.
   /// 
@@ -1150,10 +577,6 @@ public class VIPSImage: VIPSObject, PointerWrapper, VIPSImageProtocol, VIPSObjec
   /// You can call the various save operations directly if you wish, see `jpegsave(target:)` for example.
   /// 
   public func writeToTarget(suffix: String, target: VIPSTarget, quality: Int? = nil, options params: [String : Any] = [:], additionalOptions: String? = nil) throws
-
-  /// Zoom an image
-  /// 
-  public func zoom(xfac: Int, yfac: Int) throws -> VIPSImage
 }
 ```
 
@@ -1482,6 +905,16 @@ public final class VIPSTargetCustom: VIPSTarget, PointerWrapper, VIPSObjectProto
 }
 ```
 
+#### struct UnownedVIPSImageRef
+
+```swift
+public struct UnownedVIPSImageRef: PointerWrapper, VIPSImageProtocol, VIPSObjectProtocol {
+  public var ptr: UnsafeMutableRawPointer!
+
+  public init(_ ptr: UnsafeMutableRawPointer)
+}
+```
+
 #### struct UnownedVIPSObjectRef
 
 ```swift
@@ -1489,10 +922,6 @@ public struct UnownedVIPSObjectRef: PointerWrapper, VIPSObjectProtocol {
   public let ptr: UnsafeMutableRawPointer!
 
   public init(_ ptr: UnsafeMutableRawPointer)
-
-  public func ref() -> UnownedVIPSObjectRef
-
-  public func unref()
 }
 ```
 
@@ -1529,16 +958,6 @@ public struct VIPSError: Error, Sendable, SendableMetatype {
 }
 ```
 
-#### struct VIPSImageRef
-
-```swift
-public struct VIPSImageRef: PointerWrapper, VIPSImageProtocol, VIPSObjectProtocol {
-  public var ptr: UnsafeMutableRawPointer!
-
-  public init(_ ptr: UnsafeMutableRawPointer)
-}
-```
-
 #### struct VIPSObjectRef
 
 ```swift
@@ -1547,7 +966,7 @@ public struct VIPSObjectRef: PointerWrapper, VIPSObjectProtocol {
 
   public init(_ ptr: UnsafeMutableRawPointer)
 
-  public consuming func unref()
+  public init(borrowing ref: UnownedVIPSObjectRef)
 }
 ```
 
@@ -1627,7 +1046,7 @@ public enum VIPS {
 #### protocol PointerWrapper
 
 ```swift
-public protocol PointerWrapper : ~Copyable {
+public protocol PointerWrapper : ~Copyable, ~Escapable {
   public var ptr: UnsafeMutableRawPointer! { get }
 
   public init(_ ptr: UnsafeMutableRawPointer)
@@ -1637,12 +1056,617 @@ public protocol PointerWrapper : ~Copyable {
 #### protocol VIPSImageProtocol
 
 ```swift
-public protocol VIPSImageProtocol : VIPSObjectProtocol {
+public protocol VIPSImageProtocol : VIPSObjectProtocol, ~Copyable, ~Escapable {
   public var bands: Int { get }
 
   public var height: Int { get }
 
   public var width: Int { get }
+
+  /// Bandwise join a set of images
+  /// 
+  public static func bandjoin(_ in: [VIPSImage]) throws -> Self
+
+  /// Band-wise rank of a set of images
+  /// 
+  public static func bandrank(_ in: [VIPSImage], index: Int? = nil) throws -> Self
+
+  /// Make a black image
+  /// 
+  public static func black(width: Int, height: Int, bands: Int? = nil) throws -> Self
+
+  /// Make an image showing the eye's spatial response
+  /// 
+  public static func eye(width: Int, height: Int, uchar: Bool? = nil, factor: Double? = nil) throws -> Self
+
+  /// Make a fractal surface
+  /// 
+  public static func fractsurf(width: Int, height: Int, fractalDimension: Double) throws -> Self
+
+  /// Make a gaussnoise image
+  /// 
+  public static func gaussnoise(width: Int, height: Int, sigma: Double? = nil, mean: Double? = nil, seed: Int? = nil) throws -> Self
+
+  /// Make a grey ramp image
+  /// 
+  public static func grey(width: Int, height: Int, uchar: Bool? = nil) throws -> Self
+
+  /// Make a 1d image where pixel values are indexes
+  /// 
+  public static func identity(bands: Int? = nil, ushort: Bool? = nil, size: Int? = nil) throws -> Self
+
+  /// Make a butterworth filter
+  /// 
+  public static func maskButterworth(width: Int, height: Int, order: Double, frequencyCutoff: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self
+
+  /// Make a butterworth_band filter
+  /// 
+  public static func maskButterworthBand(width: Int, height: Int, order: Double, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self
+
+  /// Make a butterworth ring filter
+  /// 
+  public static func maskButterworthRing(width: Int, height: Int, order: Double, frequencyCutoff: Double, amplitudeCutoff: Double, ringwidth: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self
+
+  /// Make fractal filter
+  /// 
+  public static func maskFractal(width: Int, height: Int, fractalDimension: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self
+
+  /// Make a gaussian filter
+  /// 
+  public static func maskGaussian(width: Int, height: Int, frequencyCutoff: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self
+
+  /// Make a gaussian filter
+  /// 
+  public static func maskGaussianBand(width: Int, height: Int, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self
+
+  /// Make a gaussian ring filter
+  /// 
+  public static func maskGaussianRing(width: Int, height: Int, frequencyCutoff: Double, amplitudeCutoff: Double, ringwidth: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self
+
+  /// Make an ideal filter
+  /// 
+  public static func maskIdeal(width: Int, height: Int, frequencyCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self
+
+  /// Make an ideal band filter
+  /// 
+  public static func maskIdealBand(width: Int, height: Int, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self
+
+  /// Make an ideal ring filter
+  /// 
+  public static func maskIdealRing(width: Int, height: Int, frequencyCutoff: Double, ringwidth: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self
+
+  /// Create an empty matrix image
+  public static func matrix(width: Int, height: Int) throws -> Self
+
+  /// Create a matrix image from a double array
+  public static func matrix(width: Int, height: Int, data: [Double]) throws -> Self
+
+  /// Make a perlin noise image
+  /// 
+  public static func perlin(width: Int, height: Int, cellSize: Int? = nil, uchar: Bool? = nil, seed: Int? = nil) throws -> Self
+
+  /// Load named icc profile
+  /// 
+  public static func profileLoad(name: String) throws -> VIPSBlob
+
+  /// Make a 2d sine wave
+  /// 
+  public static func sines(width: Int, height: Int, uchar: Bool? = nil, hfreq: Double? = nil, vfreq: Double? = nil) throws -> Self
+
+  /// Sum an array of images
+  /// 
+  public static func sum(_ in: [VIPSImage]) throws -> Self
+
+  /// Find the index of the first non-zero pixel in tests
+  /// 
+  public static func `switch`(tests: [VIPSImage]) throws -> Self
+
+  /// Build a look-up table
+  /// 
+  public static func tonelut(inMax: Int? = nil, outMax: Int? = nil, Lb: Double? = nil, Lw: Double? = nil, Ps: Double? = nil, Pm: Double? = nil, Ph: Double? = nil, S: Double? = nil, M: Double? = nil, H: Double? = nil) throws -> Self
+
+  /// Make a worley noise image
+  /// 
+  public static func worley(width: Int, height: Int, cellSize: Int? = nil, seed: Int? = nil) throws -> Self
+
+  /// Make an image where pixel values are coordinates
+  /// 
+  public static func xyz(width: Int, height: Int, csize: Int? = nil, dsize: Int? = nil, esize: Int? = nil) throws -> Self
+
+  /// Make a zone plate
+  /// 
+  public static func zone(width: Int, height: Int, uchar: Bool? = nil) throws -> Self
+
+  /// Transform lch to cmc
+  public func CMC2LCh() throws -> Self
+
+  /// Transform cmyk to xyz
+  public func CMYK2XYZ() throws -> Self
+
+  /// Transform hsv to srgb
+  public func HSV2sRGB() throws -> Self
+
+  /// Transform lch to cmc
+  public func LCh2CMC() throws -> Self
+
+  /// Transform lch to lab
+  public func LCh2Lab() throws -> Self
+
+  /// Transform lab to lch
+  public func Lab2LCh() throws -> Self
+
+  /// Transform float lab to labq coding
+  public func Lab2LabQ() throws -> Self
+
+  /// Transform float lab to signed short
+  public func Lab2LabS() throws -> Self
+
+  /// Transform cielab to xyz
+  /// 
+  public func Lab2XYZ(temp: [Double]? = nil) throws -> Self
+
+  /// Unpack a labq image to float lab
+  public func LabQ2Lab() throws -> Self
+
+  /// Unpack a labq image to short lab
+  public func LabQ2LabS() throws -> Self
+
+  /// Convert a labq image to srgb
+  public func LabQ2sRGB() throws -> Self
+
+  /// Transform signed short lab to float
+  public func LabS2Lab() throws -> Self
+
+  /// Transform short lab to labq coding
+  public func LabS2LabQ() throws -> Self
+
+  /// Transform xyz to cmyk
+  public func XYZ2CMYK() throws -> Self
+
+  /// Transform xyz to lab
+  /// 
+  public func XYZ2Lab(temp: [Double]? = nil) throws -> Self
+
+  /// Transform xyz to yxy
+  public func XYZ2Yxy() throws -> Self
+
+  /// Transform xyz to scrgb
+  public func XYZ2scRGB() throws -> Self
+
+  /// Transform yxy to xyz
+  public func Yxy2XYZ() throws -> Self
+
+  /// Absolute value of an image
+  public func abs() throws -> Self
+
+  /// Add two images
+  /// 
+  public func add(_ rhs: some VIPSImageProtocol) throws -> Self
+
+  /// Bitwise AND of two images
+  /// 
+  public func andimage(_ rhs: some VIPSImageProtocol) throws -> Self
+
+  /// Autorotate image by exif tag
+  public func autorot() throws -> Self
+
+  /// Find image average
+  public func avg() throws -> Double
+
+  /// Fold up x axis into bands
+  /// 
+  public func bandfold(factor: Int? = nil) throws -> Self
+
+  /// Append a constant band to an image
+  /// 
+  public func bandjoinConst(c: [Double]) throws -> Self
+
+  /// Band-wise average
+  public func bandmean() throws -> Self
+
+  /// Unfold image bands into x axis
+  /// 
+  public func bandunfold(factor: Int? = nil) throws -> Self
+
+  /// Build a look-up table
+  public func buildlut() throws -> Self
+
+  /// Byteswap an image
+  public func byteswap() throws -> Self
+
+  /// Use pixel values to pick cases from an array of images
+  /// 
+  public func `case`(cases: [VIPSImage]) throws -> Self
+
+  /// Clamp values of an image
+  /// 
+  public func clamp(min: Double? = nil, max: Double? = nil) throws -> Self
+
+  /// Form a complex image from two real images
+  /// 
+  public func complexform(_ rhs: some VIPSImageProtocol) throws -> Self
+
+  /// Approximate integer convolution
+  /// 
+  public func conva(mask: some VIPSImageProtocol, layers: Int? = nil, cluster: Int? = nil) throws -> Self
+
+  /// Approximate separable integer convolution
+  /// 
+  public func convasep(mask: some VIPSImageProtocol, layers: Int? = nil) throws -> Self
+
+  /// Float convolution operation
+  /// 
+  public func convf(mask: some VIPSImageProtocol) throws -> Self
+
+  /// Int convolution operation
+  /// 
+  public func convi(mask: some VIPSImageProtocol) throws -> Self
+
+  /// This function allocates memory, renders image into it, builds a new image
+  /// around the memory area, and returns that.
+  /// 
+  /// If the image is already a simple area of memory, it just refs image and
+  /// returns it.
+  public func copyMemory() throws -> Self
+
+  /// Extract an area from an image
+  /// 
+  public func crop(left: Int, top: Int, width: Int, height: Int) throws -> Self
+
+  /// Calculate de00
+  /// 
+  public func dE00(_ rhs: some VIPSImageProtocol) throws -> Self
+
+  /// Calculate de76
+  /// 
+  public func dE76(_ rhs: some VIPSImageProtocol) throws -> Self
+
+  /// Calculate decmc
+  /// 
+  public func dECMC(_ rhs: some VIPSImageProtocol) throws -> Self
+
+  /// Find image standard deviation
+  public func deviate() throws -> Double
+
+  /// Divide two images
+  /// 
+  public func divide(_ rhs: some VIPSImageProtocol) throws -> Self
+
+  /// Bitwise XOR of two images
+  /// 
+  public func eorimage(_ rhs: some VIPSImageProtocol) throws -> Self
+
+  /// Test for equality
+  /// 
+  public func equal(_ value: Double) throws -> Self
+
+  /// Extract an area from an image
+  /// 
+  public func extractArea(left: Int, top: Int, width: Int, height: Int) throws -> Self
+
+  /// Extract band from an image
+  /// 
+  public func extractBand(_ band: Int, n: Int? = nil) throws -> Self
+
+  /// False-color an image
+  public func falsecolour() throws -> Self
+
+  /// Fast correlation
+  /// 
+  public func fastcor(ref: some VIPSImageProtocol) throws -> Self
+
+  /// Fill image zeros with nearest non-zero pixel
+  public func fillNearest() throws -> Self
+
+  /// Search an image for non-edge areas
+  /// 
+  public func findTrim(threshold: Double? = nil, background: [Double]? = nil, lineArt: Bool? = nil) throws -> Int
+
+  /// Flatten alpha out of an image
+  /// 
+  public func flatten(background: [Double]? = nil, maxAlpha: Double? = nil) throws -> Self
+
+  /// Transform float rgb to radiance coding
+  public func float2rad() throws -> Self
+
+  /// Frequency-domain filtering
+  /// 
+  public func freqmult(mask: some VIPSImageProtocol) throws -> Self
+
+  /// Forward fft
+  public func fwfft() throws -> Self
+
+  /// Gamma an image
+  /// 
+  public func gamma(exponent: Double? = nil) throws -> Self
+
+  /// Read a point from an image
+  /// 
+  public func getpoint(x: Int, y: Int, unpackComplex: Bool? = nil) throws -> [Double]
+
+  /// Global balance an image mosaic
+  /// 
+  public func globalbalance(gamma: Double? = nil, intOutput: Bool? = nil) throws -> Self
+
+  /// Grid an image
+  /// 
+  public func grid(tileHeight: Int, across: Int, down: Int) throws -> Self
+
+  /// Form cumulative histogram
+  public func histCum() throws -> Self
+
+  /// Estimate image entropy
+  public func histEntropy() throws -> Double
+
+  /// Histogram equalisation
+  /// 
+  public func histEqual(band: Int? = nil) throws -> Self
+
+  /// Find image histogram
+  /// 
+  public func histFind(band: Int? = nil) throws -> Self
+
+  /// Find n-dimensional image histogram
+  /// 
+  public func histFindNdim(bins: Int? = nil) throws -> Self
+
+  /// Test for monotonicity
+  public func histIsmonotonic() throws -> Bool
+
+  /// Local histogram equalisation
+  /// 
+  public func histLocal(width: Int, height: Int, maxSlope: Int? = nil) throws -> Self
+
+  /// Match two histograms
+  /// 
+  public func histMatch(ref: some VIPSImageProtocol) throws -> Self
+
+  /// Normalise histogram
+  public func histNorm() throws -> Self
+
+  /// Plot histogram
+  public func histPlot() throws -> Self
+
+  /// Find hough circle transform
+  /// 
+  public func houghCircle(scale: Int? = nil, minRadius: Int? = nil, maxRadius: Int? = nil) throws -> Self
+
+  /// Find hough line transform
+  /// 
+  public func houghLine(width: Int? = nil, height: Int? = nil) throws -> Self
+
+  /// Ifthenelse an image
+  /// 
+  public func ifthenelse(in1: some VIPSImageProtocol, in2: some VIPSImageProtocol, blend: Bool? = nil) throws -> Self
+
+  /// Insert image @sub into @main at @x, @y
+  /// 
+  public func insert(sub: some VIPSImageProtocol, x: Int, y: Int, expand: Bool? = nil, background: [Double]? = nil) throws -> Self
+
+  /// Invert an image
+  public func invert() throws -> Self
+
+  /// Build an inverted look-up table
+  /// 
+  public func invertlut(size: Int? = nil) throws -> Self
+
+  /// Inverse fft
+  /// 
+  public func invfft(real: Bool? = nil) throws -> Self
+
+  /// Label regions in an image
+  public func labelregions() throws -> Self
+
+  /// Test for less than
+  /// 
+  public func less(_ value: Double) throws -> Self
+
+  /// Test for less than or equal
+  /// 
+  public func lesseq(_ value: Double) throws -> Self
+
+  /// Left shift
+  /// 
+  public func lshift(_ amount: Int) throws -> Self
+
+  /// Map an image though a lut
+  /// 
+  public func maplut(lut: some VIPSImageProtocol, band: Int? = nil) throws -> Self
+
+  /// First-order match of two images
+  /// 
+  public func match(sec: some VIPSImageProtocol, xr1: Int, yr1: Int, xs1: Int, ys1: Int, xr2: Int, yr2: Int, xs2: Int, ys2: Int, hwindow: Int? = nil, harea: Int? = nil, search: Bool? = nil, interpolate: VIPSInterpolate? = nil) throws -> Self
+
+  /// Invert a matrix
+  public func matrixinvert() throws -> Self
+
+  /// Multiply two matrices
+  /// 
+  public func matrixmultiply(_ rhs: some VIPSImageProtocol) throws -> Self
+
+  /// Find image maximum
+  /// 
+  public func max(size: Int? = nil) throws -> Double
+
+  /// Maximum of a pair of images
+  /// 
+  public func maxpair(_ rhs: some VIPSImageProtocol) throws -> Self
+
+  /// Measure a set of patches on a color chart
+  /// 
+  public func measure(h: Int, v: Int, left: Int? = nil, top: Int? = nil, width: Int? = nil, height: Int? = nil) throws -> Self
+
+  /// Find image minimum
+  /// 
+  public func min(size: Int? = nil) throws -> Double
+
+  /// Minimum of a pair of images
+  /// 
+  public func minpair(_ rhs: some VIPSImageProtocol) throws -> Self
+
+  /// Test for greater than
+  /// 
+  public func more(_ value: Double) throws -> Self
+
+  /// Test for greater than or equal
+  /// 
+  public func moreeq(_ value: Double) throws -> Self
+
+  /// Pick most-significant byte from an image
+  /// 
+  public func msb(band: Int? = nil) throws -> Self
+
+  /// Multiply two images
+  /// 
+  public func multiply(_ rhs: some VIPSImageProtocol) throws -> Self
+
+  public func new(_ colors: [Double]) throws -> Self
+
+  /// Test for inequality
+  /// 
+  public func notequal(_ value: Double) throws -> Self
+
+  /// Bitwise OR of two images
+  /// 
+  public func orimage(_ rhs: some VIPSImageProtocol) throws -> Self
+
+  /// Find threshold for percent of pixels
+  /// 
+  public func percent(_ percent: Double) throws -> Int
+
+  /// Calculate phase correlation
+  /// 
+  public func phasecor(in2: some VIPSImageProtocol) throws -> Self
+
+  /// Prewitt edge detector
+  public func prewitt() throws -> Self
+
+  /// Resample an image with a quadratic transform
+  /// 
+  public func quadratic(coeff: some VIPSImageProtocol, interpolate: VIPSInterpolate? = nil) throws -> Self
+
+  /// Unpack radiance coding to float rgb
+  public func rad2float() throws -> Self
+
+  /// Rank filter
+  /// 
+  public func rank(width: Int, height: Int, index: Int) throws -> Self
+
+  /// Linear recombination with matrix
+  /// 
+  public func recomb(m: some VIPSImageProtocol) throws -> Self
+
+  /// Remainder after integer division of an image and a constant
+  /// 
+  public func remainder(_ value: Int) throws -> Self
+
+  /// Remainder after integer division of an image and a constant
+  /// 
+  public func remainderConst(c: [Double]) throws -> Self
+
+  /// Rebuild an mosaiced image
+  /// 
+  public func remosaic(oldStr: String, newStr: String) throws -> Self
+
+  /// Replicate an image
+  /// 
+  public func replicate(across: Int, down: Int) throws -> Self
+
+  /// Rotate an image by a number of degrees
+  /// 
+  public func rotate(angle: Double, interpolate: VIPSInterpolate? = nil, background: [Double]? = nil, odx: Double? = nil, ody: Double? = nil, idx: Double? = nil, idy: Double? = nil) throws -> Self
+
+  /// Right shift
+  /// 
+  public func rshift(_ amount: Int) throws -> Self
+
+  /// Transform srgb to hsv
+  public func sRGB2HSV() throws -> Self
+
+  /// Convert an srgb image to scrgb
+  public func sRGB2scRGB() throws -> Self
+
+  /// Convert scrgb to bw
+  /// 
+  public func scRGB2BW(depth: Int? = nil) throws -> Self
+
+  /// Transform scrgb to xyz
+  public func scRGB2XYZ() throws -> Self
+
+  /// Convert scrgb to srgb
+  /// 
+  public func scRGB2sRGB(depth: Int? = nil) throws -> Self
+
+  /// Scale an image to uchar
+  /// 
+  public func scale(exp: Double? = nil, log: Bool? = nil) throws -> Self
+
+  /// Scharr edge detector
+  public func scharr() throws -> Self
+
+  /// Check sequential access
+  /// 
+  public func sequential(tileHeight: Int? = nil) throws -> Self
+
+  /// Unsharp masking for print
+  /// 
+  public func sharpen(sigma: Double? = nil, x1: Double? = nil, y2: Double? = nil, y3: Double? = nil, m1: Double? = nil, m2: Double? = nil) throws -> Self
+
+  /// Shrink an image
+  /// 
+  public func shrink(hshrink: Double, vshrink: Double, ceil: Bool? = nil) throws -> Self
+
+  /// Shrink an image horizontally
+  /// 
+  public func shrinkh(hshrink: Int, ceil: Bool? = nil) throws -> Self
+
+  /// Shrink an image vertically
+  /// 
+  public func shrinkv(vshrink: Int, ceil: Bool? = nil) throws -> Self
+
+  /// Unit vector of pixel
+  public func sign() throws -> Self
+
+  /// Similarity transform of an image
+  /// 
+  public func similarity(scale: Double? = nil, angle: Double? = nil, interpolate: VIPSInterpolate? = nil, background: [Double]? = nil, odx: Double? = nil, ody: Double? = nil, idx: Double? = nil, idy: Double? = nil) throws -> Self
+
+  /// Sobel edge detector
+  public func sobel() throws -> Self
+
+  /// Spatial correlation
+  /// 
+  public func spcor(ref: some VIPSImageProtocol) throws -> Self
+
+  /// Make displayable power spectrum
+  public func spectrum() throws -> Self
+
+  /// Find many image stats
+  public func stats() throws -> Self
+
+  /// Statistical difference
+  /// 
+  public func stdif(width: Int, height: Int, s0: Double? = nil, b: Double? = nil, m0: Double? = nil, a: Double? = nil) throws -> Self
+
+  /// Subsample an image
+  /// 
+  public func subsample(xfac: Int, yfac: Int, point: Bool? = nil) throws -> Self
+
+  /// Subtract two images
+  /// 
+  public func subtract(_ rhs: some VIPSImageProtocol) throws -> Self
+
+  /// Transpose3d an image
+  /// 
+  public func transpose3d(pageHeight: Int? = nil) throws -> Self
+
+  /// Wrap image origin
+  /// 
+  public func wrap(x: Int? = nil, y: Int? = nil) throws -> Self
+
+  /// Zoom an image
+  /// 
+  public func zoom(xfac: Int, yfac: Int) throws -> Self
 }
 ```
 
@@ -1663,16 +1687,12 @@ public protocol VIPSLoggingDelegate : AnyObject {
 #### protocol VIPSObjectProtocol
 
 ```swift
-public protocol VIPSObjectProtocol : PointerWrapper, ~Copyable {
+public protocol VIPSObjectProtocol : PointerWrapper, ~Copyable, ~Escapable {
   public var type: GType { get }
 
   public func disconnect(signalHandler: Int)
 
   public @discardableResult func onPreClose(_ handler: @escaping (UnownedVIPSObjectRef) -> Void) -> Int
-
-  public func ref() -> Self
-
-  public func unref()
 }
 ```
 
@@ -1733,4 +1753,4 @@ public typealias VipsPrecision = Cvips.VipsPrecision
 public typealias VipsSize = Cvips.VipsSize
 ```
 
-<!-- Generated by interfazzle.swift on 2025-11-14 12:20:00 +0100 -->
+<!-- Generated by interfazzle.swift on 2025-11-15 13:43:19 +0100 -->
