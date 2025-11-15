@@ -1,0 +1,1 @@
+apt-get -y install gnupg2 libcurl4-openssl-dev libxml2-dev libncurses-dev libz3-dev pkg-config
