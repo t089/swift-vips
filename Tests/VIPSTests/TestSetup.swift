@@ -21,14 +21,17 @@ enum TestSetup {
 struct VIPSTestScopeProvider: TestScoping {
     func provideScope(for test: Test, testCase: Test.Case?, performing function: @Sendable () async throws -> Void) async throws {
         // Ensure VIPS is started before running any test
-        //TestSetup.ensureSetup()
+        TestSetup.ensureSetup()
+        /*print("!!!!!! START")
         try VIPS.start()
-        
+        defer {
+            VIPS.shutdown()
+            print("!!!!!! SHUTDOWN")
+        }*/
         // Run the test
         try await function()
         
-        // stop vips
-        VIPS.shutdown()
+        
     }
 }
 
@@ -37,7 +40,10 @@ struct VIPSTestTrait: SuiteTrait, TestTrait {
     typealias TestScopeProvider = VIPSTestScopeProvider
     
     func scopeProvider(for test: Test, testCase: Test.Case?) -> VIPSTestScopeProvider? {
-        return VIPSTestScopeProvider()
+        if test.isSuite || testCase == nil {
+            return VIPSTestScopeProvider()
+        }
+        return nil
     }
 }
 

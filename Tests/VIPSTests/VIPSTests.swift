@@ -4,7 +4,7 @@ import Testing
 
 @testable import VIPS
 
-@Suite(.vips, .serialized)
+@Suite(.serialized)
 struct VIPSTests {
 
     @Suite(.vips, .serialized)

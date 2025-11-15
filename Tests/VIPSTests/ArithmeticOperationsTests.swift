@@ -5,7 +5,7 @@ import Testing
 @testable import VIPS
 
 extension VIPSTests {
-    @Suite(.vips, .serialized)
+    @Suite(.serialized, .vips,)
     struct ArithmeticOperationsTests {
 
         // MARK: - Basic Arithmetic with Different Formats
