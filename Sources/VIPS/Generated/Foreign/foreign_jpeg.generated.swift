@@ -8,203 +8,7 @@
 import Cvips
 import CvipsShim
 
-extension VIPSImage {
-
-    /// Load jpeg from file
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - shrink: Shrink factor on load
-    ///   - autorotate: Rotate image using exif orientation
-    ///   - unlimited: Remove all denial of service limits
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func jpegload(
-        filename: String,
-        shrink: Int? = nil,
-        autorotate: Bool? = nil,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let shrink = shrink {
-                opt.set("shrink", value: shrink)
-            }
-            if let autorotate = autorotate {
-                opt.set("autorotate", value: autorotate)
-            }
-            if let unlimited = unlimited {
-                opt.set("unlimited", value: unlimited)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("jpegload", options: &opt)
-        }
-    }
-
-    /// Load jpeg from buffer
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - shrink: Shrink factor on load
-    ///   - autorotate: Rotate image using exif orientation
-    ///   - unlimited: Remove all denial of service limits
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func jpegload(
-        buffer: VIPSBlob,
-        shrink: Int? = nil,
-        autorotate: Bool? = nil,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        // the operation will retain the blob
-        try buffer.withVipsBlob { blob in
-            try VIPSImage { out in
-                var opt = VIPSOption()
-
-                opt.set("buffer", value: blob)
-                if let shrink = shrink {
-                    opt.set("shrink", value: shrink)
-                }
-                if let autorotate = autorotate {
-                    opt.set("autorotate", value: autorotate)
-                }
-                if let unlimited = unlimited {
-                    opt.set("unlimited", value: unlimited)
-                }
-                if let memory = memory {
-                    opt.set("memory", value: memory)
-                }
-                if let access = access {
-                    opt.set("access", value: access)
-                }
-                if let failOn = failOn {
-                    opt.set("fail_on", value: failOn)
-                }
-                if let revalidate = revalidate {
-                    opt.set("revalidate", value: revalidate)
-                }
-                opt.set("out", value: &out)
-
-                try VIPSImage.call("jpegload_buffer", options: &opt)
-            }
-        }
-    }
-
-    /// Load jpeg from buffer without copying the data. The caller must ensure the buffer remains valid for
-    /// the lifetime of the returned image and all its descendants.
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - shrink: Shrink factor on load
-    ///   - autorotate: Rotate image using exif orientation
-    ///   - unlimited: Remove all denial of service limits
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func jpegload(
-        unsafeBuffer buffer: UnsafeRawBufferPointer,
-        shrink: Int? = nil,
-        autorotate: Bool? = nil,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        let blob = VIPSBlob(noCopy: buffer)
-        return try jpegload(
-            buffer: blob,
-            shrink: shrink,
-            autorotate: autorotate,
-            unlimited: unlimited,
-            memory: memory,
-            access: access,
-            failOn: failOn,
-            revalidate: revalidate
-        )
-    }
-
-    /// Load image from jpeg source
-    ///
-    /// - Parameters:
-    ///   - source: Source to load from
-    ///   - shrink: Shrink factor on load
-    ///   - autorotate: Rotate image using exif orientation
-    ///   - unlimited: Remove all denial of service limits
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func jpegload(
-        source: VIPSSource,
-        shrink: Int? = nil,
-        autorotate: Bool? = nil,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("source", value: source)
-            if let shrink = shrink {
-                opt.set("shrink", value: shrink)
-            }
-            if let autorotate = autorotate {
-                opt.set("autorotate", value: autorotate)
-            }
-            if let unlimited = unlimited {
-                opt.set("unlimited", value: unlimited)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("jpegload_source", options: &opt)
-        }
-    }
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Save image to jpeg file
     ///
@@ -283,7 +87,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("jpegsave", options: &opt)
+        try Self.call("jpegsave", options: &opt)
     }
 
     /// Save image to jpeg buffer
@@ -367,7 +171,7 @@ extension VIPSImage {
         }
         opt.set("buffer", value: out)
 
-        try VIPSImage.call("jpegsave_buffer", options: &opt)
+        try Self.call("jpegsave_buffer", options: &opt)
 
         guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from jpegsave_buffer")
@@ -450,7 +254,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("jpegsave_mime", options: &opt)
+        try Self.call("jpegsave_mime", options: &opt)
     }
 
     /// Save image to jpeg target
@@ -530,7 +334,207 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("jpegsave_target", options: &opt)
+        try Self.call("jpegsave_target", options: &opt)
+    }
+
+}
+
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
+
+    /// Load jpeg from file
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - shrink: Shrink factor on load
+    ///   - autorotate: Rotate image using exif orientation
+    ///   - unlimited: Remove all denial of service limits
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func jpegload(
+        filename: String,
+        shrink: Int? = nil,
+        autorotate: Bool? = nil,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let shrink = shrink {
+                opt.set("shrink", value: shrink)
+            }
+            if let autorotate = autorotate {
+                opt.set("autorotate", value: autorotate)
+            }
+            if let unlimited = unlimited {
+                opt.set("unlimited", value: unlimited)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("jpegload", options: &opt)
+        }
+    }
+
+    /// Load jpeg from buffer
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - shrink: Shrink factor on load
+    ///   - autorotate: Rotate image using exif orientation
+    ///   - unlimited: Remove all denial of service limits
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func jpegload(
+        buffer: VIPSBlob,
+        shrink: Int? = nil,
+        autorotate: Bool? = nil,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try Self { out in
+                var opt = VIPSOption()
+
+                opt.set("buffer", value: blob)
+                if let shrink = shrink {
+                    opt.set("shrink", value: shrink)
+                }
+                if let autorotate = autorotate {
+                    opt.set("autorotate", value: autorotate)
+                }
+                if let unlimited = unlimited {
+                    opt.set("unlimited", value: unlimited)
+                }
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try Self.call("jpegload_buffer", options: &opt)
+            }
+        }
+    }
+
+    /// Load jpeg from buffer without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - shrink: Shrink factor on load
+    ///   - autorotate: Rotate image using exif orientation
+    ///   - unlimited: Remove all denial of service limits
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func jpegload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        shrink: Int? = nil,
+        autorotate: Bool? = nil,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try jpegload(
+            buffer: blob,
+            shrink: shrink,
+            autorotate: autorotate,
+            unlimited: unlimited,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
+    }
+
+    /// Load image from jpeg source
+    ///
+    /// - Parameters:
+    ///   - source: Source to load from
+    ///   - shrink: Shrink factor on load
+    ///   - autorotate: Rotate image using exif orientation
+    ///   - unlimited: Remove all denial of service limits
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func jpegload(
+        source: VIPSSource,
+        shrink: Int? = nil,
+        autorotate: Bool? = nil,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("source", value: source)
+            if let shrink = shrink {
+                opt.set("shrink", value: shrink)
+            }
+            if let autorotate = autorotate {
+                opt.set("autorotate", value: autorotate)
+            }
+            if let unlimited = unlimited {
+                opt.set("unlimited", value: unlimited)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("jpegload_source", options: &opt)
+        }
     }
 
 }

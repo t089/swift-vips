@@ -121,7 +121,7 @@ public final class VIPSBlob: @unchecked Sendable, Equatable, CustomDebugStringCo
         return try body(buffer, Unmanaged.passUnretained(self))
     }
 
-    public func withVipsBlob<R>(_ body: (UnsafeMutablePointer<VipsBlob>) throws -> R) rethrows -> R
+    public func withVipsBlob<R>(_ body: (UnsafeMutablePointer<VipsBlob>) throws -> R) rethrows -> R where R: ~Copyable
     {
         return try body(self.blob)
     }

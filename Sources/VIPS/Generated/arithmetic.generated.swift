@@ -7,65 +7,65 @@
 
 import Cvips
 
-extension VIPSImage {
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Transform float lab to signed short
-    public func Lab2LabS() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func Lab2LabS() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("Lab2LabS", options: &opt)
+            try Self.call("Lab2LabS", options: &opt)
         }
     }
 
     /// Unpack a labq image to short lab
-    public func LabQ2LabS() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func LabQ2LabS() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("LabQ2LabS", options: &opt)
+            try Self.call("LabQ2LabS", options: &opt)
         }
     }
 
     /// Transform signed short lab to float
-    public func LabS2Lab() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func LabS2Lab() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("LabS2Lab", options: &opt)
+            try Self.call("LabS2Lab", options: &opt)
         }
     }
 
     /// Transform short lab to labq coding
-    public func LabS2LabQ() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func LabS2LabQ() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("LabS2LabQ", options: &opt)
+            try Self.call("LabS2LabQ", options: &opt)
         }
     }
 
     /// Absolute value of an image
-    public func abs() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func abs() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("abs", options: &opt)
+            try Self.call("abs", options: &opt)
         }
     }
 
@@ -73,28 +73,28 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
-    public func add(_ rhs: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func add(_ rhs: some VIPSImageProtocol) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self)
             opt.set("right", value: rhs)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("add", options: &opt)
+            try Self.call("add", options: &opt)
         }
     }
 
     #if SHIM_VIPS_VERSION_8_16
         /// Append an alpha channel
-        public func addalpha() throws -> VIPSImage {
-            return try VIPSImage { out in
+        public func addalpha() throws -> Self {
+            return try Self { out in
                 var opt = VIPSOption()
 
                 opt.set("in", value: self)
                 opt.set("out", value: &out)
 
-                try VIPSImage.call("addalpha", options: &opt)
+                try Self.call("addalpha", options: &opt)
             }
         }
     #endif
@@ -108,7 +108,7 @@ extension VIPSImage {
         opt.set("in", value: self.image)
         opt.set("out", value: &out)
 
-        try VIPSImage.call("avg", options: &opt)
+        try Self.call("avg", options: &opt)
 
         return out
     }
@@ -118,8 +118,9 @@ extension VIPSImage {
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     ///   - boolean: Boolean to perform
-    public func boolean(_ rhs: VIPSImage, boolean: VipsOperationBoolean) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func boolean(_ rhs: some VIPSImageProtocol, boolean: VipsOperationBoolean) throws -> Self
+    {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self)
@@ -127,7 +128,7 @@ extension VIPSImage {
             opt.set("boolean", value: boolean)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("boolean", options: &opt)
+            try Self.call("boolean", options: &opt)
         }
     }
 
@@ -136,8 +137,8 @@ extension VIPSImage {
     /// - Parameters:
     ///   - boolean: Boolean to perform
     ///   - c: Array of constants
-    public func booleanConst(boolean: VipsOperationBoolean, c: [Double]) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func booleanConst(boolean: VipsOperationBoolean, c: [Double]) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -145,7 +146,7 @@ extension VIPSImage {
             opt.set("c", value: c)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("boolean_const", options: &opt)
+            try Self.call("boolean_const", options: &opt)
         }
     }
 
@@ -153,15 +154,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - cmplx: Complex to perform
-    public func complex(cmplx: VipsOperationComplex) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func complex(cmplx: VipsOperationComplex) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("cmplx", value: cmplx)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("complex", options: &opt)
+            try Self.call("complex", options: &opt)
         }
     }
 
@@ -170,8 +171,9 @@ extension VIPSImage {
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     ///   - cmplx: Binary complex operation to perform
-    public func complex2(_ rhs: VIPSImage, cmplx: VipsOperationComplex2) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func complex2(_ rhs: some VIPSImageProtocol, cmplx: VipsOperationComplex2) throws -> Self
+    {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self)
@@ -179,7 +181,7 @@ extension VIPSImage {
             opt.set("cmplx", value: cmplx)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("complex2", options: &opt)
+            try Self.call("complex2", options: &opt)
         }
     }
 
@@ -187,15 +189,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
-    public func complexform(_ rhs: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func complexform(_ rhs: some VIPSImageProtocol) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self)
             opt.set("right", value: rhs)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("complexform", options: &opt)
+            try Self.call("complexform", options: &opt)
         }
     }
 
@@ -203,15 +205,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - `get`: Complex to perform
-    public func complexget(`get`: VipsOperationComplexget) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func complexget(`get`: VipsOperationComplexget) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("get", value: `get`)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("complexget", options: &opt)
+            try Self.call("complexget", options: &opt)
         }
     }
 
@@ -224,7 +226,7 @@ extension VIPSImage {
         opt.set("in", value: self.image)
         opt.set("out", value: &out)
 
-        try VIPSImage.call("deviate", options: &opt)
+        try Self.call("deviate", options: &opt)
 
         return out
     }
@@ -233,27 +235,27 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
-    public func divide(_ rhs: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func divide(_ rhs: some VIPSImageProtocol) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self)
             opt.set("right", value: rhs)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("divide", options: &opt)
+            try Self.call("divide", options: &opt)
         }
     }
 
     /// Invert an image
-    public func invert() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func invert() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("invert", options: &opt)
+            try Self.call("invert", options: &opt)
         }
     }
 
@@ -261,8 +263,8 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - size: LUT size to generate
-    public func invertlut(size: Int? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func invertlut(size: Int? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -271,7 +273,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("invertlut", options: &opt)
+            try Self.call("invertlut", options: &opt)
         }
     }
 
@@ -279,15 +281,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - math: Math to perform
-    public func math(_ math: VipsOperationMath) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func math(_ math: VipsOperationMath) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("math", value: math)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("math", options: &opt)
+            try Self.call("math", options: &opt)
         }
     }
 
@@ -296,8 +298,8 @@ extension VIPSImage {
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     ///   - math2: Math to perform
-    public func math2(_ rhs: VIPSImage, math2: VipsOperationMath2) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func math2(_ rhs: some VIPSImageProtocol, math2: VipsOperationMath2) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self)
@@ -305,7 +307,7 @@ extension VIPSImage {
             opt.set("math2", value: math2)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("math2", options: &opt)
+            try Self.call("math2", options: &opt)
         }
     }
 
@@ -314,8 +316,8 @@ extension VIPSImage {
     /// - Parameters:
     ///   - math2: Math to perform
     ///   - c: Array of constants
-    public func math2Const(math2: VipsOperationMath2, c: [Double]) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func math2Const(math2: VipsOperationMath2, c: [Double]) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -323,19 +325,19 @@ extension VIPSImage {
             opt.set("c", value: c)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("math2_const", options: &opt)
+            try Self.call("math2_const", options: &opt)
         }
     }
 
     /// Invert a matrix
-    public func matrixinvert() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func matrixinvert() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("matrixinvert", options: &opt)
+            try Self.call("matrixinvert", options: &opt)
         }
     }
 
@@ -343,15 +345,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - `right`: Second matrix to multiply
-    public func matrixmultiply(_ rhs: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func matrixmultiply(_ rhs: some VIPSImageProtocol) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self)
             opt.set("right", value: rhs)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("matrixmultiply", options: &opt)
+            try Self.call("matrixmultiply", options: &opt)
         }
     }
 
@@ -370,7 +372,7 @@ extension VIPSImage {
         }
         opt.set("out", value: &out)
 
-        try VIPSImage.call("max", options: &opt)
+        try Self.call("max", options: &opt)
 
         return out
     }
@@ -379,15 +381,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
-    public func maxpair(_ rhs: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func maxpair(_ rhs: some VIPSImageProtocol) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self)
             opt.set("right", value: rhs)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("maxpair", options: &opt)
+            try Self.call("maxpair", options: &opt)
         }
     }
 
@@ -406,7 +408,7 @@ extension VIPSImage {
         }
         opt.set("out", value: &out)
 
-        try VIPSImage.call("min", options: &opt)
+        try Self.call("min", options: &opt)
 
         return out
     }
@@ -415,15 +417,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
-    public func minpair(_ rhs: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func minpair(_ rhs: some VIPSImageProtocol) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self)
             opt.set("right", value: rhs)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("minpair", options: &opt)
+            try Self.call("minpair", options: &opt)
         }
     }
 
@@ -431,15 +433,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
-    public func multiply(_ rhs: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func multiply(_ rhs: some VIPSImageProtocol) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self)
             opt.set("right", value: rhs)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("multiply", options: &opt)
+            try Self.call("multiply", options: &opt)
         }
     }
 
@@ -448,8 +450,8 @@ extension VIPSImage {
         ///
         /// - Parameters:
         ///   - maxAlpha: Maximum value of alpha channel
-        public func premultiply(maxAlpha: Double? = nil) throws -> VIPSImage {
-            return try VIPSImage { out in
+        public func premultiply(maxAlpha: Double? = nil) throws -> Self {
+            return try Self { out in
                 var opt = VIPSOption()
 
                 opt.set("in", value: self)
@@ -458,7 +460,7 @@ extension VIPSImage {
                 }
                 opt.set("out", value: &out)
 
-                try VIPSImage.call("premultiply", options: &opt)
+                try Self.call("premultiply", options: &opt)
             }
         }
     #endif
@@ -468,10 +470,10 @@ extension VIPSImage {
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     ///   - relational: Relational to perform
-    public func relational(_ rhs: VIPSImage, relational: VipsOperationRelational) throws
-        -> VIPSImage
+    public func relational(_ rhs: some VIPSImageProtocol, relational: VipsOperationRelational)
+        throws -> Self
     {
-        return try VIPSImage { out in
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self)
@@ -479,7 +481,7 @@ extension VIPSImage {
             opt.set("relational", value: relational)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("relational", options: &opt)
+            try Self.call("relational", options: &opt)
         }
     }
 
@@ -488,10 +490,8 @@ extension VIPSImage {
     /// - Parameters:
     ///   - relational: Relational to perform
     ///   - c: Array of constants
-    public func relationalConst(relational: VipsOperationRelational, c: [Double]) throws
-        -> VIPSImage
-    {
-        return try VIPSImage { out in
+    public func relationalConst(relational: VipsOperationRelational, c: [Double]) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -499,7 +499,7 @@ extension VIPSImage {
             opt.set("c", value: c)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("relational_const", options: &opt)
+            try Self.call("relational_const", options: &opt)
         }
     }
 
@@ -507,15 +507,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
-    public func remainder(_ rhs: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func remainder(_ rhs: some VIPSImageProtocol) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self)
             opt.set("right", value: rhs)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("remainder", options: &opt)
+            try Self.call("remainder", options: &opt)
         }
     }
 
@@ -523,7 +523,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - value: Constant value
-    public func remainder(_ value: Double) throws -> VIPSImage {
+    public func remainder(_ value: Double) throws -> Self {
         return try remainderConst(c: [value])
     }
 
@@ -531,7 +531,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - value: Constant value
-    public func remainder(_ value: Int) throws -> VIPSImage {
+    public func remainder(_ value: Int) throws -> Self {
         return try remainderConst(c: [Double(value)])
     }
 
@@ -539,15 +539,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - c: Array of constants
-    public func remainderConst(c: [Double]) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func remainderConst(c: [Double]) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("c", value: c)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("remainder_const", options: &opt)
+            try Self.call("remainder_const", options: &opt)
         }
     }
 
@@ -555,39 +555,39 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - round: Rounding operation to perform
-    public func round(_ round: VipsOperationRound) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func round(_ round: VipsOperationRound) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("round", value: round)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("round", options: &opt)
+            try Self.call("round", options: &opt)
         }
     }
 
     /// Unit vector of pixel
-    public func sign() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func sign() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("sign", options: &opt)
+            try Self.call("sign", options: &opt)
         }
     }
 
     /// Find many image stats
-    public func stats() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func stats() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("stats", options: &opt)
+            try Self.call("stats", options: &opt)
         }
     }
 
@@ -595,30 +595,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
-    public func subtract(_ rhs: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func subtract(_ rhs: some VIPSImageProtocol) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("left", value: self)
             opt.set("right", value: rhs)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("subtract", options: &opt)
-        }
-    }
-
-    /// Sum an array of images
-    ///
-    /// - Parameters:
-    ///   - `in`: Array of input images
-    public static func sum(_ `in`: [VIPSImage]) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("in", value: `in`)
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("sum", options: &opt)
+            try Self.call("subtract", options: &opt)
         }
     }
 
@@ -628,10 +613,8 @@ extension VIPSImage {
         /// - Parameters:
         ///   - maxAlpha: Maximum value of alpha channel
         ///   - alphaBand: Unpremultiply with this alpha
-        public func unpremultiply(maxAlpha: Double? = nil, alphaBand: Int? = nil) throws
-            -> VIPSImage
-        {
-            return try VIPSImage { out in
+        public func unpremultiply(maxAlpha: Double? = nil, alphaBand: Int? = nil) throws -> Self {
+            return try Self { out in
                 var opt = VIPSOption()
 
                 opt.set("in", value: self)
@@ -643,7 +626,7 @@ extension VIPSImage {
                 }
                 opt.set("out", value: &out)
 
-                try VIPSImage.call("unpremultiply", options: &opt)
+                try Self.call("unpremultiply", options: &opt)
             }
         }
     #endif
@@ -652,7 +635,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - rhs: Right-hand input image
-    public func equal(_ rhs: VIPSImage) throws -> VIPSImage {
+    public func equal(_ rhs: some VIPSImageProtocol) throws -> Self {
         return try relational(rhs, relational: .equal)
     }
 
@@ -660,7 +643,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - value: Constant value
-    public func equal(_ value: Double) throws -> VIPSImage {
+    public func equal(_ value: Double) throws -> Self {
         return try relationalConst(relational: .equal, c: [value])
     }
 
@@ -668,7 +651,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - rhs: Right-hand input image
-    public func notequal(_ rhs: VIPSImage) throws -> VIPSImage {
+    public func notequal(_ rhs: some VIPSImageProtocol) throws -> Self {
         return try relational(rhs, relational: .noteq)
     }
 
@@ -676,7 +659,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - value: Constant value
-    public func notequal(_ value: Double) throws -> VIPSImage {
+    public func notequal(_ value: Double) throws -> Self {
         return try relationalConst(relational: .noteq, c: [value])
     }
 
@@ -684,7 +667,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - rhs: Right-hand input image
-    public func less(_ rhs: VIPSImage) throws -> VIPSImage {
+    public func less(_ rhs: some VIPSImageProtocol) throws -> Self {
         return try relational(rhs, relational: .less)
     }
 
@@ -692,7 +675,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - value: Constant value
-    public func less(_ value: Double) throws -> VIPSImage {
+    public func less(_ value: Double) throws -> Self {
         return try relationalConst(relational: .less, c: [value])
     }
 
@@ -700,7 +683,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - rhs: Right-hand input image
-    public func lesseq(_ rhs: VIPSImage) throws -> VIPSImage {
+    public func lesseq(_ rhs: some VIPSImageProtocol) throws -> Self {
         return try relational(rhs, relational: .lesseq)
     }
 
@@ -708,7 +691,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - value: Constant value
-    public func lesseq(_ value: Double) throws -> VIPSImage {
+    public func lesseq(_ value: Double) throws -> Self {
         return try relationalConst(relational: .lesseq, c: [value])
     }
 
@@ -716,7 +699,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - rhs: Right-hand input image
-    public func more(_ rhs: VIPSImage) throws -> VIPSImage {
+    public func more(_ rhs: some VIPSImageProtocol) throws -> Self {
         return try relational(rhs, relational: .more)
     }
 
@@ -724,7 +707,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - value: Constant value
-    public func more(_ value: Double) throws -> VIPSImage {
+    public func more(_ value: Double) throws -> Self {
         return try relationalConst(relational: .more, c: [value])
     }
 
@@ -732,7 +715,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - rhs: Right-hand input image
-    public func moreeq(_ rhs: VIPSImage) throws -> VIPSImage {
+    public func moreeq(_ rhs: some VIPSImageProtocol) throws -> Self {
         return try relational(rhs, relational: .moreeq)
     }
 
@@ -740,7 +723,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - value: Constant value
-    public func moreeq(_ value: Double) throws -> VIPSImage {
+    public func moreeq(_ value: Double) throws -> Self {
         return try relationalConst(relational: .moreeq, c: [value])
     }
 
@@ -748,7 +731,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - rhs: Right-hand input image
-    public func andimage(_ rhs: VIPSImage) throws -> VIPSImage {
+    public func andimage(_ rhs: some VIPSImageProtocol) throws -> Self {
         return try boolean(rhs, boolean: .and)
     }
 
@@ -756,7 +739,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - rhs: Right-hand input image
-    public func orimage(_ rhs: VIPSImage) throws -> VIPSImage {
+    public func orimage(_ rhs: some VIPSImageProtocol) throws -> Self {
         return try boolean(rhs, boolean: .or)
     }
 
@@ -764,7 +747,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - rhs: Right-hand input image
-    public func eorimage(_ rhs: VIPSImage) throws -> VIPSImage {
+    public func eorimage(_ rhs: some VIPSImageProtocol) throws -> Self {
         return try boolean(rhs, boolean: .eor)
     }
 
@@ -772,7 +755,7 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - amount: Number of bits to shift
-    public func lshift(_ amount: Int) throws -> VIPSImage {
+    public func lshift(_ amount: Int) throws -> Self {
         return try booleanConst(boolean: .lshift, c: [Double(amount)])
     }
 
@@ -780,8 +763,27 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - amount: Number of bits to shift
-    public func rshift(_ amount: Int) throws -> VIPSImage {
+    public func rshift(_ amount: Int) throws -> Self {
         return try booleanConst(boolean: .rshift, c: [Double(amount)])
+    }
+
+}
+
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
+
+    /// Sum an array of images
+    ///
+    /// - Parameters:
+    ///   - `in`: Array of input images
+    public static func sum(_ `in`: [VIPSImage]) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("in", value: `in`)
+            opt.set("out", value: &out)
+
+            try Self.call("sum", options: &opt)
+        }
     }
 
 }

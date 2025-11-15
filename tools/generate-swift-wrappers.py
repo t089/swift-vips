@@ -43,7 +43,7 @@ gtype_to_swift = {
     GValue.gdouble_type: 'Double',
     GValue.gstr_type: 'String',
     GValue.refstr_type: 'String',
-    GValue.image_type: 'VIPSImage',
+    GValue.image_type: 'some VIPSImageProtocol',
     GValue.source_type: 'VIPSSource',
     GValue.target_type: 'VIPSTarget',
     GValue.guint64_type: 'UInt64',
@@ -257,7 +257,7 @@ def generate_simple_const_overloads(base_operation_name, const_operation_name):
         result.append("    ///")
         result.append("    /// - Parameters:")
         result.append("    ///   - value: Constant value")
-        result.append(f"    public func {func_name}(_ value: Double) throws -> VIPSImage {{")
+        result.append(f"    public func {func_name}(_ value: Double) throws -> Self {{")
         result.append(f"        return try {snake_to_camel(const_operation_name)}(c: [value])")
         result.append("    }")
         overloads.append("\n".join(result))
@@ -268,7 +268,7 @@ def generate_simple_const_overloads(base_operation_name, const_operation_name):
         result.append("    ///")
         result.append("    /// - Parameters:")
         result.append("    ///   - value: Constant value")
-        result.append(f"    public func {func_name}(_ value: Int) throws -> VIPSImage {{")
+        result.append(f"    public func {func_name}(_ value: Int) throws -> Self {{")
         result.append(f"        return try {snake_to_camel(const_operation_name)}(c: [Double(value)])")
         result.append("    }")
         overloads.append("\n".join(result))
@@ -372,11 +372,11 @@ def generate_const_overload(base_operation_name, const_operation_name):
     if params:
         signature += f", {', '.join(params)}"
     
-    signature += ") throws -> VIPSImage {"
+    signature += ") throws -> Self {"
     result.append(signature)
 
     # Generate method body - call the const operation directly
-    result.append("        return try VIPSImage { out in")
+    result.append("        return try Self { out in")
     result.append("            var opt = VIPSOption()")
     result.append("")
     result.append(f'            opt.set("{const_intro.member_x}", value: self)')
@@ -393,7 +393,7 @@ def generate_const_overload(base_operation_name, const_operation_name):
     
     result.append('            opt.set("out", value: &out)')
     result.append("")
-    result.append(f'            try VIPSImage.call("{const_operation_name}", options: &opt)')
+    result.append(f'            try Self.call("{const_operation_name}", options: &opt)')
     result.append("        }")
     result.append("    }")
     
@@ -493,7 +493,7 @@ def generate_unsafe_buffer_overload(operation_name):
         swift_type = get_swift_type(details['type'])
         params.append(f"{param_name}: {swift_type}? = nil")
     
-    signature += f"{', '.join(params)}) throws -> VIPSImage {{"
+    signature += f"{', '.join(params)}) throws -> Self {{"
     
     # Add @inlinable decorator
     result.append("    @inlinable")
@@ -622,7 +622,7 @@ def generate_collection_uint8_overload(operation_name):
         swift_type = get_swift_type(details['type'])
         params.append(f"{param_name}: {swift_type}? = nil")
     
-    signature += f"{', '.join(params)}) throws -> VIPSImage {{"
+    signature += f"{', '.join(params)}) throws -> Self {{"
     
     # Add @inlinable decorator
     result.append("    @inlinable")
@@ -782,7 +782,7 @@ def generate_vipsblob_overload(operation_name):
         params.append(f"{param_name}: {swift_type} = nil")
     
     signature += ", ".join(params)
-    signature += ") throws -> VIPSImage {"
+    signature += ") throws -> Self {"
     
     # Add @inlinable decorator
     result.append("    @inlinable")
@@ -793,7 +793,7 @@ def generate_vipsblob_overload(operation_name):
 
     result.append("        // the operation will retain the blob")
     result.append(f"        try {blob_param_swift}.withVipsBlob {{ blob in")
-    result.append("            try VIPSImage { out in")
+    result.append("            try Self { out in")
     result.append("                var opt = VIPSOption()")
     result.append("")
     result.append(f'                opt.set("{blob_param_name}", value: blob)')
@@ -821,7 +821,7 @@ def generate_vipsblob_overload(operation_name):
     
     result.append('                opt.set("out", value: &out)')
     result.append("")
-    result.append(f'                try VIPSImage.call("{operation_name}", options: &opt)')
+    result.append(f'                try Self.call("{operation_name}", options: &opt)')
     result.append("            }")
     result.append("        }")
     result.append("    }")
@@ -972,7 +972,7 @@ def generate_swift_operation(operation_name):
     
     # Add return type
     if has_image_output:
-        signature += " -> VIPSImage"
+        signature += " -> Self"
     elif has_output:
         # Handle other output types
         output_type = get_swift_type(intro.details[required_output[0]]['type'])
@@ -1014,11 +1014,11 @@ def generate_swift_operation(operation_name):
                 blob_param_swift = swiftize_param(blob_param_name)
                 result.append(f"        // the operation will retain the blob")
                 result.append(f"        try {blob_param_swift}.withVipsBlob {{ blob in")
-                result.append("            try VIPSImage { out in")
+                result.append("            try Self { out in")
                 result.append("                var opt = VIPSOption()")
                 result.append("")
         else:
-            result.append("        return try VIPSImage { out in")
+            result.append("        return try Self { out in")
             result.append("            var opt = VIPSOption()")
             result.append("")
     elif has_output and not has_image_output:
@@ -1126,7 +1126,7 @@ def generate_swift_operation(operation_name):
                 pass
     
     result.append("")
-    result.append(f'                try VIPSImage.call("{operation_name}", options: &opt)')
+    result.append(f'                try Self.call("{operation_name}", options: &opt)')
     
     if has_image_output:
         # Check if we have blob parameters that need special closing
@@ -1302,6 +1302,15 @@ def write_category_file(category, operations, output_dir):
             has_buffer_operations = True
             break
     
+    # Separate operations into static and instance methods
+    static_operations = []
+    instance_operations = []
+    for nickname, code in operations:
+        if 'public static func' in code:
+            static_operations.append((nickname, code))
+        else:
+            instance_operations.append((nickname, code))
+
     with open(filepath, 'w') as f:
         f.write("//\n")
         f.write(f"//  {filename}\n")
@@ -1313,20 +1322,35 @@ def write_category_file(category, operations, output_dir):
         if has_buffer_operations:
             f.write("import CvipsShim\n")
         f.write("\n")
-        f.write("extension VIPSImage {\n\n")
-        
-        for nickname, code in operations:
-            f.write(code)
-            f.write("\n\n")
-        
-        # Add convenience methods for relational operations in the arithmetic category
-        if category == 'Arithmetic':
-            relational_methods = generate_relational_convenience_methods()
-            if relational_methods:
-                f.write(relational_methods)
+
+        # Write instance methods in protocol extension
+        if instance_operations:
+            f.write("extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {\n\n")
+
+            for nickname, code in instance_operations:
+                f.write(code)
                 f.write("\n\n")
-        
-        f.write("}\n")
+
+            # Add convenience methods for relational operations in the arithmetic category
+            if category == 'Arithmetic':
+                relational_methods = generate_relational_convenience_methods()
+                if relational_methods:
+                    f.write(relational_methods)
+                    f.write("\n\n")
+
+            f.write("}\n")
+
+        # Write static methods in concrete class extension
+        if static_operations:
+            if instance_operations:
+                f.write("\n")
+            f.write("extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {\n\n")
+
+            for nickname, code in static_operations:
+                f.write(code)
+                f.write("\n\n")
+
+            f.write("}\n")
     
     # Format the file using swift format
     try:
@@ -1359,7 +1383,7 @@ def generate_relational_convenience_methods():
         methods.append(f"    ///")
         methods.append(f"    /// - Parameters:")
         methods.append(f"    ///   - rhs: Right-hand input image")
-        methods.append(f"    public func {method_name}(_ rhs: VIPSImage) throws -> VIPSImage {{")
+        methods.append(f"    public func {method_name}(_ rhs: some VIPSImageProtocol) throws -> Self {{")
         methods.append(f"        return try relational(rhs, relational: .{enum_value})")
         methods.append(f"    }}")
         methods.append(f"")
@@ -1369,7 +1393,7 @@ def generate_relational_convenience_methods():
         methods.append(f"    ///")
         methods.append(f"    /// - Parameters:")
         methods.append(f"    ///   - value: Constant value")
-        methods.append(f"    public func {method_name}(_ value: Double) throws -> VIPSImage {{")
+        methods.append(f"    public func {method_name}(_ value: Double) throws -> Self {{")
         methods.append(f"        return try relationalConst(relational: .{enum_value}, c: [value])")
         methods.append(f"    }}")
         methods.append(f"")
@@ -1386,7 +1410,7 @@ def generate_relational_convenience_methods():
         methods.append(f"    ///")
         methods.append(f"    /// - Parameters:")
         methods.append(f"    ///   - rhs: Right-hand input image")
-        methods.append(f"    public func {method_name}(_ rhs: VIPSImage) throws -> VIPSImage {{")
+        methods.append(f"    public func {method_name}(_ rhs: some VIPSImageProtocol) throws -> Self {{")
         methods.append(f"        return try boolean(rhs, boolean: .{enum_value})")
         methods.append(f"    }}")
         methods.append(f"")
@@ -1402,7 +1426,7 @@ def generate_relational_convenience_methods():
         methods.append(f"    ///")
         methods.append(f"    /// - Parameters:")
         methods.append(f"    ///   - amount: Number of bits to shift")
-        methods.append(f"    public func {method_name}(_ amount: Int) throws -> VIPSImage {{")
+        methods.append(f"    public func {method_name}(_ amount: Int) throws -> Self {{")
         methods.append(f"        return try booleanConst(boolean: .{enum_value}, c: [Double(amount)])")
         methods.append(f"    }}")
         methods.append(f"")

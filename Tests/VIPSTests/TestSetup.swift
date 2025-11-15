@@ -21,14 +21,14 @@ enum TestSetup {
 struct VIPSTestScopeProvider: TestScoping {
     func provideScope(for test: Test, testCase: Test.Case?, performing function: @Sendable () async throws -> Void) async throws {
         // Ensure VIPS is started before running any test
-        TestSetup.ensureSetup()
-        //try VIPS.start()
+        //TestSetup.ensureSetup()
+        try VIPS.start()
         
         // Run the test
         try await function()
         
         // stop vips
-        //VIPS.shutdown()
+        VIPS.shutdown()
     }
 }
 

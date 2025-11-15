@@ -8,167 +8,7 @@
 import Cvips
 import CvipsShim
 
-extension VIPSImage {
-
-    /// Load png from file
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - unlimited: Remove all denial of service limits
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func pngload(
-        filename: String,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let unlimited = unlimited {
-                opt.set("unlimited", value: unlimited)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("pngload", options: &opt)
-        }
-    }
-
-    /// Load png from buffer
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - unlimited: Remove all denial of service limits
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func pngload(
-        buffer: VIPSBlob,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        // the operation will retain the blob
-        try buffer.withVipsBlob { blob in
-            try VIPSImage { out in
-                var opt = VIPSOption()
-
-                opt.set("buffer", value: blob)
-                if let unlimited = unlimited {
-                    opt.set("unlimited", value: unlimited)
-                }
-                if let memory = memory {
-                    opt.set("memory", value: memory)
-                }
-                if let access = access {
-                    opt.set("access", value: access)
-                }
-                if let failOn = failOn {
-                    opt.set("fail_on", value: failOn)
-                }
-                if let revalidate = revalidate {
-                    opt.set("revalidate", value: revalidate)
-                }
-                opt.set("out", value: &out)
-
-                try VIPSImage.call("pngload_buffer", options: &opt)
-            }
-        }
-    }
-
-    /// Load png from buffer without copying the data. The caller must ensure the buffer remains valid for
-    /// the lifetime of the returned image and all its descendants.
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - unlimited: Remove all denial of service limits
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func pngload(
-        unsafeBuffer buffer: UnsafeRawBufferPointer,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        let blob = VIPSBlob(noCopy: buffer)
-        return try pngload(
-            buffer: blob,
-            unlimited: unlimited,
-            memory: memory,
-            access: access,
-            failOn: failOn,
-            revalidate: revalidate
-        )
-    }
-
-    /// Load png from source
-    ///
-    /// - Parameters:
-    ///   - source: Source to load from
-    ///   - unlimited: Remove all denial of service limits
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func pngload(
-        source: VIPSSource,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("source", value: source)
-            if let unlimited = unlimited {
-                opt.set("unlimited", value: unlimited)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("pngload_source", options: &opt)
-        }
-    }
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Save image to file as png
     ///
@@ -242,7 +82,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("pngsave", options: &opt)
+        try Self.call("pngsave", options: &opt)
     }
 
     /// Save image to buffer as png
@@ -321,7 +161,7 @@ extension VIPSImage {
         }
         opt.set("buffer", value: out)
 
-        try VIPSImage.call("pngsave_buffer", options: &opt)
+        try Self.call("pngsave_buffer", options: &opt)
 
         guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from pngsave_buffer")
@@ -402,7 +242,171 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("pngsave_target", options: &opt)
+        try Self.call("pngsave_target", options: &opt)
+    }
+
+}
+
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
+
+    /// Load png from file
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - unlimited: Remove all denial of service limits
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func pngload(
+        filename: String,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let unlimited = unlimited {
+                opt.set("unlimited", value: unlimited)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("pngload", options: &opt)
+        }
+    }
+
+    /// Load png from buffer
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - unlimited: Remove all denial of service limits
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func pngload(
+        buffer: VIPSBlob,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try Self { out in
+                var opt = VIPSOption()
+
+                opt.set("buffer", value: blob)
+                if let unlimited = unlimited {
+                    opt.set("unlimited", value: unlimited)
+                }
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try Self.call("pngload_buffer", options: &opt)
+            }
+        }
+    }
+
+    /// Load png from buffer without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - unlimited: Remove all denial of service limits
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func pngload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try pngload(
+            buffer: blob,
+            unlimited: unlimited,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
+    }
+
+    /// Load png from source
+    ///
+    /// - Parameters:
+    ///   - source: Source to load from
+    ///   - unlimited: Remove all denial of service limits
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func pngload(
+        source: VIPSSource,
+        unlimited: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("source", value: source)
+            if let unlimited = unlimited {
+                opt.set("unlimited", value: unlimited)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("pngload_source", options: &opt)
+        }
     }
 
 }

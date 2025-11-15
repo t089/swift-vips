@@ -7,89 +7,89 @@
 
 import Cvips
 
-extension VIPSImage {
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Transform lch to cmc
-    public func CMC2LCh() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func CMC2LCh() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("CMC2LCh", options: &opt)
+            try Self.call("CMC2LCh", options: &opt)
         }
     }
 
     /// Transform cmyk to xyz
-    public func CMYK2XYZ() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func CMYK2XYZ() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("CMYK2XYZ", options: &opt)
+            try Self.call("CMYK2XYZ", options: &opt)
         }
     }
 
     /// Transform hsv to srgb
-    public func HSV2sRGB() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func HSV2sRGB() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("HSV2sRGB", options: &opt)
+            try Self.call("HSV2sRGB", options: &opt)
         }
     }
 
     /// Transform lch to cmc
-    public func LCh2CMC() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func LCh2CMC() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("LCh2CMC", options: &opt)
+            try Self.call("LCh2CMC", options: &opt)
         }
     }
 
     /// Transform lch to lab
-    public func LCh2Lab() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func LCh2Lab() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("LCh2Lab", options: &opt)
+            try Self.call("LCh2Lab", options: &opt)
         }
     }
 
     /// Transform lab to lch
-    public func Lab2LCh() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func Lab2LCh() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("Lab2LCh", options: &opt)
+            try Self.call("Lab2LCh", options: &opt)
         }
     }
 
     /// Transform float lab to labq coding
-    public func Lab2LabQ() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func Lab2LabQ() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("Lab2LabQ", options: &opt)
+            try Self.call("Lab2LabQ", options: &opt)
         }
     }
 
@@ -97,8 +97,8 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - temp: Color temperature
-    public func Lab2XYZ(temp: [Double]? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func Lab2XYZ(temp: [Double]? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -107,43 +107,43 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("Lab2XYZ", options: &opt)
+            try Self.call("Lab2XYZ", options: &opt)
         }
     }
 
     /// Unpack a labq image to float lab
-    public func LabQ2Lab() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func LabQ2Lab() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("LabQ2Lab", options: &opt)
+            try Self.call("LabQ2Lab", options: &opt)
         }
     }
 
     /// Convert a labq image to srgb
-    public func LabQ2sRGB() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func LabQ2sRGB() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("LabQ2sRGB", options: &opt)
+            try Self.call("LabQ2sRGB", options: &opt)
         }
     }
 
     /// Transform xyz to cmyk
-    public func XYZ2CMYK() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func XYZ2CMYK() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("XYZ2CMYK", options: &opt)
+            try Self.call("XYZ2CMYK", options: &opt)
         }
     }
 
@@ -151,8 +151,8 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - temp: Colour temperature
-    public func XYZ2Lab(temp: [Double]? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func XYZ2Lab(temp: [Double]? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -161,43 +161,43 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("XYZ2Lab", options: &opt)
+            try Self.call("XYZ2Lab", options: &opt)
         }
     }
 
     /// Transform xyz to yxy
-    public func XYZ2Yxy() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func XYZ2Yxy() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("XYZ2Yxy", options: &opt)
+            try Self.call("XYZ2Yxy", options: &opt)
         }
     }
 
     /// Transform xyz to scrgb
-    public func XYZ2scRGB() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func XYZ2scRGB() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("XYZ2scRGB", options: &opt)
+            try Self.call("XYZ2scRGB", options: &opt)
         }
     }
 
     /// Transform yxy to xyz
-    public func Yxy2XYZ() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func Yxy2XYZ() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("Yxy2XYZ", options: &opt)
+            try Self.call("Yxy2XYZ", options: &opt)
         }
     }
 
@@ -207,9 +207,9 @@ extension VIPSImage {
     ///   - space: Destination color space
     ///   - sourceSpace: Source color space
     public func colourspace(space: VipsInterpretation, sourceSpace: VipsInterpretation? = nil)
-        throws -> VIPSImage
+        throws -> Self
     {
-        return try VIPSImage { out in
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -219,19 +219,19 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("colourspace", options: &opt)
+            try Self.call("colourspace", options: &opt)
         }
     }
 
     /// False-color an image
-    public func falsecolour() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func falsecolour() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("falsecolour", options: &opt)
+            try Self.call("falsecolour", options: &opt)
         }
     }
 
@@ -249,8 +249,8 @@ extension VIPSImage {
         blackPointCompensation: Bool? = nil,
         outputProfile: String? = nil,
         depth: Int? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -271,7 +271,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("icc_export", options: &opt)
+            try Self.call("icc_export", options: &opt)
         }
     }
 
@@ -289,8 +289,8 @@ extension VIPSImage {
         blackPointCompensation: Bool? = nil,
         embedded: Bool? = nil,
         inputProfile: String? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -311,7 +311,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("icc_import", options: &opt)
+            try Self.call("icc_import", options: &opt)
         }
     }
 
@@ -333,8 +333,8 @@ extension VIPSImage {
         embedded: Bool? = nil,
         inputProfile: String? = nil,
         depth: Int? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -359,43 +359,43 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("icc_transform", options: &opt)
+            try Self.call("icc_transform", options: &opt)
         }
     }
 
     /// Label regions in an image
-    public func labelregions() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func labelregions() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("mask", value: &out)
 
-            try VIPSImage.call("labelregions", options: &opt)
+            try Self.call("labelregions", options: &opt)
         }
     }
 
     /// Transform srgb to hsv
-    public func sRGB2HSV() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func sRGB2HSV() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("sRGB2HSV", options: &opt)
+            try Self.call("sRGB2HSV", options: &opt)
         }
     }
 
     /// Convert an srgb image to scrgb
-    public func sRGB2scRGB() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func sRGB2scRGB() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("sRGB2scRGB", options: &opt)
+            try Self.call("sRGB2scRGB", options: &opt)
         }
     }
 
@@ -403,8 +403,8 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - depth: Output device space depth in bits
-    public func scRGB2BW(depth: Int? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func scRGB2BW(depth: Int? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -413,19 +413,19 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("scRGB2BW", options: &opt)
+            try Self.call("scRGB2BW", options: &opt)
         }
     }
 
     /// Transform scrgb to xyz
-    public func scRGB2XYZ() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func scRGB2XYZ() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("scRGB2XYZ", options: &opt)
+            try Self.call("scRGB2XYZ", options: &opt)
         }
     }
 
@@ -433,8 +433,8 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - depth: Output device space depth in bits
-    public func scRGB2sRGB(depth: Int? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func scRGB2sRGB(depth: Int? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -443,9 +443,13 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("scRGB2sRGB", options: &opt)
+            try Self.call("scRGB2sRGB", options: &opt)
         }
     }
+
+}
+
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Make an image where pixel values are coordinates
     ///
@@ -461,8 +465,8 @@ extension VIPSImage {
         csize: Int? = nil,
         dsize: Int? = nil,
         esize: Int? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -478,7 +482,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("xyz", options: &opt)
+            try Self.call("xyz", options: &opt)
         }
     }
 

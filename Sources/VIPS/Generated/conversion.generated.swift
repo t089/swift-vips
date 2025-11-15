@@ -7,7 +7,7 @@
 
 import Cvips
 
-extension VIPSImage {
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Affine transform of an image
     ///
@@ -33,8 +33,8 @@ extension VIPSImage {
         background: [Double]? = nil,
         premultiplied: Bool? = nil,
         extend: VipsExtend? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -68,86 +68,19 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("affine", options: &opt)
-        }
-    }
-
-    /// Join an array of images
-    ///
-    /// - Parameters:
-    ///   - `in`: Array of input images
-    ///   - across: Number of images across grid
-    ///   - shim: Pixels between images
-    ///   - background: Colour for new pixels
-    ///   - halign: Align on the left, centre or right
-    ///   - valign: Align on the top, centre or bottom
-    ///   - hspacing: Horizontal spacing between images
-    ///   - vspacing: Vertical spacing between images
-    public static func arrayjoin(
-        _ `in`: [VIPSImage],
-        across: Int? = nil,
-        shim: Int? = nil,
-        background: [Double]? = nil,
-        halign: VipsAlign? = nil,
-        valign: VipsAlign? = nil,
-        hspacing: Int? = nil,
-        vspacing: Int? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("in", value: `in`)
-            if let across = across {
-                opt.set("across", value: across)
-            }
-            if let shim = shim {
-                opt.set("shim", value: shim)
-            }
-            if let background = background {
-                opt.set("background", value: background)
-            }
-            if let halign = halign {
-                opt.set("halign", value: halign)
-            }
-            if let valign = valign {
-                opt.set("valign", value: valign)
-            }
-            if let hspacing = hspacing {
-                opt.set("hspacing", value: hspacing)
-            }
-            if let vspacing = vspacing {
-                opt.set("vspacing", value: vspacing)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("arrayjoin", options: &opt)
+            try Self.call("affine", options: &opt)
         }
     }
 
     /// Autorotate image by exif tag
-    public func autorot() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func autorot() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("autorot", options: &opt)
-        }
-    }
-
-    /// Bandwise join a set of images
-    ///
-    /// - Parameters:
-    ///   - `in`: Array of input images
-    public static func bandjoin(_ `in`: [VIPSImage]) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("in", value: `in`)
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("bandjoin", options: &opt)
+            try Self.call("autorot", options: &opt)
         }
     }
 
@@ -155,34 +88,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - c: Array of constants to add
-    public func bandjoinConst(c: [Double]) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func bandjoinConst(c: [Double]) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("c", value: c)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("bandjoin_const", options: &opt)
-        }
-    }
-
-    /// Band-wise rank of a set of images
-    ///
-    /// - Parameters:
-    ///   - `in`: Array of input images
-    ///   - index: Select this band element from sorted list
-    public static func bandrank(_ `in`: [VIPSImage], index: Int? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("in", value: `in`)
-            if let index = index {
-                opt.set("index", value: index)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("bandrank", options: &opt)
+            try Self.call("bandjoin_const", options: &opt)
         }
     }
 
@@ -191,8 +105,8 @@ extension VIPSImage {
     /// - Parameters:
     ///   - format: Format to cast to
     ///   - shift: Shift integer values up and down
-    public func cast(format: VipsBandFormat, shift: Bool? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func cast(format: VipsBandFormat, shift: Bool? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -202,47 +116,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("cast", options: &opt)
-        }
-    }
-
-    /// Blend an array of images with an array of blend modes
-    ///
-    /// - Parameters:
-    ///   - `in`: Array of input images
-    ///   - mode: Array of VipsBlendMode to join with
-    ///   - x: Array of x coordinates to join at
-    ///   - y: Array of y coordinates to join at
-    ///   - compositingSpace: Composite images in this colour space
-    ///   - premultiplied: Images have premultiplied alpha
-    public static func composite(
-        _ `in`: [VIPSImage],
-        mode: [Int],
-        x: [Int]? = nil,
-        y: [Int]? = nil,
-        compositingSpace: VipsInterpretation? = nil,
-        premultiplied: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("in", value: `in`)
-            opt.set("mode", value: mode)
-            if let x = x {
-                opt.set("x", value: x)
-            }
-            if let y = y {
-                opt.set("y", value: y)
-            }
-            if let compositingSpace = compositingSpace {
-                opt.set("compositing_space", value: compositingSpace)
-            }
-            if let premultiplied = premultiplied {
-                opt.set("premultiplied", value: premultiplied)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("composite", options: &opt)
+            try Self.call("cast", options: &opt)
         }
     }
 
@@ -256,14 +130,14 @@ extension VIPSImage {
     ///   - compositingSpace: Composite images in this colour space
     ///   - premultiplied: Images have premultiplied alpha
     public func composite2(
-        overlay: VIPSImage,
+        overlay: some VIPSImageProtocol,
         mode: VipsBlendMode,
         x: Int? = nil,
         y: Int? = nil,
         compositingSpace: VipsInterpretation? = nil,
         premultiplied: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("base", value: self)
@@ -283,7 +157,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("composite2", options: &opt)
+            try Self.call("composite2", options: &opt)
         }
     }
 
@@ -311,8 +185,8 @@ extension VIPSImage {
         yres: Double? = nil,
         xoffset: Int? = nil,
         yoffset: Int? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -348,7 +222,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("copy", options: &opt)
+            try Self.call("copy", options: &opt)
         }
     }
 
@@ -359,8 +233,8 @@ extension VIPSImage {
     ///   - top: Top edge of extract area
     ///   - width: Width of extract area
     ///   - height: Height of extract area
-    public func crop(`left`: Int, top: Int, width: Int, height: Int) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func crop(`left`: Int, top: Int, width: Int, height: Int) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("input", value: self)
@@ -370,7 +244,7 @@ extension VIPSImage {
             opt.set("height", value: height)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("crop", options: &opt)
+            try Self.call("crop", options: &opt)
         }
     }
 
@@ -390,8 +264,8 @@ extension VIPSImage {
         height: Int,
         extend: VipsExtend? = nil,
         background: [Double]? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -407,7 +281,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("embed", options: &opt)
+            try Self.call("embed", options: &opt)
         }
     }
 
@@ -418,8 +292,8 @@ extension VIPSImage {
     ///   - top: Top edge of extract area
     ///   - width: Width of extract area
     ///   - height: Height of extract area
-    public func extractArea(`left`: Int, top: Int, width: Int, height: Int) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func extractArea(`left`: Int, top: Int, width: Int, height: Int) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("input", value: self)
@@ -429,7 +303,7 @@ extension VIPSImage {
             opt.set("height", value: height)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("extract_area", options: &opt)
+            try Self.call("extract_area", options: &opt)
         }
     }
 
@@ -438,8 +312,8 @@ extension VIPSImage {
     /// - Parameters:
     ///   - band: Band to extract
     ///   - n: Number of bands to extract
-    public func extractBand(_ band: Int, n: Int? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func extractBand(_ band: Int, n: Int? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -449,7 +323,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("extract_band", options: &opt)
+            try Self.call("extract_band", options: &opt)
         }
     }
 
@@ -457,15 +331,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - direction: Direction to flip image
-    public func flip(direction: VipsDirection) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func flip(direction: VipsDirection) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("direction", value: direction)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("flip", options: &opt)
+            try Self.call("flip", options: &opt)
         }
     }
 
@@ -475,8 +349,8 @@ extension VIPSImage {
     ///   - tileHeight: Chop into tiles this high
     ///   - across: Number of tiles across
     ///   - down: Number of tiles down
-    public func grid(tileHeight: Int, across: Int, down: Int) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func grid(tileHeight: Int, across: Int, down: Int) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -485,7 +359,7 @@ extension VIPSImage {
             opt.set("down", value: down)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("grid", options: &opt)
+            try Self.call("grid", options: &opt)
         }
     }
 
@@ -498,13 +372,13 @@ extension VIPSImage {
     ///   - expand: Expand output to hold all of both inputs
     ///   - background: Color for new pixels
     public func insert(
-        sub: VIPSImage,
+        sub: some VIPSImageProtocol,
         x: Int,
         y: Int,
         expand: Bool? = nil,
         background: [Double]? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("main", value: self)
@@ -519,7 +393,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("insert", options: &opt)
+            try Self.call("insert", options: &opt)
         }
     }
 
@@ -533,14 +407,14 @@ extension VIPSImage {
     ///   - background: Colour for new pixels
     ///   - align: Align on the low, centre or high coordinate edge
     public func join(
-        in2: VIPSImage,
+        in2: some VIPSImageProtocol,
         direction: VipsDirection,
         expand: Bool? = nil,
         shim: Int? = nil,
         background: [Double]? = nil,
         align: VipsAlign? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in1", value: self)
@@ -560,7 +434,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("join", options: &opt)
+            try Self.call("join", options: &opt)
         }
     }
 
@@ -568,15 +442,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - m: Matrix of coefficients
-    public func recomb(m: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func recomb(m: some VIPSImageProtocol) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("m", value: m)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("recomb", options: &opt)
+            try Self.call("recomb", options: &opt)
         }
     }
 
@@ -592,8 +466,8 @@ extension VIPSImage {
         vshrink: Double,
         kernel: VipsKernel? = nil,
         gap: Double? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -607,7 +481,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("reduce", options: &opt)
+            try Self.call("reduce", options: &opt)
         }
     }
 
@@ -618,9 +492,9 @@ extension VIPSImage {
     ///   - kernel: Resampling kernel
     ///   - gap: Reducing gap
     public func reduceh(hshrink: Double, kernel: VipsKernel? = nil, gap: Double? = nil) throws
-        -> VIPSImage
+        -> Self
     {
-        return try VIPSImage { out in
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -633,7 +507,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("reduceh", options: &opt)
+            try Self.call("reduceh", options: &opt)
         }
     }
 
@@ -644,9 +518,9 @@ extension VIPSImage {
     ///   - kernel: Resampling kernel
     ///   - gap: Reducing gap
     public func reducev(vshrink: Double, kernel: VipsKernel? = nil, gap: Double? = nil) throws
-        -> VIPSImage
+        -> Self
     {
-        return try VIPSImage { out in
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -659,7 +533,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("reducev", options: &opt)
+            try Self.call("reducev", options: &opt)
         }
     }
 
@@ -675,8 +549,8 @@ extension VIPSImage {
         kernel: VipsKernel? = nil,
         gap: Double? = nil,
         vscale: Double? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -692,7 +566,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("resize", options: &opt)
+            try Self.call("resize", options: &opt)
         }
     }
 
@@ -700,15 +574,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - angle: Angle to rotate image
-    public func rot(angle: VipsAngle) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func rot(angle: VipsAngle) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("angle", value: angle)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("rot", options: &opt)
+            try Self.call("rot", options: &opt)
         }
     }
 
@@ -716,8 +590,8 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - angle: Angle to rotate image
-    public func rot45(angle: VipsAngle45? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func rot45(angle: VipsAngle45? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -726,7 +600,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("rot45", options: &opt)
+            try Self.call("rot45", options: &opt)
         }
     }
 
@@ -748,8 +622,8 @@ extension VIPSImage {
         ody: Double? = nil,
         idx: Double? = nil,
         idy: Double? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -774,7 +648,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("rotate", options: &opt)
+            try Self.call("rotate", options: &opt)
         }
     }
 
@@ -783,8 +657,8 @@ extension VIPSImage {
     /// - Parameters:
     ///   - exp: Exponent for log scale
     ///   - log: Log scale
-    public func scale(exp: Double? = nil, log: Bool? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func scale(exp: Double? = nil, log: Bool? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -796,7 +670,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("scale", options: &opt)
+            try Self.call("scale", options: &opt)
         }
     }
 
@@ -806,8 +680,8 @@ extension VIPSImage {
     ///   - hshrink: Horizontal shrink factor
     ///   - vshrink: Vertical shrink factor
     ///   - ceil: Round-up output dimensions
-    public func shrink(hshrink: Double, vshrink: Double, ceil: Bool? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func shrink(hshrink: Double, vshrink: Double, ceil: Bool? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -818,7 +692,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("shrink", options: &opt)
+            try Self.call("shrink", options: &opt)
         }
     }
 
@@ -827,8 +701,8 @@ extension VIPSImage {
     /// - Parameters:
     ///   - hshrink: Horizontal shrink factor
     ///   - ceil: Round-up output dimensions
-    public func shrinkh(hshrink: Int, ceil: Bool? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func shrinkh(hshrink: Int, ceil: Bool? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -838,7 +712,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("shrinkh", options: &opt)
+            try Self.call("shrinkh", options: &opt)
         }
     }
 
@@ -847,8 +721,8 @@ extension VIPSImage {
     /// - Parameters:
     ///   - vshrink: Vertical shrink factor
     ///   - ceil: Round-up output dimensions
-    public func shrinkv(vshrink: Int, ceil: Bool? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func shrinkv(vshrink: Int, ceil: Bool? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -858,7 +732,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("shrinkv", options: &opt)
+            try Self.call("shrinkv", options: &opt)
         }
     }
 
@@ -882,8 +756,8 @@ extension VIPSImage {
         ody: Double? = nil,
         idx: Double? = nil,
         idy: Double? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -913,7 +787,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("similarity", options: &opt)
+            try Self.call("similarity", options: &opt)
         }
     }
 
@@ -929,8 +803,8 @@ extension VIPSImage {
         height: Int,
         interesting: VipsInteresting? = nil,
         premultiplied: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("input", value: self)
@@ -944,7 +818,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("smartcrop", options: &opt)
+            try Self.call("smartcrop", options: &opt)
         }
     }
 
@@ -964,8 +838,8 @@ extension VIPSImage {
         access: VipsAccess? = nil,
         threaded: Bool? = nil,
         persistent: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -989,7 +863,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("tilecache", options: &opt)
+            try Self.call("tilecache", options: &opt)
         }
     }
 
@@ -997,8 +871,8 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - pageHeight: Height of each input page
-    public func transpose3d(pageHeight: Int? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func transpose3d(pageHeight: Int? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -1007,7 +881,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("transpose3d", options: &opt)
+            try Self.call("transpose3d", options: &opt)
         }
     }
 
@@ -1016,8 +890,8 @@ extension VIPSImage {
     /// - Parameters:
     ///   - x: Left edge of input in output
     ///   - y: Top edge of input in output
-    public func wrap(x: Int? = nil, y: Int? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func wrap(x: Int? = nil, y: Int? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -1029,7 +903,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("wrap", options: &opt)
+            try Self.call("wrap", options: &opt)
         }
     }
 
@@ -1038,8 +912,8 @@ extension VIPSImage {
     /// - Parameters:
     ///   - xfac: Horizontal zoom factor
     ///   - yfac: Vertical zoom factor
-    public func zoom(xfac: Int, yfac: Int) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func zoom(xfac: Int, yfac: Int) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("input", value: self)
@@ -1047,7 +921,137 @@ extension VIPSImage {
             opt.set("yfac", value: yfac)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("zoom", options: &opt)
+            try Self.call("zoom", options: &opt)
+        }
+    }
+
+}
+
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
+
+    /// Join an array of images
+    ///
+    /// - Parameters:
+    ///   - `in`: Array of input images
+    ///   - across: Number of images across grid
+    ///   - shim: Pixels between images
+    ///   - background: Colour for new pixels
+    ///   - halign: Align on the left, centre or right
+    ///   - valign: Align on the top, centre or bottom
+    ///   - hspacing: Horizontal spacing between images
+    ///   - vspacing: Vertical spacing between images
+    public static func arrayjoin(
+        _ `in`: [VIPSImage],
+        across: Int? = nil,
+        shim: Int? = nil,
+        background: [Double]? = nil,
+        halign: VipsAlign? = nil,
+        valign: VipsAlign? = nil,
+        hspacing: Int? = nil,
+        vspacing: Int? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("in", value: `in`)
+            if let across = across {
+                opt.set("across", value: across)
+            }
+            if let shim = shim {
+                opt.set("shim", value: shim)
+            }
+            if let background = background {
+                opt.set("background", value: background)
+            }
+            if let halign = halign {
+                opt.set("halign", value: halign)
+            }
+            if let valign = valign {
+                opt.set("valign", value: valign)
+            }
+            if let hspacing = hspacing {
+                opt.set("hspacing", value: hspacing)
+            }
+            if let vspacing = vspacing {
+                opt.set("vspacing", value: vspacing)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("arrayjoin", options: &opt)
+        }
+    }
+
+    /// Bandwise join a set of images
+    ///
+    /// - Parameters:
+    ///   - `in`: Array of input images
+    public static func bandjoin(_ `in`: [VIPSImage]) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("in", value: `in`)
+            opt.set("out", value: &out)
+
+            try Self.call("bandjoin", options: &opt)
+        }
+    }
+
+    /// Band-wise rank of a set of images
+    ///
+    /// - Parameters:
+    ///   - `in`: Array of input images
+    ///   - index: Select this band element from sorted list
+    public static func bandrank(_ `in`: [VIPSImage], index: Int? = nil) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("in", value: `in`)
+            if let index = index {
+                opt.set("index", value: index)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("bandrank", options: &opt)
+        }
+    }
+
+    /// Blend an array of images with an array of blend modes
+    ///
+    /// - Parameters:
+    ///   - `in`: Array of input images
+    ///   - mode: Array of VipsBlendMode to join with
+    ///   - x: Array of x coordinates to join at
+    ///   - y: Array of y coordinates to join at
+    ///   - compositingSpace: Composite images in this colour space
+    ///   - premultiplied: Images have premultiplied alpha
+    public static func composite(
+        _ `in`: [VIPSImage],
+        mode: [Int],
+        x: [Int]? = nil,
+        y: [Int]? = nil,
+        compositingSpace: VipsInterpretation? = nil,
+        premultiplied: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("in", value: `in`)
+            opt.set("mode", value: mode)
+            if let x = x {
+                opt.set("x", value: x)
+            }
+            if let y = y {
+                opt.set("y", value: y)
+            }
+            if let compositingSpace = compositingSpace {
+                opt.set("compositing_space", value: compositingSpace)
+            }
+            if let premultiplied = premultiplied {
+                opt.set("premultiplied", value: premultiplied)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("composite", options: &opt)
         }
     }
 

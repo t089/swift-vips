@@ -18,13 +18,13 @@ public final class VIPSImage: VIPSImageProtocol {
         self.ptr = UnsafeMutableRawPointer(image)
     }
 
-    func withVipsImage<R>(_ body: (UnsafeMutablePointer<VipsImage>) -> R) -> R {
-        return body(self.image)
-    }
-
     deinit {
         guard let ptr else { return }
         g_object_unref(ptr)
+    }
+
+    public func withVipsImage<R>(_ body: (UnsafeMutablePointer<VipsImage>) -> R) -> R {
+        return body(self.image)
     }
 
     /// This function creates a VIPSImage from a memory area.
@@ -945,12 +945,9 @@ public final class VIPSImage: VIPSImageProtocol {
         }
     }
 
-    /*func withUnsafeMutablePointer<T>(_ block: (inout UnsafeMutablePointer<VipsImage>) throws -> (T))
-        rethrows -> T
-    {
-        var ptr = self.image!
-        return try block(&ptr)
-    }*/
+}
+
+extension VIPSImageProtocol where Self: ~Copyable, Self: ~Escapable {
 
     @usableFromInline
     static func call(
@@ -980,7 +977,7 @@ public final class VIPSImage: VIPSImageProtocol {
     }
 }
 
-extension VIPSImageProtocol {
+extension VIPSImageProtocol where Self: ~Copyable {
     @usableFromInline
     init(_ block: (inout UnsafeMutablePointer<VipsImage>?) throws -> Void) rethrows {
         let image: UnsafeMutablePointer<UnsafeMutablePointer<VipsImage>?> = .allocate(capacity: 1)
@@ -994,9 +991,9 @@ extension VIPSImageProtocol {
     }
 }
 
-extension VIPSImageProtocol {
-    public func new(_ colors: [Double]) throws -> VIPSImage {
-        try VIPSImage { out in
+extension VIPSImageProtocol where Self: ~Copyable {
+    public func new(_ colors: [Double]) throws -> Self {
+        try Self { out in
             var c = colors
             out = vips_image_new_from_image(self.image, &c, Int32(c.count))
             if out == nil { throw VIPSError() }
@@ -1010,7 +1007,7 @@ extension VIPSImageProtocol {
     ///   - data: Array of doubles, must have width * height elements
     /// - Returns: A new VIPSImage matrix
     /// - Note: The data is copied by libvips, so the input array does not need to remain alive
-    public static func matrix(width: Int, height: Int, data: [Double]) throws -> VIPSImage {
+    public static func matrix(width: Int, height: Int, data: [Double]) throws -> Self {
         guard data.count == width * height else {
             throw VIPSError(
                 "Data array size (\(data.count)) must match width * height (\(width * height))"
@@ -1032,7 +1029,7 @@ extension VIPSImageProtocol {
             throw VIPSError()
         }
 
-        return VIPSImage(image)
+        return Self(image)
     }
 
     /// Create an empty matrix image
@@ -1040,12 +1037,12 @@ extension VIPSImageProtocol {
     ///   - width: Width of the matrix
     ///   - height: Height of the matrix
     /// - Returns: A new VIPSImage matrix filled with zeros
-    public static func matrix(width: Int, height: Int) throws -> VIPSImage {
+    public static func matrix(width: Int, height: Int) throws -> Self {
         guard let image = vips_image_new_matrix(Int32(width), Int32(height)) else {
             throw VIPSError()
         }
 
-        return VIPSImage(image)
+        return Self(image)
     }
 
     /// This function allocates memory, renders image into it, builds a new image
@@ -1053,8 +1050,8 @@ extension VIPSImageProtocol {
     ///
     /// If the image is already a simple area of memory, it just refs image and
     /// returns it.
-    public func copyMemory() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func copyMemory() throws -> Self {
+        return try Self { out in
             out = vips_image_copy_memory(self.image)
             if out == nil { throw VIPSError() }
         }
@@ -1068,6 +1065,10 @@ public protocol VIPSImageProtocol: VIPSObjectProtocol, ~Escapable, ~Copyable {
 }
 
 extension VIPSImageProtocol where Self: ~Copyable, Self: ~Escapable {
+    public func withVipsImage<R>(_ body: (UnsafeMutablePointer<VipsImage>) throws -> R) rethrows -> R {
+        try body(self.image)
+    }
+
     @inlinable
     public var width: Int {
         return Int(vips_image_get_width(self.image))

@@ -8,203 +8,7 @@
 import Cvips
 import CvipsShim
 
-extension VIPSImage {
-
-    /// Load webp from file
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - page: First page to load
-    ///   - n: Number of pages to load, -1 for all
-    ///   - scale: Factor to scale by
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func webpload(
-        filename: String,
-        page: Int? = nil,
-        n: Int? = nil,
-        scale: Double? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let page = page {
-                opt.set("page", value: page)
-            }
-            if let n = n {
-                opt.set("n", value: n)
-            }
-            if let scale = scale {
-                opt.set("scale", value: scale)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("webpload", options: &opt)
-        }
-    }
-
-    /// Load webp from buffer
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - page: First page to load
-    ///   - n: Number of pages to load, -1 for all
-    ///   - scale: Factor to scale by
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func webpload(
-        buffer: VIPSBlob,
-        page: Int? = nil,
-        n: Int? = nil,
-        scale: Double? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        // the operation will retain the blob
-        try buffer.withVipsBlob { blob in
-            try VIPSImage { out in
-                var opt = VIPSOption()
-
-                opt.set("buffer", value: blob)
-                if let page = page {
-                    opt.set("page", value: page)
-                }
-                if let n = n {
-                    opt.set("n", value: n)
-                }
-                if let scale = scale {
-                    opt.set("scale", value: scale)
-                }
-                if let memory = memory {
-                    opt.set("memory", value: memory)
-                }
-                if let access = access {
-                    opt.set("access", value: access)
-                }
-                if let failOn = failOn {
-                    opt.set("fail_on", value: failOn)
-                }
-                if let revalidate = revalidate {
-                    opt.set("revalidate", value: revalidate)
-                }
-                opt.set("out", value: &out)
-
-                try VIPSImage.call("webpload_buffer", options: &opt)
-            }
-        }
-    }
-
-    /// Load webp from buffer without copying the data. The caller must ensure the buffer remains valid for
-    /// the lifetime of the returned image and all its descendants.
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - page: First page to load
-    ///   - n: Number of pages to load, -1 for all
-    ///   - scale: Factor to scale by
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func webpload(
-        unsafeBuffer buffer: UnsafeRawBufferPointer,
-        page: Int? = nil,
-        n: Int? = nil,
-        scale: Double? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        let blob = VIPSBlob(noCopy: buffer)
-        return try webpload(
-            buffer: blob,
-            page: page,
-            n: n,
-            scale: scale,
-            memory: memory,
-            access: access,
-            failOn: failOn,
-            revalidate: revalidate
-        )
-    }
-
-    /// Load webp from source
-    ///
-    /// - Parameters:
-    ///   - source: Source to load from
-    ///   - page: First page to load
-    ///   - n: Number of pages to load, -1 for all
-    ///   - scale: Factor to scale by
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func webpload(
-        source: VIPSSource,
-        page: Int? = nil,
-        n: Int? = nil,
-        scale: Double? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("source", value: source)
-            if let page = page {
-                opt.set("page", value: page)
-            }
-            if let n = n {
-                opt.set("n", value: n)
-            }
-            if let scale = scale {
-                opt.set("scale", value: scale)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("webpload_source", options: &opt)
-        }
-    }
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Save as webp
     ///
@@ -308,7 +112,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("webpsave", options: &opt)
+        try Self.call("webpsave", options: &opt)
     }
 
     /// Save as webp
@@ -417,7 +221,7 @@ extension VIPSImage {
         }
         opt.set("buffer", value: out)
 
-        try VIPSImage.call("webpsave_buffer", options: &opt)
+        try Self.call("webpsave_buffer", options: &opt)
 
         guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from webpsave_buffer")
@@ -525,7 +329,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("webpsave_mime", options: &opt)
+        try Self.call("webpsave_mime", options: &opt)
     }
 
     /// Save as webp
@@ -630,7 +434,207 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("webpsave_target", options: &opt)
+        try Self.call("webpsave_target", options: &opt)
+    }
+
+}
+
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
+
+    /// Load webp from file
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - page: First page to load
+    ///   - n: Number of pages to load, -1 for all
+    ///   - scale: Factor to scale by
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func webpload(
+        filename: String,
+        page: Int? = nil,
+        n: Int? = nil,
+        scale: Double? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let page = page {
+                opt.set("page", value: page)
+            }
+            if let n = n {
+                opt.set("n", value: n)
+            }
+            if let scale = scale {
+                opt.set("scale", value: scale)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("webpload", options: &opt)
+        }
+    }
+
+    /// Load webp from buffer
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - page: First page to load
+    ///   - n: Number of pages to load, -1 for all
+    ///   - scale: Factor to scale by
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func webpload(
+        buffer: VIPSBlob,
+        page: Int? = nil,
+        n: Int? = nil,
+        scale: Double? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try Self { out in
+                var opt = VIPSOption()
+
+                opt.set("buffer", value: blob)
+                if let page = page {
+                    opt.set("page", value: page)
+                }
+                if let n = n {
+                    opt.set("n", value: n)
+                }
+                if let scale = scale {
+                    opt.set("scale", value: scale)
+                }
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try Self.call("webpload_buffer", options: &opt)
+            }
+        }
+    }
+
+    /// Load webp from buffer without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - page: First page to load
+    ///   - n: Number of pages to load, -1 for all
+    ///   - scale: Factor to scale by
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func webpload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        page: Int? = nil,
+        n: Int? = nil,
+        scale: Double? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try webpload(
+            buffer: blob,
+            page: page,
+            n: n,
+            scale: scale,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
+    }
+
+    /// Load webp from source
+    ///
+    /// - Parameters:
+    ///   - source: Source to load from
+    ///   - page: First page to load
+    ///   - n: Number of pages to load, -1 for all
+    ///   - scale: Factor to scale by
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func webpload(
+        source: VIPSSource,
+        page: Int? = nil,
+        n: Int? = nil,
+        scale: Double? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("source", value: source)
+            if let page = page {
+                opt.set("page", value: page)
+            }
+            if let n = n {
+                opt.set("n", value: n)
+            }
+            if let scale = scale {
+                opt.set("scale", value: scale)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("webpload_source", options: &opt)
+        }
     }
 
 }

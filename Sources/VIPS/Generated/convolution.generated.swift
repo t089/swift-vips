@@ -7,15 +7,15 @@
 
 import Cvips
 
-extension VIPSImage {
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Canny edge detector
     ///
     /// - Parameters:
     ///   - sigma: Sigma of Gaussian
     ///   - precision: Convolve with this precision
-    public func canny(sigma: Double? = nil, precision: VipsPrecision? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func canny(sigma: Double? = nil, precision: VipsPrecision? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -27,7 +27,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("canny", options: &opt)
+            try Self.call("canny", options: &opt)
         }
     }
 
@@ -39,12 +39,12 @@ extension VIPSImage {
     ///   - layers: Use this many layers in approximation
     ///   - cluster: Cluster lines closer than this in approximation
     public func conv(
-        mask: VIPSImage,
+        mask: some VIPSImageProtocol,
         precision: VipsPrecision? = nil,
         layers: Int? = nil,
         cluster: Int? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -60,7 +60,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("conv", options: &opt)
+            try Self.call("conv", options: &opt)
         }
     }
 
@@ -70,9 +70,10 @@ extension VIPSImage {
     ///   - mask: Input matrix image
     ///   - layers: Use this many layers in approximation
     ///   - cluster: Cluster lines closer than this in approximation
-    public func conva(mask: VIPSImage, layers: Int? = nil, cluster: Int? = nil) throws -> VIPSImage
+    public func conva(mask: some VIPSImageProtocol, layers: Int? = nil, cluster: Int? = nil) throws
+        -> Self
     {
-        return try VIPSImage { out in
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -85,7 +86,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("conva", options: &opt)
+            try Self.call("conva", options: &opt)
         }
     }
 
@@ -94,8 +95,8 @@ extension VIPSImage {
     /// - Parameters:
     ///   - mask: Input matrix image
     ///   - layers: Use this many layers in approximation
-    public func convasep(mask: VIPSImage, layers: Int? = nil) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func convasep(mask: some VIPSImageProtocol, layers: Int? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -105,7 +106,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("convasep", options: &opt)
+            try Self.call("convasep", options: &opt)
         }
     }
 
@@ -113,15 +114,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - mask: Input matrix image
-    public func convf(mask: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func convf(mask: some VIPSImageProtocol) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("mask", value: mask)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("convf", options: &opt)
+            try Self.call("convf", options: &opt)
         }
     }
 
@@ -129,15 +130,15 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - mask: Input matrix image
-    public func convi(mask: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func convi(mask: some VIPSImageProtocol) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("mask", value: mask)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("convi", options: &opt)
+            try Self.call("convi", options: &opt)
         }
     }
 
@@ -149,12 +150,12 @@ extension VIPSImage {
     ///   - layers: Use this many layers in approximation
     ///   - cluster: Cluster lines closer than this in approximation
     public func convsep(
-        mask: VIPSImage,
+        mask: some VIPSImageProtocol,
         precision: VipsPrecision? = nil,
         layers: Int? = nil,
         cluster: Int? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -170,7 +171,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("convsep", options: &opt)
+            try Self.call("convsep", options: &opt)
         }
     }
 
@@ -181,9 +182,9 @@ extension VIPSImage {
     ///   - minAmpl: Minimum amplitude of Gaussian
     ///   - precision: Convolve with this precision
     public func gaussblur(sigma: Double, minAmpl: Double? = nil, precision: VipsPrecision? = nil)
-        throws -> VIPSImage
+        throws -> Self
     {
-        return try VIPSImage { out in
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -196,7 +197,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("gaussblur", options: &opt)
+            try Self.call("gaussblur", options: &opt)
         }
     }
 
@@ -216,8 +217,8 @@ extension VIPSImage {
         y3: Double? = nil,
         m1: Double? = nil,
         m2: Double? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -241,19 +242,19 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("sharpen", options: &opt)
+            try Self.call("sharpen", options: &opt)
         }
     }
 
     /// Sobel edge detector
-    public func sobel() throws -> VIPSImage {
-        return try VIPSImage { out in
+    public func sobel() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("sobel", options: &opt)
+            try Self.call("sobel", options: &opt)
         }
     }
 

@@ -8,158 +8,7 @@
 import Cvips
 import CvipsShim
 
-extension VIPSImage {
-
-    /// Load an analyze6 image
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func analyzeload(
-        filename: String,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("analyzeload", options: &opt)
-        }
-    }
-
-    /// Load csv
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - skip: Skip this many lines at the start of the file
-    ///   - lines: Read this many lines from the file
-    ///   - whitespace: Set of whitespace characters
-    ///   - separator: Set of separator characters
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func csvload(
-        filename: String,
-        skip: Int? = nil,
-        lines: Int? = nil,
-        whitespace: String? = nil,
-        separator: String? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let skip = skip {
-                opt.set("skip", value: skip)
-            }
-            if let lines = lines {
-                opt.set("lines", value: lines)
-            }
-            if let whitespace = whitespace {
-                opt.set("whitespace", value: whitespace)
-            }
-            if let separator = separator {
-                opt.set("separator", value: separator)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("csvload", options: &opt)
-        }
-    }
-
-    /// Load csv
-    ///
-    /// - Parameters:
-    ///   - source: Source to load from
-    ///   - skip: Skip this many lines at the start of the file
-    ///   - lines: Read this many lines from the file
-    ///   - whitespace: Set of whitespace characters
-    ///   - separator: Set of separator characters
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func csvload(
-        source: VIPSSource,
-        skip: Int? = nil,
-        lines: Int? = nil,
-        whitespace: String? = nil,
-        separator: String? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("source", value: source)
-            if let skip = skip {
-                opt.set("skip", value: skip)
-            }
-            if let lines = lines {
-                opt.set("lines", value: lines)
-            }
-            if let whitespace = whitespace {
-                opt.set("whitespace", value: whitespace)
-            }
-            if let separator = separator {
-                opt.set("separator", value: separator)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("csvload_source", options: &opt)
-        }
-    }
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Save image to csv
     ///
@@ -198,7 +47,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("csvsave", options: &opt)
+        try Self.call("csvsave", options: &opt)
     }
 
     /// Save image to csv
@@ -238,7 +87,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("csvsave_target", options: &opt)
+        try Self.call("csvsave_target", options: &opt)
     }
 
     /// Save image to deepzoom file
@@ -343,7 +192,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("dzsave", options: &opt)
+        try Self.call("dzsave", options: &opt)
     }
 
     /// Save image to dz buffer
@@ -452,7 +301,7 @@ extension VIPSImage {
         }
         opt.set("buffer", value: out)
 
-        try VIPSImage.call("dzsave_buffer", options: &opt)
+        try Self.call("dzsave_buffer", options: &opt)
 
         guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from dzsave_buffer")
@@ -563,81 +412,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("dzsave_target", options: &opt)
-    }
-
-    /// Load a fits image
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func fitsload(
-        filename: String,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("fitsload", options: &opt)
-        }
-    }
-
-    /// Load fits from a source
-    ///
-    /// - Parameters:
-    ///   - source: Source to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func fitsload(
-        source: VIPSSource,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("source", value: source)
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("fitsload_source", options: &opt)
-        }
+        try Self.call("dzsave_target", options: &opt)
     }
 
     /// Save image to fits file
@@ -672,185 +447,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("fitssave", options: &opt)
-    }
-
-    /// Load jpeg2000 image
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - page: Load this page from the image
-    ///   - oneshot: Load images a frame at a time
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func jp2kload(
-        filename: String,
-        page: Int? = nil,
-        oneshot: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let page = page {
-                opt.set("page", value: page)
-            }
-            if let oneshot = oneshot {
-                opt.set("oneshot", value: oneshot)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("jp2kload", options: &opt)
-        }
-    }
-
-    /// Load jpeg2000 image
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - page: Load this page from the image
-    ///   - oneshot: Load images a frame at a time
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func jp2kload(
-        buffer: VIPSBlob,
-        page: Int? = nil,
-        oneshot: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        // the operation will retain the blob
-        try buffer.withVipsBlob { blob in
-            try VIPSImage { out in
-                var opt = VIPSOption()
-
-                opt.set("buffer", value: blob)
-                if let page = page {
-                    opt.set("page", value: page)
-                }
-                if let oneshot = oneshot {
-                    opt.set("oneshot", value: oneshot)
-                }
-                if let memory = memory {
-                    opt.set("memory", value: memory)
-                }
-                if let access = access {
-                    opt.set("access", value: access)
-                }
-                if let failOn = failOn {
-                    opt.set("fail_on", value: failOn)
-                }
-                if let revalidate = revalidate {
-                    opt.set("revalidate", value: revalidate)
-                }
-                opt.set("out", value: &out)
-
-                try VIPSImage.call("jp2kload_buffer", options: &opt)
-            }
-        }
-    }
-
-    /// Load jpeg2000 image without copying the data. The caller must ensure the buffer remains valid for
-    /// the lifetime of the returned image and all its descendants.
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - page: Load this page from the image
-    ///   - oneshot: Load images a frame at a time
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func jp2kload(
-        unsafeBuffer buffer: UnsafeRawBufferPointer,
-        page: Int? = nil,
-        oneshot: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        let blob = VIPSBlob(noCopy: buffer)
-        return try jp2kload(
-            buffer: blob,
-            page: page,
-            oneshot: oneshot,
-            memory: memory,
-            access: access,
-            failOn: failOn,
-            revalidate: revalidate
-        )
-    }
-
-    /// Load jpeg2000 image
-    ///
-    /// - Parameters:
-    ///   - source: Source to load from
-    ///   - page: Load this page from the image
-    ///   - oneshot: Load images a frame at a time
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func jp2kload(
-        source: VIPSSource,
-        page: Int? = nil,
-        oneshot: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("source", value: source)
-            if let page = page {
-                opt.set("page", value: page)
-            }
-            if let oneshot = oneshot {
-                opt.set("oneshot", value: oneshot)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("jp2kload_source", options: &opt)
-        }
+        try Self.call("fitssave", options: &opt)
     }
 
     /// Save image in jpeg2000 format
@@ -910,7 +507,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("jp2ksave", options: &opt)
+        try Self.call("jp2ksave", options: &opt)
     }
 
     /// Save image in jpeg2000 format
@@ -974,7 +571,7 @@ extension VIPSImage {
         }
         opt.set("buffer", value: out)
 
-        try VIPSImage.call("jp2ksave_buffer", options: &opt)
+        try Self.call("jp2ksave_buffer", options: &opt)
 
         guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from jp2ksave_buffer")
@@ -1040,185 +637,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("jp2ksave_target", options: &opt)
-    }
-
-    /// Load jpeg-xl image
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - page: First page to load
-    ///   - n: Number of pages to load, -1 for all
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func jxlload(
-        filename: String,
-        page: Int? = nil,
-        n: Int? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let page = page {
-                opt.set("page", value: page)
-            }
-            if let n = n {
-                opt.set("n", value: n)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("jxlload", options: &opt)
-        }
-    }
-
-    /// Load jpeg-xl image
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - page: First page to load
-    ///   - n: Number of pages to load, -1 for all
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func jxlload(
-        buffer: VIPSBlob,
-        page: Int? = nil,
-        n: Int? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        // the operation will retain the blob
-        try buffer.withVipsBlob { blob in
-            try VIPSImage { out in
-                var opt = VIPSOption()
-
-                opt.set("buffer", value: blob)
-                if let page = page {
-                    opt.set("page", value: page)
-                }
-                if let n = n {
-                    opt.set("n", value: n)
-                }
-                if let memory = memory {
-                    opt.set("memory", value: memory)
-                }
-                if let access = access {
-                    opt.set("access", value: access)
-                }
-                if let failOn = failOn {
-                    opt.set("fail_on", value: failOn)
-                }
-                if let revalidate = revalidate {
-                    opt.set("revalidate", value: revalidate)
-                }
-                opt.set("out", value: &out)
-
-                try VIPSImage.call("jxlload_buffer", options: &opt)
-            }
-        }
-    }
-
-    /// Load jpeg-xl image without copying the data. The caller must ensure the buffer remains valid for
-    /// the lifetime of the returned image and all its descendants.
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - page: First page to load
-    ///   - n: Number of pages to load, -1 for all
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func jxlload(
-        unsafeBuffer buffer: UnsafeRawBufferPointer,
-        page: Int? = nil,
-        n: Int? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        let blob = VIPSBlob(noCopy: buffer)
-        return try jxlload(
-            buffer: blob,
-            page: page,
-            n: n,
-            memory: memory,
-            access: access,
-            failOn: failOn,
-            revalidate: revalidate
-        )
-    }
-
-    /// Load jpeg-xl image
-    ///
-    /// - Parameters:
-    ///   - source: Source to load from
-    ///   - page: First page to load
-    ///   - n: Number of pages to load, -1 for all
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func jxlload(
-        source: VIPSSource,
-        page: Int? = nil,
-        n: Int? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("source", value: source)
-            if let page = page {
-                opt.set("page", value: page)
-            }
-            if let n = n {
-                opt.set("n", value: n)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("jxlload_source", options: &opt)
-        }
+        try Self.call("jp2ksave_target", options: &opt)
     }
 
     /// Save image in jpeg-xl format
@@ -1278,7 +697,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("jxlsave", options: &opt)
+        try Self.call("jxlsave", options: &opt)
     }
 
     /// Save image in jpeg-xl format
@@ -1342,7 +761,7 @@ extension VIPSImage {
         }
         opt.set("buffer", value: out)
 
-        try VIPSImage.call("jxlsave_buffer", options: &opt)
+        try Self.call("jxlsave_buffer", options: &opt)
 
         guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from jxlsave_buffer")
@@ -1408,151 +827,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("jxlsave_target", options: &opt)
-    }
-
-    /// Load file with imagemagick7
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - density: Canvas resolution for rendering vector formats like SVG
-    ///   - page: First page to load
-    ///   - n: Number of pages to load, -1 for all
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func magickload(
-        filename: String,
-        density: String? = nil,
-        page: Int? = nil,
-        n: Int? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let density = density {
-                opt.set("density", value: density)
-            }
-            if let page = page {
-                opt.set("page", value: page)
-            }
-            if let n = n {
-                opt.set("n", value: n)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("magickload", options: &opt)
-        }
-    }
-
-    /// Load buffer with imagemagick7
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - density: Canvas resolution for rendering vector formats like SVG
-    ///   - page: First page to load
-    ///   - n: Number of pages to load, -1 for all
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func magickload(
-        buffer: VIPSBlob,
-        density: String? = nil,
-        page: Int? = nil,
-        n: Int? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        // the operation will retain the blob
-        try buffer.withVipsBlob { blob in
-            try VIPSImage { out in
-                var opt = VIPSOption()
-
-                opt.set("buffer", value: blob)
-                if let density = density {
-                    opt.set("density", value: density)
-                }
-                if let page = page {
-                    opt.set("page", value: page)
-                }
-                if let n = n {
-                    opt.set("n", value: n)
-                }
-                if let memory = memory {
-                    opt.set("memory", value: memory)
-                }
-                if let access = access {
-                    opt.set("access", value: access)
-                }
-                if let failOn = failOn {
-                    opt.set("fail_on", value: failOn)
-                }
-                if let revalidate = revalidate {
-                    opt.set("revalidate", value: revalidate)
-                }
-                opt.set("out", value: &out)
-
-                try VIPSImage.call("magickload_buffer", options: &opt)
-            }
-        }
-    }
-
-    /// Load buffer with imagemagick7 without copying the data. The caller must ensure the buffer remains valid for
-    /// the lifetime of the returned image and all its descendants.
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - density: Canvas resolution for rendering vector formats like SVG
-    ///   - page: First page to load
-    ///   - n: Number of pages to load, -1 for all
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func magickload(
-        unsafeBuffer buffer: UnsafeRawBufferPointer,
-        density: String? = nil,
-        page: Int? = nil,
-        n: Int? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        let blob = VIPSBlob(noCopy: buffer)
-        return try magickload(
-            buffer: blob,
-            density: density,
-            page: page,
-            n: n,
-            memory: memory,
-            access: access,
-            failOn: failOn,
-            revalidate: revalidate
-        )
+        try Self.call("jxlsave_target", options: &opt)
     }
 
     /// Save file with imagemagick
@@ -1612,7 +887,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("magicksave", options: &opt)
+        try Self.call("magicksave", options: &opt)
     }
 
     /// Save image to magick buffer
@@ -1676,124 +951,13 @@ extension VIPSImage {
         }
         opt.set("buffer", value: out)
 
-        try VIPSImage.call("magicksave_buffer", options: &opt)
+        try Self.call("magicksave_buffer", options: &opt)
 
         guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from magicksave_buffer")
         }
 
         return VIPSBlob(vipsBlob)
-    }
-
-    /// Load mat from file
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func matload(
-        filename: String,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("matload", options: &opt)
-        }
-    }
-
-    /// Load matrix
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func matrixload(
-        filename: String,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("matrixload", options: &opt)
-        }
-    }
-
-    /// Load matrix
-    ///
-    /// - Parameters:
-    ///   - source: Source to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func matrixload(
-        source: VIPSSource,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("source", value: source)
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("matrixload_source", options: &opt)
-        }
     }
 
     /// Save image to matrix
@@ -1828,7 +992,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("matrixsave", options: &opt)
+        try Self.call("matrixsave", options: &opt)
     }
 
     /// Save image to matrix
@@ -1863,310 +1027,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("matrixsave_target", options: &opt)
-    }
-
-    /// Load an openexr image
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func openexrload(
-        filename: String,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("openexrload", options: &opt)
-        }
-    }
-
-    /// Load file with openslide
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - level: Load this level from the file
-    ///   - autocrop: Crop to image bounds
-    ///   - associated: Load this associated image
-    ///   - attachAssociated: Attach all associated images
-    ///   - rgb: Output RGB (not RGBA)
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func openslideload(
-        filename: String,
-        level: Int? = nil,
-        autocrop: Bool? = nil,
-        associated: String? = nil,
-        attachAssociated: Bool? = nil,
-        rgb: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let level = level {
-                opt.set("level", value: level)
-            }
-            if let autocrop = autocrop {
-                opt.set("autocrop", value: autocrop)
-            }
-            if let associated = associated {
-                opt.set("associated", value: associated)
-            }
-            if let attachAssociated = attachAssociated {
-                opt.set("attach_associated", value: attachAssociated)
-            }
-            if let rgb = rgb {
-                opt.set("rgb", value: rgb)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("openslideload", options: &opt)
-        }
-    }
-
-    /// Load source with openslide
-    ///
-    /// - Parameters:
-    ///   - source: Source to load from
-    ///   - level: Load this level from the file
-    ///   - autocrop: Crop to image bounds
-    ///   - associated: Load this associated image
-    ///   - attachAssociated: Attach all associated images
-    ///   - rgb: Output RGB (not RGBA)
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func openslideload(
-        source: VIPSSource,
-        level: Int? = nil,
-        autocrop: Bool? = nil,
-        associated: String? = nil,
-        attachAssociated: Bool? = nil,
-        rgb: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("source", value: source)
-            if let level = level {
-                opt.set("level", value: level)
-            }
-            if let autocrop = autocrop {
-                opt.set("autocrop", value: autocrop)
-            }
-            if let associated = associated {
-                opt.set("associated", value: associated)
-            }
-            if let attachAssociated = attachAssociated {
-                opt.set("attach_associated", value: attachAssociated)
-            }
-            if let rgb = rgb {
-                opt.set("rgb", value: rgb)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("openslideload_source", options: &opt)
-        }
-    }
-
-    /// Load ppm from file
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func ppmload(
-        filename: String,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("ppmload", options: &opt)
-        }
-    }
-
-    /// Load ppm from buffer
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func ppmload(
-        buffer: VIPSBlob,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        // the operation will retain the blob
-        try buffer.withVipsBlob { blob in
-            try VIPSImage { out in
-                var opt = VIPSOption()
-
-                opt.set("buffer", value: blob)
-                if let memory = memory {
-                    opt.set("memory", value: memory)
-                }
-                if let access = access {
-                    opt.set("access", value: access)
-                }
-                if let failOn = failOn {
-                    opt.set("fail_on", value: failOn)
-                }
-                if let revalidate = revalidate {
-                    opt.set("revalidate", value: revalidate)
-                }
-                opt.set("out", value: &out)
-
-                try VIPSImage.call("ppmload_buffer", options: &opt)
-            }
-        }
-    }
-
-    /// Load ppm from buffer without copying the data. The caller must ensure the buffer remains valid for
-    /// the lifetime of the returned image and all its descendants.
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func ppmload(
-        unsafeBuffer buffer: UnsafeRawBufferPointer,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        let blob = VIPSBlob(noCopy: buffer)
-        return try ppmload(
-            buffer: blob,
-            memory: memory,
-            access: access,
-            failOn: failOn,
-            revalidate: revalidate
-        )
-    }
-
-    /// Load ppm from source
-    ///
-    /// - Parameters:
-    ///   - source: Source to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func ppmload(
-        source: VIPSSource,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("source", value: source)
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("ppmload_source", options: &opt)
-        }
+        try Self.call("matrixsave_target", options: &opt)
     }
 
     /// Save image to ppm file
@@ -2216,7 +1077,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("ppmsave", options: &opt)
+        try Self.call("ppmsave", options: &opt)
     }
 
     /// Save to ppm
@@ -2266,174 +1127,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("ppmsave_target", options: &opt)
-    }
-
-    /// Load named icc profile
-    ///
-    /// - Parameters:
-    ///   - name: Profile name
-    public static func profileLoad(name: String) throws -> VIPSBlob {
-        var opt = VIPSOption()
-
-        let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)
-        out.initialize(to: nil)
-        defer {
-            out.deallocate()
-        }
-
-        opt.set("name", value: name)
-        opt.set("profile", value: out)
-
-        try VIPSImage.call("profile_load", options: &opt)
-
-        guard let vipsBlob = out.pointee else {
-            throw VIPSError("Failed to get buffer from profile_load")
-        }
-
-        return VIPSBlob(vipsBlob)
-    }
-
-    /// Load a radiance image from a file
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func radload(
-        filename: String,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("radload", options: &opt)
-        }
-    }
-
-    /// Load rad from buffer
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func radload(
-        buffer: VIPSBlob,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        // the operation will retain the blob
-        try buffer.withVipsBlob { blob in
-            try VIPSImage { out in
-                var opt = VIPSOption()
-
-                opt.set("buffer", value: blob)
-                if let memory = memory {
-                    opt.set("memory", value: memory)
-                }
-                if let access = access {
-                    opt.set("access", value: access)
-                }
-                if let failOn = failOn {
-                    opt.set("fail_on", value: failOn)
-                }
-                if let revalidate = revalidate {
-                    opt.set("revalidate", value: revalidate)
-                }
-                opt.set("out", value: &out)
-
-                try VIPSImage.call("radload_buffer", options: &opt)
-            }
-        }
-    }
-
-    /// Load rad from buffer without copying the data. The caller must ensure the buffer remains valid for
-    /// the lifetime of the returned image and all its descendants.
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func radload(
-        unsafeBuffer buffer: UnsafeRawBufferPointer,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        let blob = VIPSBlob(noCopy: buffer)
-        return try radload(
-            buffer: blob,
-            memory: memory,
-            access: access,
-            failOn: failOn,
-            revalidate: revalidate
-        )
-    }
-
-    /// Load rad from source
-    ///
-    /// - Parameters:
-    ///   - source: Source to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func radload(
-        source: VIPSSource,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("source", value: source)
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("radload_source", options: &opt)
-        }
+        try Self.call("ppmsave_target", options: &opt)
     }
 
     /// Save image to radiance file
@@ -2468,7 +1162,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("radsave", options: &opt)
+        try Self.call("radsave", options: &opt)
     }
 
     /// Save image to radiance buffer
@@ -2507,7 +1201,7 @@ extension VIPSImage {
         }
         opt.set("buffer", value: out)
 
-        try VIPSImage.call("radsave_buffer", options: &opt)
+        try Self.call("radsave_buffer", options: &opt)
 
         guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from radsave_buffer")
@@ -2548,68 +1242,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("radsave_target", options: &opt)
-    }
-
-    /// Load raw data from a file
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - width: Image width in pixels
-    ///   - height: Image height in pixels
-    ///   - bands: Number of bands in image
-    ///   - offset: Offset in bytes from start of file
-    ///   - format: Pixel format in image
-    ///   - interpretation: Pixel interpretation
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func rawload(
-        filename: String,
-        width: Int,
-        height: Int,
-        bands: Int,
-        offset: UInt64? = nil,
-        format: VipsBandFormat? = nil,
-        interpretation: VipsInterpretation? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            opt.set("width", value: width)
-            opt.set("height", value: height)
-            opt.set("bands", value: bands)
-            if let offset = offset {
-                opt.set("offset", value: offset)
-            }
-            if let format = format {
-                opt.set("format", value: format)
-            }
-            if let interpretation = interpretation {
-                opt.set("interpretation", value: interpretation)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("rawload", options: &opt)
-        }
+        try Self.call("radsave_target", options: &opt)
     }
 
     /// Save image to raw file
@@ -2644,7 +1277,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("rawsave", options: &opt)
+        try Self.call("rawsave", options: &opt)
     }
 
     /// Write raw image to buffer
@@ -2683,7 +1316,7 @@ extension VIPSImage {
         }
         opt.set("buffer", value: out)
 
-        try VIPSImage.call("rawsave_buffer", options: &opt)
+        try Self.call("rawsave_buffer", options: &opt)
 
         guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from rawsave_buffer")
@@ -2724,81 +1357,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("rawsave_target", options: &opt)
-    }
-
-    /// Load vips from file
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func vipsload(
-        filename: String,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("vipsload", options: &opt)
-        }
-    }
-
-    /// Load vips from source
-    ///
-    /// - Parameters:
-    ///   - source: Source to load from
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func vipsload(
-        source: VIPSSource,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage { out in
-            var opt = VIPSOption()
-
-            opt.set("source", value: source)
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("vipsload_source", options: &opt)
-        }
+        try Self.call("rawsave_target", options: &opt)
     }
 
     /// Save image to file in vips format
@@ -2833,7 +1392,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("vipssave", options: &opt)
+        try Self.call("vipssave", options: &opt)
     }
 
     /// Save image to target in vips format
@@ -2868,7 +1427,1452 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("vipssave_target", options: &opt)
+        try Self.call("vipssave_target", options: &opt)
+    }
+
+}
+
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
+
+    /// Load an analyze6 image
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func analyzeload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("analyzeload", options: &opt)
+        }
+    }
+
+    /// Load csv
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - skip: Skip this many lines at the start of the file
+    ///   - lines: Read this many lines from the file
+    ///   - whitespace: Set of whitespace characters
+    ///   - separator: Set of separator characters
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func csvload(
+        filename: String,
+        skip: Int? = nil,
+        lines: Int? = nil,
+        whitespace: String? = nil,
+        separator: String? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let skip = skip {
+                opt.set("skip", value: skip)
+            }
+            if let lines = lines {
+                opt.set("lines", value: lines)
+            }
+            if let whitespace = whitespace {
+                opt.set("whitespace", value: whitespace)
+            }
+            if let separator = separator {
+                opt.set("separator", value: separator)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("csvload", options: &opt)
+        }
+    }
+
+    /// Load csv
+    ///
+    /// - Parameters:
+    ///   - source: Source to load from
+    ///   - skip: Skip this many lines at the start of the file
+    ///   - lines: Read this many lines from the file
+    ///   - whitespace: Set of whitespace characters
+    ///   - separator: Set of separator characters
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func csvload(
+        source: VIPSSource,
+        skip: Int? = nil,
+        lines: Int? = nil,
+        whitespace: String? = nil,
+        separator: String? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("source", value: source)
+            if let skip = skip {
+                opt.set("skip", value: skip)
+            }
+            if let lines = lines {
+                opt.set("lines", value: lines)
+            }
+            if let whitespace = whitespace {
+                opt.set("whitespace", value: whitespace)
+            }
+            if let separator = separator {
+                opt.set("separator", value: separator)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("csvload_source", options: &opt)
+        }
+    }
+
+    /// Load a fits image
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func fitsload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("fitsload", options: &opt)
+        }
+    }
+
+    /// Load fits from a source
+    ///
+    /// - Parameters:
+    ///   - source: Source to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func fitsload(
+        source: VIPSSource,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("source", value: source)
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("fitsload_source", options: &opt)
+        }
+    }
+
+    /// Load jpeg2000 image
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - page: Load this page from the image
+    ///   - oneshot: Load images a frame at a time
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func jp2kload(
+        filename: String,
+        page: Int? = nil,
+        oneshot: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let page = page {
+                opt.set("page", value: page)
+            }
+            if let oneshot = oneshot {
+                opt.set("oneshot", value: oneshot)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("jp2kload", options: &opt)
+        }
+    }
+
+    /// Load jpeg2000 image
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - page: Load this page from the image
+    ///   - oneshot: Load images a frame at a time
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func jp2kload(
+        buffer: VIPSBlob,
+        page: Int? = nil,
+        oneshot: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try Self { out in
+                var opt = VIPSOption()
+
+                opt.set("buffer", value: blob)
+                if let page = page {
+                    opt.set("page", value: page)
+                }
+                if let oneshot = oneshot {
+                    opt.set("oneshot", value: oneshot)
+                }
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try Self.call("jp2kload_buffer", options: &opt)
+            }
+        }
+    }
+
+    /// Load jpeg2000 image without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - page: Load this page from the image
+    ///   - oneshot: Load images a frame at a time
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func jp2kload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        page: Int? = nil,
+        oneshot: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try jp2kload(
+            buffer: blob,
+            page: page,
+            oneshot: oneshot,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
+    }
+
+    /// Load jpeg2000 image
+    ///
+    /// - Parameters:
+    ///   - source: Source to load from
+    ///   - page: Load this page from the image
+    ///   - oneshot: Load images a frame at a time
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func jp2kload(
+        source: VIPSSource,
+        page: Int? = nil,
+        oneshot: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("source", value: source)
+            if let page = page {
+                opt.set("page", value: page)
+            }
+            if let oneshot = oneshot {
+                opt.set("oneshot", value: oneshot)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("jp2kload_source", options: &opt)
+        }
+    }
+
+    /// Load jpeg-xl image
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - page: First page to load
+    ///   - n: Number of pages to load, -1 for all
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func jxlload(
+        filename: String,
+        page: Int? = nil,
+        n: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let page = page {
+                opt.set("page", value: page)
+            }
+            if let n = n {
+                opt.set("n", value: n)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("jxlload", options: &opt)
+        }
+    }
+
+    /// Load jpeg-xl image
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - page: First page to load
+    ///   - n: Number of pages to load, -1 for all
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func jxlload(
+        buffer: VIPSBlob,
+        page: Int? = nil,
+        n: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try Self { out in
+                var opt = VIPSOption()
+
+                opt.set("buffer", value: blob)
+                if let page = page {
+                    opt.set("page", value: page)
+                }
+                if let n = n {
+                    opt.set("n", value: n)
+                }
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try Self.call("jxlload_buffer", options: &opt)
+            }
+        }
+    }
+
+    /// Load jpeg-xl image without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - page: First page to load
+    ///   - n: Number of pages to load, -1 for all
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func jxlload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        page: Int? = nil,
+        n: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try jxlload(
+            buffer: blob,
+            page: page,
+            n: n,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
+    }
+
+    /// Load jpeg-xl image
+    ///
+    /// - Parameters:
+    ///   - source: Source to load from
+    ///   - page: First page to load
+    ///   - n: Number of pages to load, -1 for all
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func jxlload(
+        source: VIPSSource,
+        page: Int? = nil,
+        n: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("source", value: source)
+            if let page = page {
+                opt.set("page", value: page)
+            }
+            if let n = n {
+                opt.set("n", value: n)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("jxlload_source", options: &opt)
+        }
+    }
+
+    /// Load file with imagemagick7
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - density: Canvas resolution for rendering vector formats like SVG
+    ///   - page: First page to load
+    ///   - n: Number of pages to load, -1 for all
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func magickload(
+        filename: String,
+        density: String? = nil,
+        page: Int? = nil,
+        n: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let density = density {
+                opt.set("density", value: density)
+            }
+            if let page = page {
+                opt.set("page", value: page)
+            }
+            if let n = n {
+                opt.set("n", value: n)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("magickload", options: &opt)
+        }
+    }
+
+    /// Load buffer with imagemagick7
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - density: Canvas resolution for rendering vector formats like SVG
+    ///   - page: First page to load
+    ///   - n: Number of pages to load, -1 for all
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func magickload(
+        buffer: VIPSBlob,
+        density: String? = nil,
+        page: Int? = nil,
+        n: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try Self { out in
+                var opt = VIPSOption()
+
+                opt.set("buffer", value: blob)
+                if let density = density {
+                    opt.set("density", value: density)
+                }
+                if let page = page {
+                    opt.set("page", value: page)
+                }
+                if let n = n {
+                    opt.set("n", value: n)
+                }
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try Self.call("magickload_buffer", options: &opt)
+            }
+        }
+    }
+
+    /// Load buffer with imagemagick7 without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - density: Canvas resolution for rendering vector formats like SVG
+    ///   - page: First page to load
+    ///   - n: Number of pages to load, -1 for all
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func magickload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        density: String? = nil,
+        page: Int? = nil,
+        n: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try magickload(
+            buffer: blob,
+            density: density,
+            page: page,
+            n: n,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
+    }
+
+    /// Load mat from file
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func matload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("matload", options: &opt)
+        }
+    }
+
+    /// Load matrix
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func matrixload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("matrixload", options: &opt)
+        }
+    }
+
+    /// Load matrix
+    ///
+    /// - Parameters:
+    ///   - source: Source to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func matrixload(
+        source: VIPSSource,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("source", value: source)
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("matrixload_source", options: &opt)
+        }
+    }
+
+    /// Load an openexr image
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func openexrload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("openexrload", options: &opt)
+        }
+    }
+
+    /// Load file with openslide
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - level: Load this level from the file
+    ///   - autocrop: Crop to image bounds
+    ///   - associated: Load this associated image
+    ///   - attachAssociated: Attach all associated images
+    ///   - rgb: Output RGB (not RGBA)
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func openslideload(
+        filename: String,
+        level: Int? = nil,
+        autocrop: Bool? = nil,
+        associated: String? = nil,
+        attachAssociated: Bool? = nil,
+        rgb: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let level = level {
+                opt.set("level", value: level)
+            }
+            if let autocrop = autocrop {
+                opt.set("autocrop", value: autocrop)
+            }
+            if let associated = associated {
+                opt.set("associated", value: associated)
+            }
+            if let attachAssociated = attachAssociated {
+                opt.set("attach_associated", value: attachAssociated)
+            }
+            if let rgb = rgb {
+                opt.set("rgb", value: rgb)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("openslideload", options: &opt)
+        }
+    }
+
+    /// Load source with openslide
+    ///
+    /// - Parameters:
+    ///   - source: Source to load from
+    ///   - level: Load this level from the file
+    ///   - autocrop: Crop to image bounds
+    ///   - associated: Load this associated image
+    ///   - attachAssociated: Attach all associated images
+    ///   - rgb: Output RGB (not RGBA)
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func openslideload(
+        source: VIPSSource,
+        level: Int? = nil,
+        autocrop: Bool? = nil,
+        associated: String? = nil,
+        attachAssociated: Bool? = nil,
+        rgb: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("source", value: source)
+            if let level = level {
+                opt.set("level", value: level)
+            }
+            if let autocrop = autocrop {
+                opt.set("autocrop", value: autocrop)
+            }
+            if let associated = associated {
+                opt.set("associated", value: associated)
+            }
+            if let attachAssociated = attachAssociated {
+                opt.set("attach_associated", value: attachAssociated)
+            }
+            if let rgb = rgb {
+                opt.set("rgb", value: rgb)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("openslideload_source", options: &opt)
+        }
+    }
+
+    /// Load ppm from file
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func ppmload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("ppmload", options: &opt)
+        }
+    }
+
+    /// Load ppm from buffer
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func ppmload(
+        buffer: VIPSBlob,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try Self { out in
+                var opt = VIPSOption()
+
+                opt.set("buffer", value: blob)
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try Self.call("ppmload_buffer", options: &opt)
+            }
+        }
+    }
+
+    /// Load ppm from buffer without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func ppmload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try ppmload(
+            buffer: blob,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
+    }
+
+    /// Load ppm from source
+    ///
+    /// - Parameters:
+    ///   - source: Source to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func ppmload(
+        source: VIPSSource,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("source", value: source)
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("ppmload_source", options: &opt)
+        }
+    }
+
+    /// Load named icc profile
+    ///
+    /// - Parameters:
+    ///   - name: Profile name
+    public static func profileLoad(name: String) throws -> VIPSBlob {
+        var opt = VIPSOption()
+
+        let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)
+        out.initialize(to: nil)
+        defer {
+            out.deallocate()
+        }
+
+        opt.set("name", value: name)
+        opt.set("profile", value: out)
+
+        try Self.call("profile_load", options: &opt)
+
+        guard let vipsBlob = out.pointee else {
+            throw VIPSError("Failed to get buffer from profile_load")
+        }
+
+        return VIPSBlob(vipsBlob)
+    }
+
+    /// Load a radiance image from a file
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func radload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("radload", options: &opt)
+        }
+    }
+
+    /// Load rad from buffer
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func radload(
+        buffer: VIPSBlob,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try Self { out in
+                var opt = VIPSOption()
+
+                opt.set("buffer", value: blob)
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try Self.call("radload_buffer", options: &opt)
+            }
+        }
+    }
+
+    /// Load rad from buffer without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func radload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try radload(
+            buffer: blob,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
+    }
+
+    /// Load rad from source
+    ///
+    /// - Parameters:
+    ///   - source: Source to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func radload(
+        source: VIPSSource,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("source", value: source)
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("radload_source", options: &opt)
+        }
+    }
+
+    /// Load raw data from a file
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - width: Image width in pixels
+    ///   - height: Image height in pixels
+    ///   - bands: Number of bands in image
+    ///   - offset: Offset in bytes from start of file
+    ///   - format: Pixel format in image
+    ///   - interpretation: Pixel interpretation
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func rawload(
+        filename: String,
+        width: Int,
+        height: Int,
+        bands: Int,
+        offset: UInt64? = nil,
+        format: VipsBandFormat? = nil,
+        interpretation: VipsInterpretation? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            opt.set("width", value: width)
+            opt.set("height", value: height)
+            opt.set("bands", value: bands)
+            if let offset = offset {
+                opt.set("offset", value: offset)
+            }
+            if let format = format {
+                opt.set("format", value: format)
+            }
+            if let interpretation = interpretation {
+                opt.set("interpretation", value: interpretation)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("rawload", options: &opt)
+        }
+    }
+
+    /// Load vips from file
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func vipsload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("vipsload", options: &opt)
+        }
+    }
+
+    /// Load vips from source
+    ///
+    /// - Parameters:
+    ///   - source: Source to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func vipsload(
+        source: VIPSSource,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("source", value: source)
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("vipsload_source", options: &opt)
+        }
     }
 
 }
