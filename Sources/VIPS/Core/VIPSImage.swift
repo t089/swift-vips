@@ -1176,3 +1176,8 @@ public struct UnownedVIPSImageRef: VIPSImageProtocol, ~Escapable {
     }
 }
 
+extension VIPSImage {
+    public convenience init(takingOwnership imgRef: UnownedVIPSImageRef) {
+        self.init(g_object_ref(imgRef.ptr))
+    }
+}
