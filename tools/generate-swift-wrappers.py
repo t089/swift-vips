@@ -374,9 +374,9 @@ def generate_const_overload(base_operation_name, const_operation_name):
     
     signature += ") throws -> VIPSImage {"
     result.append(signature)
-    
+
     # Generate method body - call the const operation directly
-    result.append("        return try VIPSImage(self) { out in")
+    result.append("        return try VIPSImage { out in")
     result.append("            var opt = VIPSOption()")
     result.append("")
     result.append(f'            opt.set("{const_intro.member_x}", value: self)')
@@ -790,10 +790,10 @@ def generate_vipsblob_overload(operation_name):
     
     # Generate function body
     blob_param_swift = swiftize_param(blob_param_name)
-    
+
     result.append("        // the operation will retain the blob")
     result.append(f"        try {blob_param_swift}.withVipsBlob {{ blob in")
-    result.append("            try VIPSImage(nil) { out in")
+    result.append("            try VIPSImage { out in")
     result.append("                var opt = VIPSOption()")
     result.append("")
     result.append(f'                opt.set("{blob_param_name}", value: blob)')
@@ -1014,49 +1014,11 @@ def generate_swift_operation(operation_name):
                 blob_param_swift = swiftize_param(blob_param_name)
                 result.append(f"        // the operation will retain the blob")
                 result.append(f"        try {blob_param_swift}.withVipsBlob {{ blob in")
-                result.append("            try VIPSImage(nil) { out in")
+                result.append("            try VIPSImage { out in")
                 result.append("                var opt = VIPSOption()")
                 result.append("")
         else:
-            # Build the array of Swift objects to keep alive
-            if is_instance_method:
-                if swift_object_params:
-                    # We have additional Swift object parameters to keep alive
-                    object_refs = []
-                    for name in swift_object_params:
-                        if name == "right":
-                            param_name = "rhs"
-                        elif name == "in":
-                            param_name = "`in`"
-                        else:
-                            param_name = swiftize_param(name)
-                        # Cast optional parameters to Any to silence compiler warnings
-                        if name in optional_input:
-                            object_refs.append(f"{param_name} as Any")
-                        else:
-                            object_refs.append(param_name)
-                    result.append(f"        return try VIPSImage([self, {', '.join(object_refs)}]) {{ out in")
-                else:
-                    result.append("        return try VIPSImage(self) { out in")
-            else:
-                if swift_object_params:
-                    # Static method with Swift object parameters
-                    object_refs = []
-                    for name in swift_object_params:
-                        if name == "right":
-                            param_name = "rhs"
-                        elif name == "in":
-                            param_name = "`in`"
-                        else:
-                            param_name = swiftize_param(name)
-                        # Cast optional parameters to Any to silence compiler warnings
-                        if name in optional_input:
-                            object_refs.append(f"{param_name} as Any")
-                        else:
-                            object_refs.append(param_name)
-                    result.append(f"        return try VIPSImage([{', '.join(object_refs)}]) {{ out in")
-                else:
-                    result.append("        return try VIPSImage(nil) { out in")
+            result.append("        return try VIPSImage { out in")
             result.append("            var opt = VIPSOption()")
             result.append("")
     elif has_output and not has_image_output:

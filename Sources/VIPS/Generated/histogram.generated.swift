@@ -11,7 +11,7 @@ extension VIPSImage {
 
     /// Form cumulative histogram
     public func histCum() throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -40,7 +40,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - band: Equalise with this band
     public func histEqual(band: Int? = nil) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -58,7 +58,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - band: Find histogram of band
     public func histFind(band: Int? = nil) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -77,7 +77,7 @@ extension VIPSImage {
     ///   - index: Index image
     ///   - combine: Combine bins like this
     public func histFindIndexed(index: VIPSImage, combine: VipsCombine? = nil) throws -> VIPSImage {
-        return try VIPSImage([self, index]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -96,7 +96,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - bins: Number of bins in each dimension
     public func histFindNdim(bins: Int? = nil) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -130,7 +130,7 @@ extension VIPSImage {
     ///   - height: Window height in pixels
     ///   - maxSlope: Maximum slope (CLAHE)
     public func histLocal(width: Int, height: Int, maxSlope: Int? = nil) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -150,7 +150,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - ref: Reference histogram
     public func histMatch(ref: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage([self, ref]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -163,7 +163,7 @@ extension VIPSImage {
 
     /// Normalise histogram
     public func histNorm() throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -175,7 +175,7 @@ extension VIPSImage {
 
     /// Plot histogram
     public func histPlot() throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -194,7 +194,7 @@ extension VIPSImage {
     public func houghCircle(scale: Int? = nil, minRadius: Int? = nil, maxRadius: Int? = nil) throws
         -> VIPSImage
     {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -219,7 +219,7 @@ extension VIPSImage {
     ///   - width: Horizontal size of parameter space
     ///   - height: Vertical size of parameter space
     public func houghLine(width: Int? = nil, height: Int? = nil) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -240,7 +240,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - in2: Second input image
     public func phasecor(in2: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage([self, in2]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -253,7 +253,7 @@ extension VIPSImage {
 
     /// Make displayable power spectrum
     public func spectrum() throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)

@@ -33,7 +33,7 @@ extension VIPSImage {
     ///   - mask: Input matrix image
     ///   - morph: Morphological operation to perform
     public func morph(mask: VIPSImage, morph: VipsOperationMorphology) throws -> VIPSImage {
-        return try VIPSImage([self, mask]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -52,7 +52,7 @@ extension VIPSImage {
     ///   - height: Window height in pixels
     ///   - index: Select pixel at index
     public func rank(width: Int, height: Int, index: Int) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)

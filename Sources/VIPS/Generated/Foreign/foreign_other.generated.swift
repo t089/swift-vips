@@ -25,7 +25,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -70,7 +70,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -127,7 +127,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
@@ -581,7 +581,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -618,7 +618,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
@@ -680,6 +680,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - filename: Filename to load from
     ///   - page: Load this page from the image
+    ///   - oneshot: Load images a frame at a time
     ///   - memory: Force open via memory
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
@@ -687,17 +688,21 @@ extension VIPSImage {
     public static func jp2kload(
         filename: String,
         page: Int? = nil,
+        oneshot: Bool? = nil,
         memory: Bool? = nil,
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
             if let page = page {
                 opt.set("page", value: page)
+            }
+            if let oneshot = oneshot {
+                opt.set("oneshot", value: oneshot)
             }
             if let memory = memory {
                 opt.set("memory", value: memory)
@@ -722,6 +727,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - buffer: Buffer to load from
     ///   - page: Load this page from the image
+    ///   - oneshot: Load images a frame at a time
     ///   - memory: Force open via memory
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
@@ -730,6 +736,7 @@ extension VIPSImage {
     public static func jp2kload(
         buffer: VIPSBlob,
         page: Int? = nil,
+        oneshot: Bool? = nil,
         memory: Bool? = nil,
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
@@ -737,12 +744,15 @@ extension VIPSImage {
     ) throws -> VIPSImage {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
-            try VIPSImage(nil) { out in
+            try VIPSImage { out in
                 var opt = VIPSOption()
 
                 opt.set("buffer", value: blob)
                 if let page = page {
                     opt.set("page", value: page)
+                }
+                if let oneshot = oneshot {
+                    opt.set("oneshot", value: oneshot)
                 }
                 if let memory = memory {
                     opt.set("memory", value: memory)
@@ -769,6 +779,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - buffer: Buffer to load from
     ///   - page: Load this page from the image
+    ///   - oneshot: Load images a frame at a time
     ///   - memory: Force open via memory
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
@@ -777,6 +788,7 @@ extension VIPSImage {
     public static func jp2kload(
         unsafeBuffer buffer: UnsafeRawBufferPointer,
         page: Int? = nil,
+        oneshot: Bool? = nil,
         memory: Bool? = nil,
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
@@ -786,6 +798,7 @@ extension VIPSImage {
         return try jp2kload(
             buffer: blob,
             page: page,
+            oneshot: oneshot,
             memory: memory,
             access: access,
             failOn: failOn,
@@ -798,6 +811,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - source: Source to load from
     ///   - page: Load this page from the image
+    ///   - oneshot: Load images a frame at a time
     ///   - memory: Force open via memory
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
@@ -805,17 +819,21 @@ extension VIPSImage {
     public static func jp2kload(
         source: VIPSSource,
         page: Int? = nil,
+        oneshot: Bool? = nil,
         memory: Bool? = nil,
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
             if let page = page {
                 opt.set("page", value: page)
+            }
+            if let oneshot = oneshot {
+                opt.set("oneshot", value: oneshot)
             }
             if let memory = memory {
                 opt.set("memory", value: memory)
@@ -1044,7 +1062,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -1094,7 +1112,7 @@ extension VIPSImage {
     ) throws -> VIPSImage {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
-            try VIPSImage(nil) { out in
+            try VIPSImage { out in
                 var opt = VIPSOption()
 
                 opt.set("buffer", value: blob)
@@ -1175,7 +1193,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
@@ -1414,7 +1432,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -1469,7 +1487,7 @@ extension VIPSImage {
     ) throws -> VIPSImage {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
-            try VIPSImage(nil) { out in
+            try VIPSImage { out in
                 var opt = VIPSOption()
 
                 opt.set("buffer", value: blob)
@@ -1682,7 +1700,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -1719,7 +1737,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -1756,7 +1774,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
@@ -1863,7 +1881,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -1910,7 +1928,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -1972,7 +1990,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
@@ -2024,7 +2042,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -2046,7 +2064,75 @@ extension VIPSImage {
         }
     }
 
-    /// Load ppm base class
+    /// Load ppm from buffer
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func ppmload(
+        buffer: VIPSBlob,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try VIPSImage { out in
+                var opt = VIPSOption()
+
+                opt.set("buffer", value: blob)
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try VIPSImage.call("ppmload_buffer", options: &opt)
+            }
+        }
+    }
+
+    /// Load ppm from buffer without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func ppmload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> VIPSImage {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try ppmload(
+            buffer: blob,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
+    }
+
+    /// Load ppm from source
     ///
     /// - Parameters:
     ///   - source: Source to load from
@@ -2061,7 +2147,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
@@ -2223,7 +2309,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -2263,7 +2349,7 @@ extension VIPSImage {
     ) throws -> VIPSImage {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
-            try VIPSImage(nil) { out in
+            try VIPSImage { out in
                 var opt = VIPSOption()
 
                 opt.set("buffer", value: blob)
@@ -2328,7 +2414,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
@@ -2492,7 +2578,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -2656,7 +2742,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -2693,7 +2779,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)

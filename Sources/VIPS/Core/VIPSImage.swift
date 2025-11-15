@@ -3,29 +3,35 @@ import CvipsShim
 
 public typealias VIPSProgress = Cvips.VipsProgress
 
-public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
-    public let ptr: UnsafeMutableRawPointer!
+public final class VIPSImage: VIPSImageProtocol {
+    public var ptr: UnsafeMutableRawPointer!
+
     public var image: UnsafeMutablePointer<VipsImage>! {
         return self.ptr.assumingMemoryBound(to: VipsImage.self)
     }
 
-    public required init(_ ptr: UnsafeMutableRawPointer) {
+    public init(_ ptr: UnsafeMutableRawPointer) {
         self.ptr = ptr
     }
 
-    public required convenience init(_ image: UnsafeMutablePointer<VipsImage>) {
-        self.init(UnsafeMutableRawPointer(image))
+    public init(_ image: UnsafeMutablePointer<VipsImage>) {
+        self.ptr = UnsafeMutableRawPointer(image)
     }
 
     func withVipsImage<R>(_ body: (UnsafeMutablePointer<VipsImage>) -> R) -> R {
         return body(self.image)
     }
 
+    deinit {
+        guard let ptr else { return }
+        g_object_unref(ptr)
+    }
+
     /// This function creates a VIPSImage from a memory area.
     /// The memory area must be a simple array, for example RGBRGBRGB, left-to-right, top-to-bottom.
     /// The memory will be copied into the image.
     @inlinable
-    public init(
+    public convenience init(
         data: some Collection<UInt8>,
         width: Int,
         height: Int,
@@ -56,13 +62,13 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
         }
 
         if let maybe = maybe {
-            super.init(maybe)
+            self.init(maybe)
         } else {
             let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
-            super.init(image)
+            self.init(image)
         }
     }
 
@@ -78,7 +84,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - bands: Number of bands per pixel
     /// - Throws: VIPSError if image creation fails
     @inlinable
-    public init(
+    public convenience init(
         data: some Collection<Int8>,
         width: Int,
         height: Int,
@@ -107,13 +113,13 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
         }
 
         if let maybe = maybe {
-            super.init(maybe)
+            self.init(maybe)
         } else {
             let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
-            super.init(image)
+            self.init(image)
         }
     }
 
@@ -129,7 +135,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - bands: Number of bands per pixel
     /// - Throws: VIPSError if image creation fails
     @inlinable
-    public init(
+    public convenience init(
         data: some Collection<UInt16>,
         width: Int,
         height: Int,
@@ -158,13 +164,13 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
         }
 
         if let maybe = maybe {
-            super.init(maybe)
+            self.init(maybe)
         } else {
             let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
-            super.init(image)
+            self.init(image)
         }
     }
 
@@ -180,7 +186,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - bands: Number of bands per pixel
     /// - Throws: VIPSError if image creation fails
     @inlinable
-    public init(
+    public convenience init(
         data: some Collection<Int16>,
         width: Int,
         height: Int,
@@ -209,13 +215,13 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
         }
 
         if let maybe = maybe {
-            super.init(maybe)
+            self.init(maybe)
         } else {
             let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
-            super.init(image)
+            self.init(image)
         }
     }
 
@@ -231,7 +237,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - bands: Number of bands per pixel
     /// - Throws: VIPSError if image creation fails
     @inlinable
-    public init(
+    public convenience init(
         data: some Collection<UInt32>,
         width: Int,
         height: Int,
@@ -260,13 +266,13 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
         }
 
         if let maybe = maybe {
-            super.init(maybe)
+            self.init(maybe)
         } else {
             let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
-            super.init(image)
+            self.init(image)
         }
     }
 
@@ -282,7 +288,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - bands: Number of bands per pixel
     /// - Throws: VIPSError if image creation fails
     @inlinable
-    public init(
+    public convenience init(
         data: some Collection<Int32>,
         width: Int,
         height: Int,
@@ -311,13 +317,13 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
         }
 
         if let maybe = maybe {
-            super.init(maybe)
+            self.init(maybe)
         } else {
             let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
-            super.init(image)
+            self.init(image)
         }
     }
 
@@ -333,7 +339,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - bands: Number of bands per pixel
     /// - Throws: VIPSError if image creation fails
     @inlinable
-    public init(
+    public convenience init(
         data: some Collection<Float>,
         width: Int,
         height: Int,
@@ -362,13 +368,13 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
         }
 
         if let maybe = maybe {
-            super.init(maybe)
+            self.init(maybe)
         } else {
             let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
-            super.init(image)
+            self.init(image)
         }
     }
 
@@ -384,7 +390,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - bands: Number of bands per pixel
     /// - Throws: VIPSError if image creation fails
     @inlinable
-    public init(
+    public convenience init(
         data: some Collection<Double>,
         width: Int,
         height: Int,
@@ -413,13 +419,13 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
         }
 
         if let maybe = maybe {
-            super.init(maybe)
+            self.init(maybe)
         } else {
             let image = try Array(data)
                 .withUnsafeBufferPointer { buffer in
                     try createImage(from: .init(buffer))
                 }
-            super.init(image)
+            self.init(image)
         }
     }
 
@@ -438,7 +444,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - height: Image height in pixels
     ///   - bands: Number of bands per pixel
     /// - Throws: VIPSError if image creation fails
-    public init(
+    public convenience init(
         unsafeData buffer: UnsafeBufferPointer<UInt8>,
         width: Int,
         height: Int,
@@ -457,7 +463,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
             throw VIPSError()
         }
 
-        super.init(image)
+        self.init(image)
     }
 
     /// Creates a VIPSImage from a memory area containing signed 8-bit integer data.
@@ -475,7 +481,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - height: Image height in pixels
     ///   - bands: Number of bands per pixel
     /// - Throws: VIPSError if image creation fails
-    public init(
+    public convenience init(
         unsafeData buffer: UnsafeBufferPointer<Int8>,
         width: Int,
         height: Int,
@@ -494,7 +500,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
             throw VIPSError()
         }
 
-        super.init(image)
+        self.init(image)
     }
 
     /// Creates a VIPSImage from a memory area containing unsigned 16-bit integer data.
@@ -512,7 +518,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - height: Image height in pixels
     ///   - bands: Number of bands per pixel
     /// - Throws: VIPSError if image creation fails
-    public init(
+    public convenience init(
         unsafeData buffer: UnsafeBufferPointer<UInt16>,
         width: Int,
         height: Int,
@@ -531,7 +537,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
             throw VIPSError()
         }
 
-        super.init(image)
+        self.init(image)
     }
 
     /// Creates a VIPSImage from a memory area containing signed 16-bit integer data.
@@ -549,7 +555,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - height: Image height in pixels
     ///   - bands: Number of bands per pixel
     /// - Throws: VIPSError if image creation fails
-    public init(
+    public convenience init(
         unsafeData buffer: UnsafeBufferPointer<Int16>,
         width: Int,
         height: Int,
@@ -568,7 +574,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
             throw VIPSError()
         }
 
-        super.init(image)
+        self.init(image)
     }
 
     /// Creates a VIPSImage from a memory area containing unsigned 32-bit integer data.
@@ -586,7 +592,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - height: Image height in pixels
     ///   - bands: Number of bands per pixel
     /// - Throws: VIPSError if image creation fails
-    public init(
+    public convenience init(
         unsafeData buffer: UnsafeBufferPointer<UInt32>,
         width: Int,
         height: Int,
@@ -605,7 +611,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
             throw VIPSError()
         }
 
-        super.init(image)
+        self.init(image)
     }
 
     /// Creates a VIPSImage from a memory area containing signed 32-bit integer data.
@@ -623,7 +629,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - height: Image height in pixels
     ///   - bands: Number of bands per pixel
     /// - Throws: VIPSError if image creation fails
-    public init(
+    public convenience init(
         unsafeData buffer: UnsafeBufferPointer<Int32>,
         width: Int,
         height: Int,
@@ -642,7 +648,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
             throw VIPSError()
         }
 
-        super.init(image)
+        self.init(image)
     }
 
     /// Creates a VIPSImage from a memory area containing 32-bit floating point data.
@@ -660,7 +666,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - height: Image height in pixels
     ///   - bands: Number of bands per pixel
     /// - Throws: VIPSError if image creation fails
-    public init(
+    public convenience init(
         unsafeData buffer: UnsafeBufferPointer<Float>,
         width: Int,
         height: Int,
@@ -679,7 +685,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
             throw VIPSError()
         }
 
-        super.init(image)
+        self.init(image)
     }
 
     /// Creates a VIPSImage from a memory area containing 64-bit floating point data.
@@ -697,7 +703,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - height: Image height in pixels
     ///   - bands: Number of bands per pixel
     /// - Throws: VIPSError if image creation fails
-    public init(
+    public convenience init(
         unsafeData buffer: UnsafeBufferPointer<Double>,
         width: Int,
         height: Int,
@@ -716,7 +722,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
             throw VIPSError()
         }
 
-        super.init(image)
+        self.init(image)
     }
 
     /// Creates a new image by loading the given data.
@@ -728,7 +734,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - bufferNoCopy: The image data to load
     ///   - loader: The loader to use (optional)
     ///   - options: The options to use (optional)
-    convenience public init(
+    public convenience init(
         bufferNoCopy data: UnsafeRawBufferPointer,
         loader: String? = nil,
         options: String? = nil
@@ -748,7 +754,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
             vips_area_unref(shim_vips_area(blob))
         }
 
-        try self.init(nil) { out in
+        try self.init { out in
             var option = VIPSOption()
             option.set("buffer", value: blob)
             option.set("out", value: &out)
@@ -765,7 +771,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - loader: The loader to use (optional)
     ///   - options: The options to use (optional)
     @inlinable
-    convenience public init(
+    public convenience init(
         data: some Collection<UInt8>,
         loader: String? = nil,
         options: String? = nil
@@ -792,7 +798,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
             vips_area_unref(shim_vips_area(blob))
         }
 
-        try self.init(nil) { out in
+        try self.init { out in
             var option = VIPSOption()
             option.set("buffer", value: blob)
             option.set("out", value: &out)
@@ -811,7 +817,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - loader: The loader to use (optional)
     ///   - options: The options to use (optional)
     @inlinable
-    convenience public init(
+    public convenience init(
         unsafeData: UnsafeRawBufferPointer,
         loader: String? = nil,
         options: String? = nil
@@ -830,7 +836,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
             vips_area_unref(shim_vips_area(blob))
         }
 
-        try self.init(nil) { out in
+        try self.init { out in
             var option = VIPSOption()
             option.set("buffer", value: blob)
             option.set("out", value: &out)
@@ -847,7 +853,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - loader: The loader to use (optional)
     ///   - options: The options to use (optional)
     @inlinable
-    convenience public init(
+    public convenience init(
         blob: VIPSBlob,
         loader: String? = nil,
         options: String? = nil
@@ -858,7 +864,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
             throw VIPSError()
         }
 
-        try self.init(blob) { out in
+        try self.init { out in
             var option = VIPSOption()
             try blob.withVipsBlob { blob in
                 option.set("buffer", value: blob)
@@ -912,7 +918,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     ///   - access: Access pattern hint (`.random` or `.sequential`)
     ///   - inMemory: Force loading via memory instead of temporary files
     /// - Throws: VIPSError if the file cannot be opened or read
-    public init(fromFilePath path: String, access: VipsAccess = .random, inMemory: Bool = false)
+    public convenience init(fromFilePath path: String, access: VipsAccess = .random, inMemory: Bool = false)
         throws
     {
         guard let image = shim_vips_image_new_from_file(path, access, inMemory ? .true : .false)
@@ -920,7 +926,7 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
             throw VIPSError(vips_error_buffer())
         }
 
-        super.init(image)
+        self.init(image)
     }
 
     public convenience init(
@@ -931,25 +937,12 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
 
         let loader = try loader ?? source.findLoader()
 
-        try self.init(source) { out in
+        try self.init { out in
             var option = VIPSOption()
             option.set("source", value: source.source)
             option.set("out", value: &out)
             try VIPSImage.call(loader, optionsString: options, options: &option)
         }
-    }
-
-    @usableFromInline
-    init(_ other: Any?, _ block: (inout UnsafeMutablePointer<VipsImage>?) throws -> Void) rethrows {
-        let image: UnsafeMutablePointer<UnsafeMutablePointer<VipsImage>?> = .allocate(capacity: 1)
-        image.initialize(to: nil)
-        defer {
-            image.deallocate()
-        }
-        try block(&image.pointee)
-        precondition(image.pointee != nil, "Image pointer cannot be nil after init.")
-        super.init(image.pointee!)
-        self.other = other
     }
 
     /*func withUnsafeMutablePointer<T>(_ block: (inout UnsafeMutablePointer<VipsImage>) throws -> (T))
@@ -987,9 +980,23 @@ public struct VIPSImage: VIPSObject, VIPSImageProtocol, ~Copyable {
     }
 }
 
-extension VIPSImage {
+extension VIPSImageProtocol {
+    @usableFromInline
+    init(_ block: (inout UnsafeMutablePointer<VipsImage>?) throws -> Void) rethrows {
+        let image: UnsafeMutablePointer<UnsafeMutablePointer<VipsImage>?> = .allocate(capacity: 1)
+        image.initialize(to: nil)
+        defer {
+            image.deallocate()
+        }
+        try block(&image.pointee)
+        precondition(image.pointee != nil, "Image pointer cannot be nil after init.")
+        self.init(image.pointee!)
+    }
+}
+
+extension VIPSImageProtocol {
     public func new(_ colors: [Double]) throws -> VIPSImage {
-        try VIPSImage(self) { out in
+        try VIPSImage { out in
             var c = colors
             out = vips_image_new_from_image(self.image, &c, Int32(c.count))
             if out == nil { throw VIPSError() }
@@ -1047,7 +1054,7 @@ extension VIPSImage {
     /// If the image is already a simple area of memory, it just refs image and
     /// returns it.
     public func copyMemory() throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             out = vips_image_copy_memory(self.image)
             if out == nil { throw VIPSError() }
         }
@@ -1168,39 +1175,3 @@ public struct UnownedVIPSImageRef: VIPSImageProtocol, ~Escapable {
     }
 }
 
-
-public struct VIPSImageRef: ~Copyable {
-    public init(_ image: UnsafeMutablePointer<VipsImage>) {
-        self.ptr = UnsafeMutableRawPointer(image)
-    }
-
-    public var ptr: UnsafeMutableRawPointer!
-
-    public init(_ ptr: UnsafeMutableRawPointer) {
-        self.ptr = ptr
-    }
-
-    public var image: UnsafeMutablePointer<VipsImage>! {
-        return ptr.assumingMemoryBound(to: VipsImage.self)
-    }
-
-    deinit {
-        g_object_unref(self.ptr)
-    }
-
-    func thumbnail() throws -> VIPSImageRef {
-        let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsImage>?> = .allocate(capacity: 1)
-        out.initialize(to: nil)
-        defer {
-            out.deallocate()
-        }
-
-        var options = VIPSOption()
-        options.set("out", value: out)
-        options.set("in", value: self.image)
-
-        try VIPSImage.call("thumbnail", options: &options)
-
-        return VIPSImageRef(out.pointee!)
-    }
-}

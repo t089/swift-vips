@@ -16,7 +16,7 @@ extension VIPSImage {
     ///   - height: Image height in pixels
     ///   - bands: Number of bands in image
     public static func black(width: Int, height: Int, bands: Int? = nil) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -32,7 +32,7 @@ extension VIPSImage {
 
     /// Build a look-up table
     public func buildlut() throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -52,7 +52,7 @@ extension VIPSImage {
     public static func eye(width: Int, height: Int, uchar: Bool? = nil, factor: Double? = nil)
         throws -> VIPSImage
     {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -78,7 +78,7 @@ extension VIPSImage {
     public static func fractsurf(width: Int, height: Int, fractalDimension: Double) throws
         -> VIPSImage
     {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -103,7 +103,7 @@ extension VIPSImage {
         separable: Bool? = nil,
         precision: VipsPrecision? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("sigma", value: sigma)
@@ -135,7 +135,7 @@ extension VIPSImage {
         mean: Double? = nil,
         seed: Int? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -162,7 +162,7 @@ extension VIPSImage {
     ///   - height: Image height in pixels
     ///   - uchar: Output an unsigned char image
     public static func grey(width: Int, height: Int, uchar: Bool? = nil) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -185,7 +185,7 @@ extension VIPSImage {
     public static func identity(bands: Int? = nil, ushort: Bool? = nil, size: Int? = nil) throws
         -> VIPSImage
     {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             if let bands = bands {
@@ -216,7 +216,7 @@ extension VIPSImage {
         separable: Bool? = nil,
         precision: VipsPrecision? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("sigma", value: sigma)
@@ -256,7 +256,7 @@ extension VIPSImage {
         reject: Bool? = nil,
         optical: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -309,7 +309,7 @@ extension VIPSImage {
         reject: Bool? = nil,
         optical: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -362,7 +362,7 @@ extension VIPSImage {
         reject: Bool? = nil,
         optical: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -408,7 +408,7 @@ extension VIPSImage {
         reject: Bool? = nil,
         optical: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -453,7 +453,7 @@ extension VIPSImage {
         reject: Bool? = nil,
         optical: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -503,7 +503,7 @@ extension VIPSImage {
         reject: Bool? = nil,
         optical: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -553,7 +553,7 @@ extension VIPSImage {
         reject: Bool? = nil,
         optical: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -598,7 +598,7 @@ extension VIPSImage {
         reject: Bool? = nil,
         optical: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -645,7 +645,7 @@ extension VIPSImage {
         reject: Bool? = nil,
         optical: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -692,7 +692,7 @@ extension VIPSImage {
         reject: Bool? = nil,
         optical: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -732,7 +732,7 @@ extension VIPSImage {
         uchar: Bool? = nil,
         seed: Int? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -767,7 +767,7 @@ extension VIPSImage {
         hfreq: Double? = nil,
         vfreq: Double? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -814,7 +814,7 @@ extension VIPSImage {
         rgba: Bool? = nil,
         wrap: VipsTextWrap? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("text", value: text)
@@ -879,7 +879,7 @@ extension VIPSImage {
         M: Double? = nil,
         H: Double? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             if let inMax = inMax {
@@ -928,7 +928,7 @@ extension VIPSImage {
     public static func worley(width: Int, height: Int, cellSize: Int? = nil, seed: Int? = nil)
         throws -> VIPSImage
     {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
@@ -952,7 +952,7 @@ extension VIPSImage {
     ///   - height: Image height in pixels
     ///   - uchar: Output an unsigned char image
     public static func zone(width: Int, height: Int, uchar: Bool? = nil) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)

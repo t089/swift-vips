@@ -29,7 +29,7 @@ public struct VIPSOption {
         self.pairs.append(pair)
     }
 
-    public mutating func set(_ name: String, value: VIPSObject) {
+    public mutating func set(_ name: String, value: some VIPSObjectProtocol) {
         let pair = Pair(name: name, input: true)
         g_value_init(&pair.value, value.type)
         g_value_set_object(&pair.value, value.object)

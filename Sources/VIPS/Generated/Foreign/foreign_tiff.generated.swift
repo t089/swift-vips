@@ -15,9 +15,10 @@ extension VIPSImage {
     /// - Parameters:
     ///   - filename: Filename to load from
     ///   - page: First page to load
-    ///   - subifd: Subifd index
     ///   - n: Number of pages to load, -1 for all
     ///   - autorotate: Rotate image using orientation tag
+    ///   - subifd: Subifd index
+    ///   - unlimited: Remove all denial of service limits
     ///   - memory: Force open via memory
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
@@ -25,29 +26,33 @@ extension VIPSImage {
     public static func tiffload(
         filename: String,
         page: Int? = nil,
-        subifd: Int? = nil,
         n: Int? = nil,
         autorotate: Bool? = nil,
+        subifd: Int? = nil,
+        unlimited: Bool? = nil,
         memory: Bool? = nil,
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
             if let page = page {
                 opt.set("page", value: page)
             }
-            if let subifd = subifd {
-                opt.set("subifd", value: subifd)
-            }
             if let n = n {
                 opt.set("n", value: n)
             }
             if let autorotate = autorotate {
                 opt.set("autorotate", value: autorotate)
+            }
+            if let subifd = subifd {
+                opt.set("subifd", value: subifd)
+            }
+            if let unlimited = unlimited {
+                opt.set("unlimited", value: unlimited)
             }
             if let memory = memory {
                 opt.set("memory", value: memory)
@@ -72,9 +77,10 @@ extension VIPSImage {
     /// - Parameters:
     ///   - buffer: Buffer to load from
     ///   - page: First page to load
-    ///   - subifd: Subifd index
     ///   - n: Number of pages to load, -1 for all
     ///   - autorotate: Rotate image using orientation tag
+    ///   - subifd: Subifd index
+    ///   - unlimited: Remove all denial of service limits
     ///   - memory: Force open via memory
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
@@ -83,9 +89,10 @@ extension VIPSImage {
     public static func tiffload(
         buffer: VIPSBlob,
         page: Int? = nil,
-        subifd: Int? = nil,
         n: Int? = nil,
         autorotate: Bool? = nil,
+        subifd: Int? = nil,
+        unlimited: Bool? = nil,
         memory: Bool? = nil,
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
@@ -93,21 +100,24 @@ extension VIPSImage {
     ) throws -> VIPSImage {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
-            try VIPSImage(nil) { out in
+            try VIPSImage { out in
                 var opt = VIPSOption()
 
                 opt.set("buffer", value: blob)
                 if let page = page {
                     opt.set("page", value: page)
                 }
-                if let subifd = subifd {
-                    opt.set("subifd", value: subifd)
-                }
                 if let n = n {
                     opt.set("n", value: n)
                 }
                 if let autorotate = autorotate {
                     opt.set("autorotate", value: autorotate)
+                }
+                if let subifd = subifd {
+                    opt.set("subifd", value: subifd)
+                }
+                if let unlimited = unlimited {
+                    opt.set("unlimited", value: unlimited)
                 }
                 if let memory = memory {
                     opt.set("memory", value: memory)
@@ -134,9 +144,10 @@ extension VIPSImage {
     /// - Parameters:
     ///   - buffer: Buffer to load from
     ///   - page: First page to load
-    ///   - subifd: Subifd index
     ///   - n: Number of pages to load, -1 for all
     ///   - autorotate: Rotate image using orientation tag
+    ///   - subifd: Subifd index
+    ///   - unlimited: Remove all denial of service limits
     ///   - memory: Force open via memory
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
@@ -145,9 +156,10 @@ extension VIPSImage {
     public static func tiffload(
         unsafeBuffer buffer: UnsafeRawBufferPointer,
         page: Int? = nil,
-        subifd: Int? = nil,
         n: Int? = nil,
         autorotate: Bool? = nil,
+        subifd: Int? = nil,
+        unlimited: Bool? = nil,
         memory: Bool? = nil,
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
@@ -157,9 +169,10 @@ extension VIPSImage {
         return try tiffload(
             buffer: blob,
             page: page,
-            subifd: subifd,
             n: n,
             autorotate: autorotate,
+            subifd: subifd,
+            unlimited: unlimited,
             memory: memory,
             access: access,
             failOn: failOn,
@@ -172,9 +185,10 @@ extension VIPSImage {
     /// - Parameters:
     ///   - source: Source to load from
     ///   - page: First page to load
-    ///   - subifd: Subifd index
     ///   - n: Number of pages to load, -1 for all
     ///   - autorotate: Rotate image using orientation tag
+    ///   - subifd: Subifd index
+    ///   - unlimited: Remove all denial of service limits
     ///   - memory: Force open via memory
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
@@ -182,29 +196,33 @@ extension VIPSImage {
     public static func tiffload(
         source: VIPSSource,
         page: Int? = nil,
-        subifd: Int? = nil,
         n: Int? = nil,
         autorotate: Bool? = nil,
+        subifd: Int? = nil,
+        unlimited: Bool? = nil,
         memory: Bool? = nil,
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
             if let page = page {
                 opt.set("page", value: page)
             }
-            if let subifd = subifd {
-                opt.set("subifd", value: subifd)
-            }
             if let n = n {
                 opt.set("n", value: n)
             }
             if let autorotate = autorotate {
                 opt.set("autorotate", value: autorotate)
+            }
+            if let subifd = subifd {
+                opt.set("subifd", value: subifd)
+            }
+            if let unlimited = unlimited {
+                opt.set("unlimited", value: unlimited)
             }
             if let memory = memory {
                 opt.set("memory", value: memory)

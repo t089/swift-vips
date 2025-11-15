@@ -14,7 +14,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - mask: Input mask image
     public func freqmult(mask: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage([self, mask]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -27,7 +27,7 @@ extension VIPSImage {
 
     /// Forward fft
     public func fwfft() throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -42,7 +42,7 @@ extension VIPSImage {
     /// - Parameters:
     ///   - real: Output only the real part of the transform
     public func invfft(real: Bool? = nil) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)

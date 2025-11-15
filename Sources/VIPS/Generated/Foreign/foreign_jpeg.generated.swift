@@ -31,7 +31,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -86,7 +86,7 @@ extension VIPSImage {
     ) throws -> VIPSImage {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
-            try VIPSImage(nil) { out in
+            try VIPSImage { out in
                 var opt = VIPSOption()
 
                 opt.set("buffer", value: blob)
@@ -175,7 +175,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)

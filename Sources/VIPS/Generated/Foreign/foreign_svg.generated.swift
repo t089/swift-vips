@@ -17,6 +17,8 @@ extension VIPSImage {
     ///   - dpi: Render at this DPI
     ///   - scale: Scale output by this factor
     ///   - unlimited: Allow SVG of any size
+    ///   - stylesheet: Custom CSS
+    ///   - highBitdepth: Enable scRGB 128-bit output (32-bit per channel)
     ///   - memory: Force open via memory
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
@@ -26,12 +28,14 @@ extension VIPSImage {
         dpi: Double? = nil,
         scale: Double? = nil,
         unlimited: Bool? = nil,
+        stylesheet: String? = nil,
+        highBitdepth: Bool? = nil,
         memory: Bool? = nil,
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -43,6 +47,12 @@ extension VIPSImage {
             }
             if let unlimited = unlimited {
                 opt.set("unlimited", value: unlimited)
+            }
+            if let stylesheet = stylesheet {
+                opt.set("stylesheet", value: stylesheet)
+            }
+            if let highBitdepth = highBitdepth {
+                opt.set("high_bitdepth", value: highBitdepth)
             }
             if let memory = memory {
                 opt.set("memory", value: memory)
@@ -69,6 +79,8 @@ extension VIPSImage {
     ///   - dpi: Render at this DPI
     ///   - scale: Scale output by this factor
     ///   - unlimited: Allow SVG of any size
+    ///   - stylesheet: Custom CSS
+    ///   - highBitdepth: Enable scRGB 128-bit output (32-bit per channel)
     ///   - memory: Force open via memory
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
@@ -79,6 +91,8 @@ extension VIPSImage {
         dpi: Double? = nil,
         scale: Double? = nil,
         unlimited: Bool? = nil,
+        stylesheet: String? = nil,
+        highBitdepth: Bool? = nil,
         memory: Bool? = nil,
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
@@ -86,7 +100,7 @@ extension VIPSImage {
     ) throws -> VIPSImage {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
-            try VIPSImage(nil) { out in
+            try VIPSImage { out in
                 var opt = VIPSOption()
 
                 opt.set("buffer", value: blob)
@@ -98,6 +112,12 @@ extension VIPSImage {
                 }
                 if let unlimited = unlimited {
                     opt.set("unlimited", value: unlimited)
+                }
+                if let stylesheet = stylesheet {
+                    opt.set("stylesheet", value: stylesheet)
+                }
+                if let highBitdepth = highBitdepth {
+                    opt.set("high_bitdepth", value: highBitdepth)
                 }
                 if let memory = memory {
                     opt.set("memory", value: memory)
@@ -126,6 +146,8 @@ extension VIPSImage {
     ///   - dpi: Render at this DPI
     ///   - scale: Scale output by this factor
     ///   - unlimited: Allow SVG of any size
+    ///   - stylesheet: Custom CSS
+    ///   - highBitdepth: Enable scRGB 128-bit output (32-bit per channel)
     ///   - memory: Force open via memory
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
@@ -136,6 +158,8 @@ extension VIPSImage {
         dpi: Double? = nil,
         scale: Double? = nil,
         unlimited: Bool? = nil,
+        stylesheet: String? = nil,
+        highBitdepth: Bool? = nil,
         memory: Bool? = nil,
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
@@ -147,6 +171,8 @@ extension VIPSImage {
             dpi: dpi,
             scale: scale,
             unlimited: unlimited,
+            stylesheet: stylesheet,
+            highBitdepth: highBitdepth,
             memory: memory,
             access: access,
             failOn: failOn,
@@ -161,6 +187,8 @@ extension VIPSImage {
     ///   - dpi: Render at this DPI
     ///   - scale: Scale output by this factor
     ///   - unlimited: Allow SVG of any size
+    ///   - stylesheet: Custom CSS
+    ///   - highBitdepth: Enable scRGB 128-bit output (32-bit per channel)
     ///   - memory: Force open via memory
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
@@ -170,12 +198,14 @@ extension VIPSImage {
         dpi: Double? = nil,
         scale: Double? = nil,
         unlimited: Bool? = nil,
+        stylesheet: String? = nil,
+        highBitdepth: Bool? = nil,
         memory: Bool? = nil,
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
@@ -187,6 +217,12 @@ extension VIPSImage {
             }
             if let unlimited = unlimited {
                 opt.set("unlimited", value: unlimited)
+            }
+            if let stylesheet = stylesheet {
+                opt.set("stylesheet", value: stylesheet)
+            }
+            if let highBitdepth = highBitdepth {
+                opt.set("high_bitdepth", value: highBitdepth)
             }
             if let memory = memory {
                 opt.set("memory", value: memory)

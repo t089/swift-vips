@@ -29,7 +29,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -79,7 +79,7 @@ extension VIPSImage {
     ) throws -> VIPSImage {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
-            try VIPSImage(nil) { out in
+            try VIPSImage { out in
                 var opt = VIPSOption()
 
                 opt.set("buffer", value: blob)
@@ -160,7 +160,7 @@ extension VIPSImage {
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
     ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
@@ -199,6 +199,7 @@ extension VIPSImage {
     ///   - reuse: Reuse palette from input
     ///   - interpaletteMaxerror: Maximum inter-palette error for palette reusage
     ///   - interlace: Generate an interlaced (progressive) GIF
+    ///   - keepDuplicateFrames: Keep duplicate frames in the output instead of combining them
     ///   - keep: Which metadata to retain
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
@@ -212,6 +213,7 @@ extension VIPSImage {
         reuse: Bool? = nil,
         interpaletteMaxerror: Double? = nil,
         interlace: Bool? = nil,
+        keepDuplicateFrames: Bool? = nil,
         keep: VipsForeignKeep? = nil,
         background: [Double]? = nil,
         pageHeight: Int? = nil,
@@ -242,6 +244,9 @@ extension VIPSImage {
         if let interlace = interlace {
             opt.set("interlace", value: interlace)
         }
+        if let keepDuplicateFrames = keepDuplicateFrames {
+            opt.set("keep_duplicate_frames", value: keepDuplicateFrames)
+        }
         if let keep = keep {
             opt.set("keep", value: keep)
         }
@@ -268,6 +273,7 @@ extension VIPSImage {
     ///   - reuse: Reuse palette from input
     ///   - interpaletteMaxerror: Maximum inter-palette error for palette reusage
     ///   - interlace: Generate an interlaced (progressive) GIF
+    ///   - keepDuplicateFrames: Keep duplicate frames in the output instead of combining them
     ///   - keep: Which metadata to retain
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
@@ -280,6 +286,7 @@ extension VIPSImage {
         reuse: Bool? = nil,
         interpaletteMaxerror: Double? = nil,
         interlace: Bool? = nil,
+        keepDuplicateFrames: Bool? = nil,
         keep: VipsForeignKeep? = nil,
         background: [Double]? = nil,
         pageHeight: Int? = nil,
@@ -315,6 +322,9 @@ extension VIPSImage {
         if let interlace = interlace {
             opt.set("interlace", value: interlace)
         }
+        if let keepDuplicateFrames = keepDuplicateFrames {
+            opt.set("keep_duplicate_frames", value: keepDuplicateFrames)
+        }
         if let keep = keep {
             opt.set("keep", value: keep)
         }
@@ -349,6 +359,7 @@ extension VIPSImage {
     ///   - reuse: Reuse palette from input
     ///   - interpaletteMaxerror: Maximum inter-palette error for palette reusage
     ///   - interlace: Generate an interlaced (progressive) GIF
+    ///   - keepDuplicateFrames: Keep duplicate frames in the output instead of combining them
     ///   - keep: Which metadata to retain
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
@@ -362,6 +373,7 @@ extension VIPSImage {
         reuse: Bool? = nil,
         interpaletteMaxerror: Double? = nil,
         interlace: Bool? = nil,
+        keepDuplicateFrames: Bool? = nil,
         keep: VipsForeignKeep? = nil,
         background: [Double]? = nil,
         pageHeight: Int? = nil,
@@ -391,6 +403,9 @@ extension VIPSImage {
         }
         if let interlace = interlace {
             opt.set("interlace", value: interlace)
+        }
+        if let keepDuplicateFrames = keepDuplicateFrames {
+            opt.set("keep_duplicate_frames", value: keepDuplicateFrames)
         }
         if let keep = keep {
             opt.set("keep", value: keep)
