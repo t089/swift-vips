@@ -106,34 +106,98 @@ gboolean shim_vips_source_is_pipe(VipsSource *source);
 #endif
 #endif
 
-// VipsSaveable backwards compatibility shim for libvips 8.17+
-// In 8.17.0, VipsSaveable was removed and replaced with VipsForeignSaveable (a flags enum)
-// This shim provides the old enum for backwards compatibility
-#if defined(SHIM_VIPS_VERSION_8_17) && !defined(VIPS_SAVEABLE_MONO)
-// VipsSaveable doesn't exist in 8.17.x, so we recreate it
+// VipsSaveable backwards compatibility shim
+// In libvips 8.17.0, VipsSaveable was removed and replaced with VipsForeignSaveable.
+// In 8.17.3+, they added macros for backwards compatibility, but Swift can't import
+// macros that use bitwise OR operations. We provide simple constant getters that work
+// across all versions: pre-8.17 (native enum), 8.17.0-8.17.2 (VipsForeignSaveable),
+// and 8.17.3+ (backwards compat macros).
 
-/**
- * VipsSaveable:
- * @VIPS_SAVEABLE_MONO: 1 band (eg. CSV)
- * @VIPS_SAVEABLE_RGB: 1 or 3 bands (eg. PPM)
- * @VIPS_SAVEABLE_RGBA: 1, 2, 3 or 4 bands (eg. PNG)
- * @VIPS_SAVEABLE_RGBA_ONLY: 3 or 4 bands (eg. WEBP)
- * @VIPS_SAVEABLE_RGB_CMYK: 1, 3 or 4 bands (eg. JPEG)
- * @VIPS_SAVEABLE_ANY: any number of bands (eg. TIFF)
- *
- * Backwards compatibility shim for the old VipsSaveable enum.
- * Maps to appropriate VipsForeignSaveable flags.
- */
-typedef enum {
-    VIPS_SAVEABLE_MONO = VIPS_FOREIGN_SAVEABLE_MONO,
-    VIPS_SAVEABLE_RGB = VIPS_FOREIGN_SAVEABLE_RGB,
-    VIPS_SAVEABLE_RGBA = VIPS_FOREIGN_SAVEABLE_RGB | VIPS_FOREIGN_SAVEABLE_ALPHA,
-    VIPS_SAVEABLE_RGBA_ONLY = VIPS_FOREIGN_SAVEABLE_RGB | VIPS_FOREIGN_SAVEABLE_ALPHA,
-    VIPS_SAVEABLE_RGB_CMYK = VIPS_FOREIGN_SAVEABLE_RGB | VIPS_FOREIGN_SAVEABLE_CMYK,
-    VIPS_SAVEABLE_ANY = VIPS_FOREIGN_SAVEABLE_ALL,
-    VIPS_SAVEABLE_LAST = VIPS_FOREIGN_SAVEABLE_ALL + 1
-} VipsSaveable;
-
+// Getter functions that Swift can import
+static inline int shim_VIPS_SAVEABLE_MONO(void) {
+#if defined(SHIM_VIPS_VERSION_8_17)
+    // For 8.17+, use the macro if available, otherwise VipsForeignSaveable
+    #ifdef VIPS_SAVEABLE_MONO
+        return VIPS_SAVEABLE_MONO;
+    #else
+        return VIPS_FOREIGN_SAVEABLE_MONO;
+    #endif
+#else
+    // For pre-8.17, use the native enum
+    return VIPS_SAVEABLE_MONO;
 #endif
+}
+
+static inline int shim_VIPS_SAVEABLE_RGB(void) {
+#if defined(SHIM_VIPS_VERSION_8_17)
+    #ifdef VIPS_SAVEABLE_RGB
+        return VIPS_SAVEABLE_RGB;
+    #else
+        return VIPS_FOREIGN_SAVEABLE_MONO | VIPS_FOREIGN_SAVEABLE_RGB;
+    #endif
+#else
+    return VIPS_SAVEABLE_RGB;
+#endif
+}
+
+static inline int shim_VIPS_SAVEABLE_RGBA(void) {
+#if defined(SHIM_VIPS_VERSION_8_17)
+    #ifdef VIPS_SAVEABLE_RGBA
+        return VIPS_SAVEABLE_RGBA;
+    #else
+        return VIPS_FOREIGN_SAVEABLE_MONO | VIPS_FOREIGN_SAVEABLE_RGB | VIPS_FOREIGN_SAVEABLE_ALPHA;
+    #endif
+#else
+    return VIPS_SAVEABLE_RGBA;
+#endif
+}
+
+static inline int shim_VIPS_SAVEABLE_RGBA_ONLY(void) {
+#if defined(SHIM_VIPS_VERSION_8_17)
+    #ifdef VIPS_SAVEABLE_RGBA_ONLY
+        return VIPS_SAVEABLE_RGBA_ONLY;
+    #else
+        return VIPS_FOREIGN_SAVEABLE_RGB | VIPS_FOREIGN_SAVEABLE_ALPHA;
+    #endif
+#else
+    return VIPS_SAVEABLE_RGBA_ONLY;
+#endif
+}
+
+static inline int shim_VIPS_SAVEABLE_RGB_CMYK(void) {
+#if defined(SHIM_VIPS_VERSION_8_17)
+    #ifdef VIPS_SAVEABLE_RGB_CMYK
+        return VIPS_SAVEABLE_RGB_CMYK;
+    #else
+        return VIPS_FOREIGN_SAVEABLE_MONO | VIPS_FOREIGN_SAVEABLE_RGB | VIPS_FOREIGN_SAVEABLE_CMYK;
+    #endif
+#else
+    return VIPS_SAVEABLE_RGB_CMYK;
+#endif
+}
+
+static inline int shim_VIPS_SAVEABLE_ANY(void) {
+#if defined(SHIM_VIPS_VERSION_8_17)
+    #ifdef VIPS_SAVEABLE_ANY
+        return VIPS_SAVEABLE_ANY;
+    #else
+        return VIPS_FOREIGN_SAVEABLE_ALL;
+    #endif
+#else
+    return VIPS_SAVEABLE_ANY;
+#endif
+}
+
+static inline int shim_VIPS_SAVEABLE_LAST(void) {
+#if defined(SHIM_VIPS_VERSION_8_17)
+    #ifdef VIPS_SAVEABLE_LAST
+        return VIPS_SAVEABLE_LAST;
+    #else
+        return 99;
+    #endif
+#else
+    return VIPS_SAVEABLE_LAST;
+#endif
+}
 
 #endif /* C_vips_shim_h */

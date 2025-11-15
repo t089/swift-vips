@@ -2,18 +2,19 @@ import Cvips
 import CvipsShim
 
 // VipsSaveable was removed in libvips 8.17.0 and replaced with VipsForeignSaveable.
-// CvipsShim provides the VipsSaveable typedef and constants for 8.17+.
-// We use a Swift typealias that works with both the native enum (pre-8.17)
-// and our shim typedef (8.17+), since both are compatible with UInt32/CInt.
+// In 8.17.3+, they added backwards compatibility macros, but Swift can't import them
+// because they use bitwise OR. CvipsShim provides getter functions that work across
+// all libvips versions by checking for the native enum/macros and falling back to
+// VipsForeignSaveable flags.
 
 public typealias VipsSaveable = UInt32
 
 public extension VipsSaveable {
-    static var mono: Self { VIPS_SAVEABLE_MONO.rawValue }
-    static var rgb: Self { VIPS_SAVEABLE_RGB.rawValue }
-    static var rgba: Self { VIPS_SAVEABLE_RGBA.rawValue }
-    static var rgbaOnly: Self { VIPS_SAVEABLE_RGBA_ONLY.rawValue }
-    static var rgbCmyk: Self { VIPS_SAVEABLE_RGB_CMYK.rawValue }
-    static var any: Self { VIPS_SAVEABLE_ANY.rawValue }
-    static var last: Self { VIPS_SAVEABLE_LAST.rawValue }
+    static var mono: Self { UInt32(shim_VIPS_SAVEABLE_MONO()) }
+    static var rgb: Self { UInt32(shim_VIPS_SAVEABLE_RGB()) }
+    static var rgba: Self { UInt32(shim_VIPS_SAVEABLE_RGBA()) }
+    static var rgbaOnly: Self { UInt32(shim_VIPS_SAVEABLE_RGBA_ONLY()) }
+    static var rgbCmyk: Self { UInt32(shim_VIPS_SAVEABLE_RGB_CMYK()) }
+    static var any: Self { UInt32(shim_VIPS_SAVEABLE_ANY()) }
+    static var last: Self { UInt32(shim_VIPS_SAVEABLE_LAST()) }
 }
