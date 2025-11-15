@@ -1,6 +1,9 @@
 import Cvips
 import CvipsShim
 
+// VipsSaveable was removed in libvips 8.17.0 and replaced with VipsForeignSaveable.
+// CvipsShim provides a backwards compatibility layer for 8.17+ that recreates
+// the old VipsSaveable enum by mapping to VipsForeignSaveable flags.
 extension VipsSaveable {
     public static var mono: Self { VIPS_SAVEABLE_MONO }
     public static var rgb: Self { VIPS_SAVEABLE_RGB }
