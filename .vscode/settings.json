@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "*.swift": "swift",
+        "cvipsshim.h": "c"
+    }
+}

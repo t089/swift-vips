@@ -3,11 +3,16 @@ import CvipsShim
 
 
 open class VIPSInterpolate: VIPSObject {
-    private(set) var interpolate: UnsafeMutablePointer<VipsInterpolate>!
+    var interpolate: UnsafeMutablePointer<VipsInterpolate>! {
+        return self.ptr.assumingMemoryBound(to: VipsInterpolate.self)
+    }
+
+    public required init(_ ptr: UnsafeMutableRawPointer) {
+        super.init(ptr)
+    }
 
     public init(_ interpolate: UnsafeMutablePointer<VipsInterpolate>!) {
         super.init(shim_vips_object(interpolate))
-        self.interpolate = interpolate
     }
 
     public init(_ name: String) throws {
@@ -15,7 +20,6 @@ open class VIPSInterpolate: VIPSObject {
             throw VIPSError()
         }
         super.init(shim_vips_object(ptr))
-        self.interpolate = ptr
     }
 
     public var bilinear: VIPSInterpolate {

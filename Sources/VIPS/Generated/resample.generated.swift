@@ -8,7 +8,7 @@
 import Cvips
 import CvipsShim
 
-extension VIPSImage {
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Resample with a map image
     ///
@@ -19,13 +19,13 @@ extension VIPSImage {
     ///   - premultiplied: Images have premultiplied alpha
     ///   - extend: How to generate the extra pixels
     public func mapim(
-        index: VIPSImage,
+        index: some VIPSImageProtocol,
         interpolate: VIPSInterpolate? = nil,
         background: [Double]? = nil,
         premultiplied: Bool? = nil,
         extend: VipsExtend? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage([self, index, interpolate as Any]) { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -44,7 +44,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("mapim", options: &opt)
+            try Self.call("mapim", options: &opt)
         }
     }
 
@@ -53,9 +53,10 @@ extension VIPSImage {
     /// - Parameters:
     ///   - coeff: Coefficient matrix
     ///   - interpolate: Interpolate values with this
-    public func quadratic(coeff: VIPSImage, interpolate: VIPSInterpolate? = nil) throws -> VIPSImage
+    public func quadratic(coeff: some VIPSImageProtocol, interpolate: VIPSInterpolate? = nil) throws
+        -> Self
     {
-        return try VIPSImage([self, coeff, interpolate as Any]) { out in
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -65,9 +66,76 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("quadratic", options: &opt)
+            try Self.call("quadratic", options: &opt)
         }
     }
+
+    /// Generate thumbnail from image
+    ///
+    /// - Parameters:
+    ///   - width: Size to this width
+    ///   - height: Size to this height
+    ///   - size: Only upsize, only downsize, or both
+    ///   - noRotate: Don't use orientation tags to rotate image upright
+    ///   - crop: Reduce to fill target rectangle, then crop
+    ///   - linear: Reduce in linear light
+    ///   - inputProfile: Fallback input profile
+    ///   - outputProfile: Fallback output profile
+    ///   - intent: Rendering intent
+    ///   - failOn: Error level to fail on
+    public func thumbnailImage(
+        width: Int,
+        height: Int? = nil,
+        size: VipsSize? = nil,
+        noRotate: Bool? = nil,
+        crop: VipsInteresting? = nil,
+        linear: Bool? = nil,
+        inputProfile: String? = nil,
+        outputProfile: String? = nil,
+        intent: VipsIntent? = nil,
+        failOn: VipsFailOn? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("in", value: self)
+            opt.set("width", value: width)
+            if let height = height {
+                opt.set("height", value: height)
+            }
+            if let size = size {
+                opt.set("size", value: size)
+            }
+            if let noRotate = noRotate {
+                opt.set("no_rotate", value: noRotate)
+            }
+            if let crop = crop {
+                opt.set("crop", value: crop)
+            }
+            if let linear = linear {
+                opt.set("linear", value: linear)
+            }
+            if let inputProfile = inputProfile {
+                opt.set("input_profile", value: inputProfile)
+            }
+            if let outputProfile = outputProfile {
+                opt.set("output_profile", value: outputProfile)
+            }
+            if let intent = intent {
+                opt.set("intent", value: intent)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("thumbnail_image", options: &opt)
+        }
+    }
+
+}
+
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Generate thumbnail from file
     ///
@@ -79,8 +147,8 @@ extension VIPSImage {
     ///   - noRotate: Don't use orientation tags to rotate image upright
     ///   - crop: Reduce to fill target rectangle, then crop
     ///   - linear: Reduce in linear light
-    ///   - importProfile: Fallback import profile
-    ///   - exportProfile: Fallback export profile
+    ///   - inputProfile: Fallback input profile
+    ///   - outputProfile: Fallback output profile
     ///   - intent: Rendering intent
     ///   - failOn: Error level to fail on
     public static func thumbnail(
@@ -91,12 +159,12 @@ extension VIPSImage {
         noRotate: Bool? = nil,
         crop: VipsInteresting? = nil,
         linear: Bool? = nil,
-        importProfile: String? = nil,
-        exportProfile: String? = nil,
+        inputProfile: String? = nil,
+        outputProfile: String? = nil,
         intent: VipsIntent? = nil,
         failOn: VipsFailOn? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -116,11 +184,11 @@ extension VIPSImage {
             if let linear = linear {
                 opt.set("linear", value: linear)
             }
-            if let importProfile = importProfile {
-                opt.set("import_profile", value: importProfile)
+            if let inputProfile = inputProfile {
+                opt.set("input_profile", value: inputProfile)
             }
-            if let exportProfile = exportProfile {
-                opt.set("export_profile", value: exportProfile)
+            if let outputProfile = outputProfile {
+                opt.set("output_profile", value: outputProfile)
             }
             if let intent = intent {
                 opt.set("intent", value: intent)
@@ -130,7 +198,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("thumbnail", options: &opt)
+            try Self.call("thumbnail", options: &opt)
         }
     }
 
@@ -145,8 +213,8 @@ extension VIPSImage {
     ///   - noRotate: Don't use orientation tags to rotate image upright
     ///   - crop: Reduce to fill target rectangle, then crop
     ///   - linear: Reduce in linear light
-    ///   - importProfile: Fallback import profile
-    ///   - exportProfile: Fallback export profile
+    ///   - inputProfile: Fallback input profile
+    ///   - outputProfile: Fallback output profile
     ///   - intent: Rendering intent
     ///   - failOn: Error level to fail on
     @inlinable
@@ -159,14 +227,14 @@ extension VIPSImage {
         noRotate: Bool? = nil,
         crop: VipsInteresting? = nil,
         linear: Bool? = nil,
-        importProfile: String? = nil,
-        exportProfile: String? = nil,
+        inputProfile: String? = nil,
+        outputProfile: String? = nil,
         intent: VipsIntent? = nil,
         failOn: VipsFailOn? = nil
-    ) throws -> VIPSImage {
+    ) throws -> Self {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
-            try VIPSImage(nil) { out in
+            try Self { out in
                 var opt = VIPSOption()
 
                 opt.set("buffer", value: blob)
@@ -189,11 +257,11 @@ extension VIPSImage {
                 if let linear = linear {
                     opt.set("linear", value: linear)
                 }
-                if let importProfile = importProfile {
-                    opt.set("import_profile", value: importProfile)
+                if let inputProfile = inputProfile {
+                    opt.set("input_profile", value: inputProfile)
                 }
-                if let exportProfile = exportProfile {
-                    opt.set("export_profile", value: exportProfile)
+                if let outputProfile = outputProfile {
+                    opt.set("output_profile", value: outputProfile)
                 }
                 if let intent = intent {
                     opt.set("intent", value: intent)
@@ -203,71 +271,8 @@ extension VIPSImage {
                 }
                 opt.set("out", value: &out)
 
-                try VIPSImage.call("thumbnail_buffer", options: &opt)
+                try Self.call("thumbnail_buffer", options: &opt)
             }
-        }
-    }
-
-    /// Generate thumbnail from image
-    ///
-    /// - Parameters:
-    ///   - width: Size to this width
-    ///   - height: Size to this height
-    ///   - size: Only upsize, only downsize, or both
-    ///   - noRotate: Don't use orientation tags to rotate image upright
-    ///   - crop: Reduce to fill target rectangle, then crop
-    ///   - linear: Reduce in linear light
-    ///   - importProfile: Fallback import profile
-    ///   - exportProfile: Fallback export profile
-    ///   - intent: Rendering intent
-    ///   - failOn: Error level to fail on
-    public func thumbnailImage(
-        width: Int,
-        height: Int? = nil,
-        size: VipsSize? = nil,
-        noRotate: Bool? = nil,
-        crop: VipsInteresting? = nil,
-        linear: Bool? = nil,
-        importProfile: String? = nil,
-        exportProfile: String? = nil,
-        intent: VipsIntent? = nil,
-        failOn: VipsFailOn? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
-            var opt = VIPSOption()
-
-            opt.set("in", value: self)
-            opt.set("width", value: width)
-            if let height = height {
-                opt.set("height", value: height)
-            }
-            if let size = size {
-                opt.set("size", value: size)
-            }
-            if let noRotate = noRotate {
-                opt.set("no_rotate", value: noRotate)
-            }
-            if let crop = crop {
-                opt.set("crop", value: crop)
-            }
-            if let linear = linear {
-                opt.set("linear", value: linear)
-            }
-            if let importProfile = importProfile {
-                opt.set("import_profile", value: importProfile)
-            }
-            if let exportProfile = exportProfile {
-                opt.set("export_profile", value: exportProfile)
-            }
-            if let intent = intent {
-                opt.set("intent", value: intent)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("thumbnail_image", options: &opt)
         }
     }
 
@@ -282,8 +287,8 @@ extension VIPSImage {
     ///   - noRotate: Don't use orientation tags to rotate image upright
     ///   - crop: Reduce to fill target rectangle, then crop
     ///   - linear: Reduce in linear light
-    ///   - importProfile: Fallback import profile
-    ///   - exportProfile: Fallback export profile
+    ///   - inputProfile: Fallback input profile
+    ///   - outputProfile: Fallback output profile
     ///   - intent: Rendering intent
     ///   - failOn: Error level to fail on
     public static func thumbnail(
@@ -295,12 +300,12 @@ extension VIPSImage {
         noRotate: Bool? = nil,
         crop: VipsInteresting? = nil,
         linear: Bool? = nil,
-        importProfile: String? = nil,
-        exportProfile: String? = nil,
+        inputProfile: String? = nil,
+        outputProfile: String? = nil,
         intent: VipsIntent? = nil,
         failOn: VipsFailOn? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
@@ -323,11 +328,11 @@ extension VIPSImage {
             if let linear = linear {
                 opt.set("linear", value: linear)
             }
-            if let importProfile = importProfile {
-                opt.set("import_profile", value: importProfile)
+            if let inputProfile = inputProfile {
+                opt.set("input_profile", value: inputProfile)
             }
-            if let exportProfile = exportProfile {
-                opt.set("export_profile", value: exportProfile)
+            if let outputProfile = outputProfile {
+                opt.set("output_profile", value: outputProfile)
             }
             if let intent = intent {
                 opt.set("intent", value: intent)
@@ -337,7 +342,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("thumbnail_source", options: &opt)
+            try Self.call("thumbnail_source", options: &opt)
         }
     }
 

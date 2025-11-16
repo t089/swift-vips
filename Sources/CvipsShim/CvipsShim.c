@@ -6,7 +6,16 @@
 //
 
 #include "CvipsShim.h"
+#include "glib.h"
 
+
+gboolean shim_g_is_object(const void * p) {
+    return G_IS_OBJECT(p);
+}
+
+gint shim_g_object_get_ref_count(GObject* object) {
+    return g_atomic_int_get(&object->ref_count);
+}
 
 GObject* shim_g_object(const void * p) {
     return G_OBJECT(p);

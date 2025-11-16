@@ -8,7 +8,7 @@
 import Cvips
 import CvipsShim
 
-extension VIPSImage {
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Load pdf from file
     ///
@@ -36,8 +36,8 @@ extension VIPSImage {
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("filename", value: filename)
@@ -73,7 +73,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("pdfload", options: &opt)
+            try Self.call("pdfload", options: &opt)
         }
     }
 
@@ -104,10 +104,10 @@ extension VIPSImage {
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
-    ) throws -> VIPSImage {
+    ) throws -> Self {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
-            try VIPSImage(nil) { out in
+            try Self { out in
                 var opt = VIPSOption()
 
                 opt.set("buffer", value: blob)
@@ -143,7 +143,7 @@ extension VIPSImage {
                 }
                 opt.set("out", value: &out)
 
-                try VIPSImage.call("pdfload_buffer", options: &opt)
+                try Self.call("pdfload_buffer", options: &opt)
             }
         }
     }
@@ -176,7 +176,7 @@ extension VIPSImage {
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
-    ) throws -> VIPSImage {
+    ) throws -> Self {
         let blob = VIPSBlob(noCopy: buffer)
         return try pdfload(
             buffer: blob,
@@ -219,8 +219,8 @@ extension VIPSImage {
         access: VipsAccess? = nil,
         failOn: VipsFailOn? = nil,
         revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
+    ) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
@@ -256,7 +256,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("pdfload_source", options: &opt)
+            try Self.call("pdfload_source", options: &opt)
         }
     }
 

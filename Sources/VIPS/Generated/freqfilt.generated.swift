@@ -7,33 +7,33 @@
 
 import Cvips
 
-extension VIPSImage {
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Frequency-domain filtering
     ///
     /// - Parameters:
     ///   - mask: Input mask image
-    public func freqmult(mask: VIPSImage) throws -> VIPSImage {
-        return try VIPSImage([self, mask]) { out in
+    public func freqmult(mask: some VIPSImageProtocol) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("mask", value: mask)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("freqmult", options: &opt)
+            try Self.call("freqmult", options: &opt)
         }
     }
 
     /// Forward fft
-    public func fwfft() throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+    public func fwfft() throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("fwfft", options: &opt)
+            try Self.call("fwfft", options: &opt)
         }
     }
 
@@ -41,8 +41,8 @@ extension VIPSImage {
     ///
     /// - Parameters:
     ///   - real: Output only the real part of the transform
-    public func invfft(real: Bool? = nil) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+    public func invfft(real: Bool? = nil) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -51,7 +51,7 @@ extension VIPSImage {
             }
             opt.set("out", value: &out)
 
-            try VIPSImage.call("invfft", options: &opt)
+            try Self.call("invfft", options: &opt)
         }
     }
 

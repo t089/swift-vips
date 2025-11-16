@@ -8,3 +8,4 @@
 .swiftpm
 swiftly
 swiftly-*.tar.gz
+.swift-version

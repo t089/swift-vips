@@ -46,8 +46,6 @@ extension VIPSImage {
 
         let blob = outBuf.pointee
 
-        defer { vips_area_unref(shim_vips_area(blob)) }
-
         return VIPSBlob(blob)
     }
 

@@ -222,7 +222,7 @@ extension VIPSImage {
     /// arrays have more than one element and the image only has a single band, the result is 
     /// a many-band image where each band corresponds to one array element.
     public func linear(_ a: Double = 1.0, _ b: Double = 0, uchar: Bool? = nil) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
             
             opt.set("in", value: self.image)
@@ -242,7 +242,7 @@ extension VIPSImage {
     }
 
     public func linear(_ a: [Double], _ b: [Double], uchar: Bool? = nil) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
             
             opt.set("in", value: self.image)

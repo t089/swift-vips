@@ -7,7 +7,7 @@
 
 import Cvips
 
-extension VIPSImage {
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Count lines in an image
     ///
@@ -22,7 +22,7 @@ extension VIPSImage {
         opt.set("direction", value: direction)
         opt.set("nolines", value: &out)
 
-        try VIPSImage.call("countlines", options: &opt)
+        try Self.call("countlines", options: &opt)
 
         return out
     }
@@ -32,8 +32,8 @@ extension VIPSImage {
     /// - Parameters:
     ///   - mask: Input matrix image
     ///   - morph: Morphological operation to perform
-    public func morph(mask: VIPSImage, morph: VipsOperationMorphology) throws -> VIPSImage {
-        return try VIPSImage([self, mask]) { out in
+    public func morph(mask: some VIPSImageProtocol, morph: VipsOperationMorphology) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -41,7 +41,7 @@ extension VIPSImage {
             opt.set("morph", value: morph)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("morph", options: &opt)
+            try Self.call("morph", options: &opt)
         }
     }
 
@@ -51,8 +51,8 @@ extension VIPSImage {
     ///   - width: Window width in pixels
     ///   - height: Window height in pixels
     ///   - index: Select pixel at index
-    public func rank(width: Int, height: Int, index: Int) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+    public func rank(width: Int, height: Int, index: Int) throws -> Self {
+        return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
@@ -61,7 +61,7 @@ extension VIPSImage {
             opt.set("index", value: index)
             opt.set("out", value: &out)
 
-            try VIPSImage.call("rank", options: &opt)
+            try Self.call("rank", options: &opt)
         }
     }
 

@@ -8,185 +8,7 @@
 import Cvips
 import CvipsShim
 
-extension VIPSImage {
-
-    /// Load gif with libnsgif
-    ///
-    /// - Parameters:
-    ///   - filename: Filename to load from
-    ///   - n: Number of pages to load, -1 for all
-    ///   - page: First page to load
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func gifload(
-        filename: String,
-        n: Int? = nil,
-        page: Int? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage(nil) { out in
-            var opt = VIPSOption()
-
-            opt.set("filename", value: filename)
-            if let n = n {
-                opt.set("n", value: n)
-            }
-            if let page = page {
-                opt.set("page", value: page)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("gifload", options: &opt)
-        }
-    }
-
-    /// Load gif with libnsgif
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - n: Number of pages to load, -1 for all
-    ///   - page: First page to load
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func gifload(
-        buffer: VIPSBlob,
-        n: Int? = nil,
-        page: Int? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        // the operation will retain the blob
-        try buffer.withVipsBlob { blob in
-            try VIPSImage(nil) { out in
-                var opt = VIPSOption()
-
-                opt.set("buffer", value: blob)
-                if let n = n {
-                    opt.set("n", value: n)
-                }
-                if let page = page {
-                    opt.set("page", value: page)
-                }
-                if let memory = memory {
-                    opt.set("memory", value: memory)
-                }
-                if let access = access {
-                    opt.set("access", value: access)
-                }
-                if let failOn = failOn {
-                    opt.set("fail_on", value: failOn)
-                }
-                if let revalidate = revalidate {
-                    opt.set("revalidate", value: revalidate)
-                }
-                opt.set("out", value: &out)
-
-                try VIPSImage.call("gifload_buffer", options: &opt)
-            }
-        }
-    }
-
-    /// Load gif with libnsgif without copying the data. The caller must ensure the buffer remains valid for
-    /// the lifetime of the returned image and all its descendants.
-    ///
-    /// - Parameters:
-    ///   - buffer: Buffer to load from
-    ///   - n: Number of pages to load, -1 for all
-    ///   - page: First page to load
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func gifload(
-        unsafeBuffer buffer: UnsafeRawBufferPointer,
-        n: Int? = nil,
-        page: Int? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        let blob = VIPSBlob(noCopy: buffer)
-        return try gifload(
-            buffer: blob,
-            n: n,
-            page: page,
-            memory: memory,
-            access: access,
-            failOn: failOn,
-            revalidate: revalidate
-        )
-    }
-
-    /// Load gif from source
-    ///
-    /// - Parameters:
-    ///   - source: Source to load from
-    ///   - n: Number of pages to load, -1 for all
-    ///   - page: First page to load
-    ///   - memory: Force open via memory
-    ///   - access: Required access pattern for this file
-    ///   - failOn: Error level to fail on
-    ///   - revalidate: Don't use a cached result for this operation
-    public static func gifload(
-        source: VIPSSource,
-        n: Int? = nil,
-        page: Int? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> VIPSImage {
-        return try VIPSImage([source]) { out in
-            var opt = VIPSOption()
-
-            opt.set("source", value: source)
-            if let n = n {
-                opt.set("n", value: n)
-            }
-            if let page = page {
-                opt.set("page", value: page)
-            }
-            if let memory = memory {
-                opt.set("memory", value: memory)
-            }
-            if let access = access {
-                opt.set("access", value: access)
-            }
-            if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
-            }
-            if let revalidate = revalidate {
-                opt.set("revalidate", value: revalidate)
-            }
-            opt.set("out", value: &out)
-
-            try VIPSImage.call("gifload_source", options: &opt)
-        }
-    }
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Save as gif
     ///
@@ -199,6 +21,7 @@ extension VIPSImage {
     ///   - reuse: Reuse palette from input
     ///   - interpaletteMaxerror: Maximum inter-palette error for palette reusage
     ///   - interlace: Generate an interlaced (progressive) GIF
+    ///   - keepDuplicateFrames: Keep duplicate frames in the output instead of combining them
     ///   - keep: Which metadata to retain
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
@@ -212,6 +35,7 @@ extension VIPSImage {
         reuse: Bool? = nil,
         interpaletteMaxerror: Double? = nil,
         interlace: Bool? = nil,
+        keepDuplicateFrames: Bool? = nil,
         keep: VipsForeignKeep? = nil,
         background: [Double]? = nil,
         pageHeight: Int? = nil,
@@ -242,6 +66,9 @@ extension VIPSImage {
         if let interlace = interlace {
             opt.set("interlace", value: interlace)
         }
+        if let keepDuplicateFrames = keepDuplicateFrames {
+            opt.set("keep_duplicate_frames", value: keepDuplicateFrames)
+        }
         if let keep = keep {
             opt.set("keep", value: keep)
         }
@@ -255,7 +82,7 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("gifsave", options: &opt)
+        try Self.call("gifsave", options: &opt)
     }
 
     /// Save as gif
@@ -268,6 +95,7 @@ extension VIPSImage {
     ///   - reuse: Reuse palette from input
     ///   - interpaletteMaxerror: Maximum inter-palette error for palette reusage
     ///   - interlace: Generate an interlaced (progressive) GIF
+    ///   - keepDuplicateFrames: Keep duplicate frames in the output instead of combining them
     ///   - keep: Which metadata to retain
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
@@ -280,6 +108,7 @@ extension VIPSImage {
         reuse: Bool? = nil,
         interpaletteMaxerror: Double? = nil,
         interlace: Bool? = nil,
+        keepDuplicateFrames: Bool? = nil,
         keep: VipsForeignKeep? = nil,
         background: [Double]? = nil,
         pageHeight: Int? = nil,
@@ -315,6 +144,9 @@ extension VIPSImage {
         if let interlace = interlace {
             opt.set("interlace", value: interlace)
         }
+        if let keepDuplicateFrames = keepDuplicateFrames {
+            opt.set("keep_duplicate_frames", value: keepDuplicateFrames)
+        }
         if let keep = keep {
             opt.set("keep", value: keep)
         }
@@ -329,7 +161,7 @@ extension VIPSImage {
         }
         opt.set("buffer", value: out)
 
-        try VIPSImage.call("gifsave_buffer", options: &opt)
+        try Self.call("gifsave_buffer", options: &opt)
 
         guard let vipsBlob = out.pointee else {
             throw VIPSError("Failed to get buffer from gifsave_buffer")
@@ -349,6 +181,7 @@ extension VIPSImage {
     ///   - reuse: Reuse palette from input
     ///   - interpaletteMaxerror: Maximum inter-palette error for palette reusage
     ///   - interlace: Generate an interlaced (progressive) GIF
+    ///   - keepDuplicateFrames: Keep duplicate frames in the output instead of combining them
     ///   - keep: Which metadata to retain
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
@@ -362,6 +195,7 @@ extension VIPSImage {
         reuse: Bool? = nil,
         interpaletteMaxerror: Double? = nil,
         interlace: Bool? = nil,
+        keepDuplicateFrames: Bool? = nil,
         keep: VipsForeignKeep? = nil,
         background: [Double]? = nil,
         pageHeight: Int? = nil,
@@ -392,6 +226,9 @@ extension VIPSImage {
         if let interlace = interlace {
             opt.set("interlace", value: interlace)
         }
+        if let keepDuplicateFrames = keepDuplicateFrames {
+            opt.set("keep_duplicate_frames", value: keepDuplicateFrames)
+        }
         if let keep = keep {
             opt.set("keep", value: keep)
         }
@@ -405,7 +242,189 @@ extension VIPSImage {
             opt.set("profile", value: profile)
         }
 
-        try VIPSImage.call("gifsave_target", options: &opt)
+        try Self.call("gifsave_target", options: &opt)
+    }
+
+}
+
+extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
+
+    /// Load gif with libnsgif
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - n: Number of pages to load, -1 for all
+    ///   - page: First page to load
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func gifload(
+        filename: String,
+        n: Int? = nil,
+        page: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let n = n {
+                opt.set("n", value: n)
+            }
+            if let page = page {
+                opt.set("page", value: page)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("gifload", options: &opt)
+        }
+    }
+
+    /// Load gif with libnsgif
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - n: Number of pages to load, -1 for all
+    ///   - page: First page to load
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func gifload(
+        buffer: VIPSBlob,
+        n: Int? = nil,
+        page: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        // the operation will retain the blob
+        try buffer.withVipsBlob { blob in
+            try Self { out in
+                var opt = VIPSOption()
+
+                opt.set("buffer", value: blob)
+                if let n = n {
+                    opt.set("n", value: n)
+                }
+                if let page = page {
+                    opt.set("page", value: page)
+                }
+                if let memory = memory {
+                    opt.set("memory", value: memory)
+                }
+                if let access = access {
+                    opt.set("access", value: access)
+                }
+                if let failOn = failOn {
+                    opt.set("fail_on", value: failOn)
+                }
+                if let revalidate = revalidate {
+                    opt.set("revalidate", value: revalidate)
+                }
+                opt.set("out", value: &out)
+
+                try Self.call("gifload_buffer", options: &opt)
+            }
+        }
+    }
+
+    /// Load gif with libnsgif without copying the data. The caller must ensure the buffer remains valid for
+    /// the lifetime of the returned image and all its descendants.
+    ///
+    /// - Parameters:
+    ///   - buffer: Buffer to load from
+    ///   - n: Number of pages to load, -1 for all
+    ///   - page: First page to load
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    @inlinable
+    public static func gifload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        n: Int? = nil,
+        page: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        let blob = VIPSBlob(noCopy: buffer)
+        return try gifload(
+            buffer: blob,
+            n: n,
+            page: page,
+            memory: memory,
+            access: access,
+            failOn: failOn,
+            revalidate: revalidate
+        )
+    }
+
+    /// Load gif from source
+    ///
+    /// - Parameters:
+    ///   - source: Source to load from
+    ///   - n: Number of pages to load, -1 for all
+    ///   - page: First page to load
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func gifload(
+        source: VIPSSource,
+        n: Int? = nil,
+        page: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("source", value: source)
+            if let n = n {
+                opt.set("n", value: n)
+            }
+            if let page = page {
+                opt.set("page", value: page)
+            }
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("gifload_source", options: &opt)
+        }
     }
 
 }

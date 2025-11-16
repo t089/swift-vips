@@ -5,7 +5,7 @@ extension VIPSImage {
 
     /// See VIPSImage.bandjoin(`in`:)
     public func bandjoin(_ other: [VIPSImage]) throws -> VIPSImage {
-        return try VIPSImage([self] + other) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
 
             opt.set("in", value: [self] + other)
@@ -27,7 +27,7 @@ extension VIPSImage {
     /// - Returns: A new single-band image
     /// - Throws: `VIPSError` if the operation fails
     public func bandbool(_ operation: VipsOperationBoolean) throws -> VIPSImage {
-        return try VIPSImage(self) { out in
+        return try VIPSImage { out in
             var opt = VIPSOption()
             
             opt.set("in", value: self.image)

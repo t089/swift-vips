@@ -29,7 +29,7 @@ public struct VIPSOption {
         self.pairs.append(pair)
     }
 
-    public mutating func set(_ name: String, value: VIPSObject) {
+    public mutating func set<Value: VIPSObjectProtocol>(_ name: String, value: borrowing Value) where Value: ~Copyable {
         let pair = Pair(name: name, input: true)
         g_value_init(&pair.value, value.type)
         g_value_set_object(&pair.value, value.object)
@@ -95,7 +95,7 @@ public struct VIPSOption {
         self.pairs.append(pair)
     }
 
-    public mutating func set(_ name: String, value: VIPSImage) {
+    public mutating func set(_ name: String, value: some VIPSImageProtocol) {
         set(name, value: value.image)
     }
 
@@ -110,7 +110,7 @@ public struct VIPSOption {
         set(name, value: value.target)
     }
     
-    public mutating func set(_ name: String, value: [VIPSImage]) {
+    public mutating func set(_ name: String, value: [some VIPSImage]) {
         let pair = Pair(name: name, input: true)
         g_value_init(&pair.value, vips_array_image_get_type())
         vips_value_set_array_image(&pair.value, Int32(value.count))

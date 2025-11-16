@@ -24,13 +24,11 @@ extension VIPSImage {
             throw VIPSError("Failed to get projection outputs")
         }
         
-        // Create output images with references to keep input alive
-        // Use the init with 'other' parameter to keep self alive
-        let rows = VIPSImage(self) { ptr in
+        let rows = VIPSImage { ptr in
             ptr = rowsPtr
         }
         
-        let columns = VIPSImage(self) { ptr in
+        let columns = VIPSImage { ptr in
             ptr = colsPtr
         }
         
@@ -60,13 +58,11 @@ extension VIPSImage {
             throw VIPSError("Failed to get profile outputs")
         }
         
-        // Create output images with references to keep input alive
-        // Use the init with 'other' parameter to keep self alive
-        let columns = VIPSImage(self) { ptr in
+        let columns = VIPSImage { ptr in
             ptr = colsPtr
         }
         
-        let rows = VIPSImage(self) { ptr in
+        let rows = VIPSImage { ptr in
             ptr = rowsPtr
         }
         

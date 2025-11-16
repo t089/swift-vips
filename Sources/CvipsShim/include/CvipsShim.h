@@ -14,6 +14,10 @@
 
 VipsImage* shim_vips_image_new_from_source(VipsSource *source, const char* options);
 
+gint shim_g_object_get_ref_count(GObject* object);
+
+gboolean shim_g_is_object(const void * p);
+
 GObject* shim_g_object(const void * p);
 
 GType shim_g_object_type(const void * p);
