@@ -3,7 +3,7 @@ import Testing
 import VIPS
 
 extension VIPSTests {
-    @Suite(.vips, .serialized)
+    @Suite(.vips)
     struct VIPSBlobTests {
         @Test
         func testCreateFromArray() {

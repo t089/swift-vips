@@ -2,7 +2,7 @@ import Testing
 import VIPS
 
 extension VIPSTests {
-    @Suite(.vips, .serialized)
+    @Suite(.vips)
     struct VIPSTargetCustomTests {
 
         @Test

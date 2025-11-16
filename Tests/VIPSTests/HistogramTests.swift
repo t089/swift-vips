@@ -10,7 +10,7 @@ private func histogramSum(_ histogram: VIPSImage) throws -> Double {
 }
 
 extension VIPSTests {
-    @Suite(.vips, .serialized)
+    @Suite(.vips)
     struct HistogramTests {
 
         // MARK: - Basic Histogram Operations

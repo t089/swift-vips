@@ -7,7 +7,7 @@ import Testing
 @Suite(.serialized)
 struct VIPSTests {
 
-    @Suite(.vips, .serialized)
+    @Suite(.vips)
     struct SomeTests {
         var testPath: String {
             testUrl.path

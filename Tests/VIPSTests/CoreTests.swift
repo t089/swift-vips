@@ -6,7 +6,7 @@ import Testing
 @testable import VIPS
 
 extension VIPSTests {
-    @Suite(.vips, .serialized)
+    @Suite(.vips)
     struct CoreTests {
 
         var testPath: String {

@@ -4,7 +4,7 @@ import Testing
 import Foundation
 
 extension VIPSTests {
-@Suite(.vips, .serialized)
+@Suite(.vips)
 struct CreateTests {
     
     // MARK: - Basic Image Creation
