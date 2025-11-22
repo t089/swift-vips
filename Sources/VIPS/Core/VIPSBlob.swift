@@ -87,6 +87,7 @@ public final class VIPSBlob: @unchecked Sendable, Equatable, CustomDebugStringCo
         return VIPSBlob(newBlob)
     }
 
+    @inlinable
     public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
         let data = blob.pointee.area.data
         let length = blob.pointee.area.length
@@ -97,6 +98,7 @@ public final class VIPSBlob: @unchecked Sendable, Equatable, CustomDebugStringCo
     /// Yield the contiguous buffer of this blob.
     ///
     /// Never returns nil, unless `body` returns nil.
+    @inlinable
     public func withContiguousStorageIfAvailable<R>(
         _ body: (UnsafeBufferPointer<UInt8>) throws -> R
     ) rethrows -> R? {
@@ -112,6 +114,7 @@ public final class VIPSBlob: @unchecked Sendable, Equatable, CustomDebugStringCo
     /// If you escape the pointer from the closure, you _must_ call `storageManagement.retain()` to get ownership to
     /// the bytes and you also must call `storageManagement.release()` if you no longer require those bytes. Calls to
     /// `retain` and `release` must be balanced.
+    @inlinable
     public func withUnsafeBytesAndStorageManagement<R>(
         _ body: (UnsafeRawBufferPointer, Unmanaged<AnyObject>) throws -> R
     ) rethrows -> R {

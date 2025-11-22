@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsForeignKeep = Cvips.VipsForeignKeep
+
 extension VipsForeignKeep {
     public static var none: Self { VIPS_FOREIGN_KEEP_NONE }
     public static var exif: Self { VIPS_FOREIGN_KEEP_EXIF }

@@ -1084,7 +1084,7 @@ extension VIPSImageProtocol where Self: ~Copyable, Self: ~Escapable {
         return Int(vips_image_get_bands(self.image))
     }
 
-    var kill: Bool {
+    public var kill: Bool {
         get {
             return vips_image_iskilled(self.image) != 0
         }
@@ -1095,11 +1095,11 @@ extension VIPSImageProtocol where Self: ~Copyable, Self: ~Escapable {
         */
     }
 
-    func setKill(_ kill: Bool) {
+    public func setKill(_ kill: Bool) {
         vips_image_set_kill(self.image, kill ? 1 : 0)
     }
 
-    func setProgressReportingEnabled(_ enabled: Bool) {
+    public func setProgressReportingEnabled(_ enabled: Bool) {
         vips_image_set_progress(self.image, enabled ? .true : .false)
     }
 
