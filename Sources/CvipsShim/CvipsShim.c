@@ -168,3 +168,138 @@ gboolean shim_vips_source_decode_status(VipsSource *source) {
 gboolean shim_vips_source_is_pipe(VipsSource *source) {
     return source->is_pipe;
 }
+
+// Callback for collecting operation types
+static void* collect_operation_type(GType type, void* a, void* b) {
+    GArray* types = (GArray*)a;
+    const char* nickname = vips_nickname_find(type);
+
+    if (nickname) {
+        g_array_append_val(types, type);
+    }
+
+    return NULL;
+}
+
+// Get all operation types
+GType* shim_get_all_operation_types(int* count) {
+    GArray* types = g_array_new(FALSE, FALSE, sizeof(GType));
+
+    // Map over all VipsOperation subclasses
+    vips_type_map(vips_operation_get_type(), collect_operation_type, types, NULL);
+
+    *count = types->len;
+
+    // Convert GArray to C array - caller must free
+    GType* result = g_malloc(sizeof(GType) * types->len);
+    for (guint i = 0; i < types->len; i++) {
+        result[i] = g_array_index(types, GType, i);
+    }
+
+    g_array_free(types, TRUE);
+    return result;
+}
+
+// Get operation info by nickname
+ShimOperationInfo* shim_get_operation_info(const char* nickname) {
+    // Find the operation class by nickname
+    VipsObjectClass* object_class = vips_class_find("VipsOperation", nickname);
+    if (!object_class) {
+        return NULL;
+    }
+
+    GType operation_type = G_OBJECT_CLASS_TYPE(object_class);
+    VipsOperationClass* operation_class = VIPS_OPERATION_CLASS(object_class);
+
+    ShimOperationInfo* info = g_malloc(sizeof(ShimOperationInfo));
+    info->nickname = g_strdup(object_class->nickname ? object_class->nickname : nickname);
+    info->description = g_strdup(object_class->description ? object_class->description : "");
+    info->operation_type = operation_type;
+    info->flags = operation_class ? operation_class->flags : 0;
+
+    return info;
+}
+
+// Callback for collecting parameter info
+typedef struct {
+    GArray* params;
+} CollectParamsData;
+
+static void* collect_parameter_info(VipsObjectClass* object_class,
+                                   GParamSpec* pspec,
+                                   VipsArgumentClass* argument_class,
+                                   void* a, void* b) {
+    CollectParamsData* data = (CollectParamsData*)a;
+
+    ShimParameterInfo param_info;
+    param_info.name = g_strdup(g_param_spec_get_name(pspec));
+    param_info.description = g_strdup(g_param_spec_get_blurb(pspec));
+    param_info.parameter_type = G_PARAM_SPEC_VALUE_TYPE(pspec);
+    param_info.flags = argument_class->flags;
+    param_info.priority = argument_class->priority;
+
+    g_array_append_val(data->params, param_info);
+    return NULL;
+}
+
+// Get parameters for an operation
+ShimParameterInfo* shim_get_operation_parameters(const char* nickname, int* count) {
+    // Find the operation class by nickname
+    VipsObjectClass* object_class = vips_class_find("VipsOperation", nickname);
+    if (!object_class) {
+        *count = 0;
+        return NULL;
+    }
+
+    CollectParamsData data;
+    data.params = g_array_new(FALSE, FALSE, sizeof(ShimParameterInfo));
+
+    // Collect all arguments
+    vips_argument_class_map(object_class, collect_parameter_info, &data, NULL);
+
+    *count = data.params->len;
+
+    // Convert to C array - caller must free
+    ShimParameterInfo* result = g_malloc(sizeof(ShimParameterInfo) * data.params->len);
+    for (guint i = 0; i < data.params->len; i++) {
+        result[i] = g_array_index(data.params, ShimParameterInfo, i);
+    }
+
+    g_array_free(data.params, TRUE);
+    return result;
+}
+
+// Free allocated arrays
+void shim_free_operation_types(GType* types) {
+    g_free(types);
+}
+
+void shim_free_operation_info(ShimOperationInfo* info) {
+    if (info) {
+        g_free((char*)info->nickname);
+        g_free((char*)info->description);
+        g_free(info);
+    }
+}
+
+void shim_free_parameter_info(ShimParameterInfo* params) {
+    // Note: We don't free individual strings here as they're owned by GLib
+    g_free(params);
+}
+
+// Helper functions for type introspection
+const char* shim_gtype_name(GType gtype) {
+    return g_type_name(gtype);
+}
+
+GType shim_gtype_fundamental(GType gtype) {
+    return g_type_fundamental(gtype);
+}
+
+gboolean shim_gtype_is_enum(GType gtype) {
+    return G_TYPE_IS_ENUM(gtype);
+}
+
+gboolean shim_gtype_is_flags(GType gtype) {
+    return G_TYPE_IS_FLAGS(gtype);
+}

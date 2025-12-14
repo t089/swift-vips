@@ -106,4 +106,40 @@ gboolean shim_vips_source_is_pipe(VipsSource *source);
 #endif
 #endif
 
+// Introspection functions for operation discovery
+typedef struct {
+    const char* nickname;
+    const char* description;
+    GType operation_type;
+    int flags;
+} ShimOperationInfo;
+
+typedef struct {
+    const char* name;
+    const char* description;
+    GType parameter_type;
+    int flags;
+    int priority;
+} ShimParameterInfo;
+
+// Get all operation types and count
+GType* shim_get_all_operation_types(int* count);
+
+// Get operation info by nickname
+ShimOperationInfo* shim_get_operation_info(const char* nickname);
+
+// Get parameters for an operation
+ShimParameterInfo* shim_get_operation_parameters(const char* nickname, int* count);
+
+// Free allocated arrays
+void shim_free_operation_types(GType* types);
+void shim_free_operation_info(ShimOperationInfo* info);
+void shim_free_parameter_info(ShimParameterInfo* params);
+
+// Helper functions for type introspection
+const char* shim_gtype_name(GType gtype);
+GType shim_gtype_fundamental(GType gtype);
+gboolean shim_gtype_is_enum(GType gtype);
+gboolean shim_gtype_is_flags(GType gtype);
+
 #endif /* C_vips_shim_h */
