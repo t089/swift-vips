@@ -1069,50 +1069,93 @@ extension VIPSImageProtocol where Self: ~Copyable, Self: ~Escapable {
         try body(self.image)
     }
 
+    /// The number of pixels across the image.
     @inlinable
     public var width: Int {
         return Int(vips_image_get_width(self.image))
     }
 
+    /// The number of pixels down the image.
     @inlinable
     public var height: Int {
         return Int(vips_image_get_height(self.image))
     }
 
+    /// The number of bands (channels) in the image.
     @inlinable
     public var bands: Int {
         return Int(vips_image_get_bands(self.image))
     }
 
+    /// The kill flag for this image.
+    ///
+    /// When getting: If the image has been killed, returns `true`. Otherwise returns `false`.
+    ///
+    /// When setting: Set the kill flag on an image. Setting this to `true` will block eval
+    /// and is handy for stopping sets of threads.
+    ///
+    /// - SeeAlso: `setProgressReportingEnabled(_:)`
     public var kill: Bool {
         get {
             return vips_image_iskilled(self.image) != 0
         }
-        /* Compiler bug:
-        set {
+        nonmutating set {
             vips_image_set_kill(self.image, newValue ? 1 : 0)
         }
-        */
+
     }
 
-    public func setKill(_ kill: Bool) {
-        vips_image_set_kill(self.image, kill ? 1 : 0)
-    }
-
+    /// Enable or disable progress reporting for this image.
+    ///
+    /// VIPS signals evaluation progress via the `preeval`, `eval` and `posteval` signals.
+    /// Progress is signalled on the most-downstream image for which `setProgressReportingEnabled(_:)`
+    /// was called with `true`.
+    ///
+    /// - Parameter enabled: `true` to enable progress reporting, `false` to disable
+    ///
+    /// - SeeAlso: `onPreeval(_:)`, `onEval(_:)`, `onPosteval(_:)`
     public func setProgressReportingEnabled(_ enabled: Bool) {
         vips_image_set_progress(self.image, enabled ? .true : .false)
     }
 
+    /// Connect a handler to be called when evaluation is starting.
+    ///
+    /// This signal is emitted when image evaluation begins. The handler receives
+    /// the image reference and a `VIPSProgress` struct with evaluation information.
+    ///
+    /// - Parameter handler: Closure to be called when evaluation starts
+    /// - Returns: Signal handler ID that can be used to disconnect the handler
+    ///
+    /// - SeeAlso: `setProgressReportingEnabled(_:)`, `onEval(_:)`, `onPosteval(_:)`
     @discardableResult
     public func onPreeval(_ handler: @escaping (UnownedVIPSImageRef, VIPSProgress) -> Void) -> Int {
         self.onProgress(signal: "preeval", handler: handler)
     }
 
+    /// Connect a handler to be called during evaluation progress.
+    ///
+    /// This signal is emitted periodically during image evaluation to report progress.
+    /// The handler receives the image reference and a `VIPSProgress` struct with
+    /// current evaluation information including percent complete.
+    ///
+    /// - Parameter handler: Closure to be called during evaluation
+    /// - Returns: Signal handler ID that can be used to disconnect the handler
+    ///
+    /// - SeeAlso: `setProgressReportingEnabled(_:)`, `onPreeval(_:)`, `onPosteval(_:)`
     @discardableResult
     public func onEval(_ handler: @escaping (UnownedVIPSImageRef, VIPSProgress) -> Void) -> Int {
         self.onProgress(signal: "eval", handler: handler)
     }
 
+    /// Connect a handler to be called when evaluation is ending.
+    ///
+    /// This signal is emitted when image evaluation completes. The handler receives
+    /// the image reference and a `VIPSProgress` struct with final evaluation information.
+    ///
+    /// - Parameter handler: Closure to be called when evaluation ends
+    /// - Returns: Signal handler ID that can be used to disconnect the handler
+    ///
+    /// - SeeAlso: `setProgressReportingEnabled(_:)`, `onPreeval(_:)`, `onEval(_:)`
     @discardableResult
     public func onPosteval(_ handler: @escaping (UnownedVIPSImageRef, VIPSProgress) -> Void) -> Int {
         self.onProgress(signal: "posteval", handler: handler)
