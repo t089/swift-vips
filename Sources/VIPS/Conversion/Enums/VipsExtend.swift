@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsExtend = Cvips.VipsExtend
+
 extension VipsExtend {
     public static var black: Self { VIPS_EXTEND_BLACK }
     public static var copy: Self { VIPS_EXTEND_COPY }

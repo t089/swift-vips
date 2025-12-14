@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsRegionShrink = Cvips.VipsRegionShrink
+
 extension VipsRegionShrink {
     public static var mean: Self { VIPS_REGION_SHRINK_MEAN }
     public static var median: Self { VIPS_REGION_SHRINK_MEDIAN }

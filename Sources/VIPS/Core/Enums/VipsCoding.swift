@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsCoding = Cvips.VipsCoding
+
 extension VipsCoding {
     public static var error: Self { VIPS_CODING_ERROR }
     public static var none: Self { VIPS_CODING_NONE }

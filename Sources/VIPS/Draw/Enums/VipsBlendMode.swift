@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsBlendMode = Cvips.VipsBlendMode
+
 extension VipsBlendMode {
     public static var clear: Self { VIPS_BLEND_MODE_CLEAR }
     public static var source: Self { VIPS_BLEND_MODE_SOURCE }

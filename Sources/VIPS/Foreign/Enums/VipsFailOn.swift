@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsFailOn = Cvips.VipsFailOn
+
 extension VipsFailOn {
     public static var none: Self { VIPS_FAIL_ON_NONE }
     public static var truncated: Self { VIPS_FAIL_ON_TRUNCATED }

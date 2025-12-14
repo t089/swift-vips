@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsTextWrap = Cvips.VipsTextWrap
+
 extension VipsTextWrap {
     public static var word: Self { VIPS_TEXT_WRAP_WORD }
     public static var char: Self { VIPS_TEXT_WRAP_CHAR }

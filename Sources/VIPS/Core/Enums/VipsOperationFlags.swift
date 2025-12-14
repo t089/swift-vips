@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsOperationFlags = Cvips.VipsOperationFlags
+
 extension VipsOperationFlags {
     public static var none: Self { VIPS_OPERATION_NONE }
     public static var sequential: Self { VIPS_OPERATION_SEQUENTIAL }

@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsImageType = Cvips.VipsImageType
+
 extension VipsImageType {
     public static var error: Self { VIPS_IMAGE_ERROR }
     public static var none: Self { VIPS_IMAGE_NONE }

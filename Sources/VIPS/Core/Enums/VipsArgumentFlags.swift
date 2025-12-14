@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsArgumentFlags = Cvips.VipsArgumentFlags
+
 extension VipsArgumentFlags {
     public static var none: Self { VIPS_ARGUMENT_NONE }
     public static var required: Self { VIPS_ARGUMENT_REQUIRED }

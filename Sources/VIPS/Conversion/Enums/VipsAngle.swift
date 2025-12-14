@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsAngle = Cvips.VipsAngle
+
 extension VipsAngle {
     public static var d0: Self { VIPS_ANGLE_D0 }
     public static var d90: Self { VIPS_ANGLE_D90 }

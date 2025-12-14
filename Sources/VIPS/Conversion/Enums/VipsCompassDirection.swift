@@ -1,6 +1,8 @@
 import Cvips
 import CvipsShim
 
+public typealias VipsCompassDirection = Cvips.VipsCompassDirection
+
 extension VipsCompassDirection {
     public static var centre: Self { VIPS_COMPASS_DIRECTION_CENTRE }
     public static var north: Self { VIPS_COMPASS_DIRECTION_NORTH }
