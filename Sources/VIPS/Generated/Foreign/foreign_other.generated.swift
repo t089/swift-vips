@@ -1030,6 +1030,41 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         try Self.call("matrixsave_target", options: &opt)
     }
 
+    /// Save image to nifti file
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to save to
+    ///   - keep: Which metadata to retain
+    ///   - background: Background value
+    ///   - pageHeight: Set page height for multipage save
+    ///   - profile: Filename of ICC profile to embed
+    public func niftisave(
+        filename: String,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
+        var opt = VIPSOption()
+
+        opt.set("in", value: self)
+        opt.set("filename", value: filename)
+        if let keep = keep {
+            opt.set("keep", value: keep)
+        }
+        if let background = background {
+            opt.set("background", value: background)
+        }
+        if let pageHeight = pageHeight {
+            opt.set("page_height", value: pageHeight)
+        }
+        if let profile = profile {
+            opt.set("profile", value: profile)
+        }
+
+        try Self.call("niftisave", options: &opt)
+    }
+
     /// Save image to ppm file
     ///
     /// - Parameters:
@@ -2264,6 +2299,80 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("out", value: &out)
 
             try Self.call("matrixload_source", options: &opt)
+        }
+    }
+
+    /// Load NIfTI volume
+    ///
+    /// - Parameters:
+    ///   - filename: Filename to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func niftiload(
+        filename: String,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("filename", value: filename)
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("niftiload", options: &opt)
+        }
+    }
+
+    /// Load NIfTI volumes
+    ///
+    /// - Parameters:
+    ///   - source: Source to load from
+    ///   - memory: Force open via memory
+    ///   - access: Required access pattern for this file
+    ///   - failOn: Error level to fail on
+    ///   - revalidate: Don't use a cached result for this operation
+    public static func niftiload(
+        source: VIPSSource,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
+
+            opt.set("source", value: source)
+            if let memory = memory {
+                opt.set("memory", value: memory)
+            }
+            if let access = access {
+                opt.set("access", value: access)
+            }
+            if let failOn = failOn {
+                opt.set("fail_on", value: failOn)
+            }
+            if let revalidate = revalidate {
+                opt.set("revalidate", value: revalidate)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("niftiload_source", options: &opt)
         }
     }
 
