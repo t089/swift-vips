@@ -206,7 +206,7 @@ GType* shim_get_all_operation_types(int* count) {
 // Get operation info by nickname
 ShimOperationInfo* shim_get_operation_info(const char* nickname) {
     // Find the operation class by nickname
-    VipsObjectClass* object_class = vips_class_find("VipsOperation", nickname);
+    const VipsObjectClass* object_class = vips_class_find("VipsOperation", nickname);
     if (!object_class) {
         return NULL;
     }
@@ -248,7 +248,7 @@ static void* collect_parameter_info(VipsObjectClass* object_class,
 // Get parameters for an operation
 ShimParameterInfo* shim_get_operation_parameters(const char* nickname, int* count) {
     // Find the operation class by nickname
-    VipsObjectClass* object_class = vips_class_find("VipsOperation", nickname);
+    const VipsObjectClass* object_class = vips_class_find("VipsOperation", nickname);
     if (!object_class) {
         *count = 0;
         return NULL;
@@ -257,8 +257,8 @@ ShimParameterInfo* shim_get_operation_parameters(const char* nickname, int* coun
     CollectParamsData data;
     data.params = g_array_new(FALSE, FALSE, sizeof(ShimParameterInfo));
 
-    // Collect all arguments
-    vips_argument_class_map(object_class, collect_parameter_info, &data, NULL);
+    // Collect all arguments (cast away const - vips_argument_class_map doesn't modify the class)
+    vips_argument_class_map((VipsObjectClass*)object_class, collect_parameter_info, &data, NULL);
 
     *count = data.params->len;
 
