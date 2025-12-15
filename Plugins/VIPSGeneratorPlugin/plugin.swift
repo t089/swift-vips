@@ -21,33 +21,12 @@ struct VIPSGeneratorPlugin: BuildToolPlugin {
 
         // Output directory for generated files (using URL-based API)
         let outputDir = context.pluginWorkDirectoryURL.appending(path: "Generated")
-        let foreignDir = outputDir.appending(path: "Foreign")
 
-        // Define all known output files - categories are deterministic
-        // even if some might be empty for certain libvips builds
-        let outputFiles: [URL] = [
-            // Top-level categories
-            outputDir.appending(path: "arithmetic.generated.swift"),
-            outputDir.appending(path: "colour.generated.swift"),
-            outputDir.appending(path: "conversion.generated.swift"),
-            outputDir.appending(path: "convolution.generated.swift"),
-            outputDir.appending(path: "create.generated.swift"),
-            outputDir.appending(path: "freqfilt.generated.swift"),
-            outputDir.appending(path: "histogram.generated.swift"),
-            outputDir.appending(path: "misc.generated.swift"),
-            outputDir.appending(path: "morphology.generated.swift"),
-            outputDir.appending(path: "resample.generated.swift"),
-            // Foreign subcategories
-            foreignDir.appending(path: "foreign_gif.generated.swift"),
-            foreignDir.appending(path: "foreign_heif.generated.swift"),
-            foreignDir.appending(path: "foreign_jpeg.generated.swift"),
-            foreignDir.appending(path: "foreign_other.generated.swift"),
-            foreignDir.appending(path: "foreign_pdf.generated.swift"),
-            foreignDir.appending(path: "foreign_png.generated.swift"),
-            foreignDir.appending(path: "foreign_svg.generated.swift"),
-            foreignDir.appending(path: "foreign_tiff.generated.swift"),
-            foreignDir.appending(path: "foreign_webp.generated.swift"),
-        ]
+        // Discover output files by running the generator with --list-outputs
+        let outputFiles = try discoverOutputFiles(
+            generator: generator.url,
+            outputDir: outputDir
+        )
 
         // Use a build command - runs when outputs are missing or inputs changed
         // Since there are no file inputs (we introspect libvips at runtime),
@@ -65,4 +44,41 @@ struct VIPSGeneratorPlugin: BuildToolPlugin {
             )
         ]
     }
+
+    /// Discover output files by running the generator with --list-outputs
+    private func discoverOutputFiles(generator: URL, outputDir: URL) throws -> [URL] {
+        let process = Process()
+        process.executableURL = generator
+        process.arguments = ["--list-outputs", "--output-dir", outputDir.path()]
+
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = Pipe() // Suppress stderr
+
+        try process.run()
+        process.waitUntilExit()
+
+        guard process.terminationStatus == 0 else {
+            throw PluginError.generatorFailed(status: process.terminationStatus)
+        }
+
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        guard let output = String(data: data, encoding: .utf8) else {
+            throw PluginError.invalidGeneratorOutput
+        }
+
+        // Parse output - one file path per line
+        let filePaths = output
+            .split(separator: "\n")
+            .map { String($0).trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+            .map { URL(fileURLWithPath: $0) }
+
+        return filePaths
+    }
+}
+
+enum PluginError: Error {
+    case generatorFailed(status: Int32)
+    case invalidGeneratorOutput
 }

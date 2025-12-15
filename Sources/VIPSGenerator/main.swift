@@ -16,6 +16,7 @@ struct Arguments {
     var dryRun: Bool = false
     var verbose: Bool = false
     var operation: String? = nil
+    var listOutputs: Bool = false
 }
 
 func parseArguments() -> Arguments {
@@ -41,6 +42,8 @@ func parseArguments() -> Arguments {
             if i < commandLineArgs.count {
                 args.operation = commandLineArgs[i]
             }
+        case "--list-outputs":
+            args.listOutputs = true
         case "--help", "-h":
             printHelp()
             exit(0)
@@ -69,6 +72,7 @@ func printHelp() {
         --dry-run                  Print what would be generated without writing
         --verbose                  Print progress information
         --operation <name>         Generate single operation (for testing)
+        --list-outputs             List output file paths (one per line) and exit
         --help, -h                 Show this help message
     """)
 }
@@ -135,7 +139,9 @@ func main() async {
         // Note: Don't add "crop" as synonym - it would duplicate "extract_area"
         // The Python generator adds it but handles deduplication differently
 
-        print("Found \(operations.count) operations")
+        if !args.listOutputs {
+            print("Found \(operations.count) operations")
+        }
 
         // Filter to single operation if requested
         if let singleOp = args.operation {
@@ -168,7 +174,7 @@ func main() async {
         // Const variant mapping
         let constVariants = ["remainder": "remainder_const"]
 
-        if args.verbose {
+        if args.verbose && !args.listOutputs {
             print("Generating wrappers...")
         }
 
@@ -184,7 +190,7 @@ func main() async {
                 details = try VIPSIntrospection.getOperationDetails(nickname)
             } catch {
                 // Can fail for abstract types, skip them
-                if args.verbose {
+                if args.verbose && !args.listOutputs {
                     print("  Skipping \(nickname) (abstract type)")
                 }
                 continue
@@ -202,7 +208,7 @@ func main() async {
 
                 categorizedMethods[category, default: []].append((nickname, code))
 
-                if args.verbose {
+                if args.verbose && !args.listOutputs {
                     print("  Generated \(nickname) -> \(category)")
                 }
             }
@@ -253,6 +259,16 @@ func main() async {
                 if methods.count > 3 {
                     print("    ... and \(methods.count - 3) more")
                 }
+            }
+            return
+        }
+
+        // If --list-outputs, just print the file paths and exit
+        if args.listOutputs {
+            let writer = FileWriter(outputDirectory: args.outputDir)
+            for category in categorizedMethods.keys.sorted() {
+                let (filepath, _) = writer.getFilePath(for: category)
+                print(filepath.path())
             }
             return
         }

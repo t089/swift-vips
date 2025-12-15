@@ -106,12 +106,12 @@ struct FileWriter {
         }
     }
 
-    // MARK: - Private helpers
+    // MARK: - Public helpers
 
     /// Get file path and filename for a category
     /// - Parameter category: The category name (e.g., "Arithmetic", "Foreign/JPEG")
     /// - Returns: Tuple of (filepath, filename)
-    private func getFilePath(for category: String) -> (URL, String) {
+    public func getFilePath(for category: String) -> (URL, String) {
         let categoryParts = category.split(separator: "/")
 
         if categoryParts.count > 1 {
