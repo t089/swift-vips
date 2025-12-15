@@ -23,7 +23,18 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func svgload(filename: String, dpi: Double? = nil, scale: Double? = nil, unlimited: Bool? = nil, stylesheet: String? = nil, highBitdepth: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
+    public static func svgload(
+        filename: String,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        unlimited: Bool? = nil,
+        stylesheet: String? = nil,
+        highBitdepth: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -41,7 +52,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("stylesheet", value: stylesheet)
             }
             if let highBitdepth = highBitdepth {
-                opt.set("high-bitdepth", value: highBitdepth)
+                opt.set("high_bitdepth", value: highBitdepth)
             }
             if let memory = memory {
                 opt.set("memory", value: memory)
@@ -50,7 +61,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("access", value: access)
             }
             if let failOn = failOn {
-                opt.set("fail-on", value: failOn)
+                opt.set("fail_on", value: failOn)
             }
             if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
@@ -74,7 +85,18 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func svgload(buffer: VIPSBlob, dpi: Double? = nil, scale: Double? = nil, unlimited: Bool? = nil, stylesheet: String? = nil, highBitdepth: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
+    public static func svgload(
+        buffer: VIPSBlob,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        unlimited: Bool? = nil,
+        stylesheet: String? = nil,
+        highBitdepth: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
             try Self { out in
@@ -94,7 +116,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                     opt.set("stylesheet", value: stylesheet)
                 }
                 if let highBitdepth = highBitdepth {
-                    opt.set("high-bitdepth", value: highBitdepth)
+                    opt.set("high_bitdepth", value: highBitdepth)
                 }
                 if let memory = memory {
                     opt.set("memory", value: memory)
@@ -103,7 +125,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                     opt.set("access", value: access)
                 }
                 if let failOn = failOn {
-                    opt.set("fail-on", value: failOn)
+                    opt.set("fail_on", value: failOn)
                 }
                 if let revalidate = revalidate {
                     opt.set("revalidate", value: revalidate)
@@ -130,7 +152,18 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
-    public static func svgload(unsafeBuffer buffer: UnsafeRawBufferPointer, dpi: Double? = nil, scale: Double? = nil, unlimited: Bool? = nil, stylesheet: String? = nil, highBitdepth: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
+    public static func svgload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        unlimited: Bool? = nil,
+        stylesheet: String? = nil,
+        highBitdepth: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
         let blob = VIPSBlob(noCopy: buffer)
         return try svgload(
             buffer: blob,
@@ -159,7 +192,18 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func svgload(source: VIPSSource, dpi: Double? = nil, scale: Double? = nil, unlimited: Bool? = nil, stylesheet: String? = nil, highBitdepth: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
+    public static func svgload(
+        source: VIPSSource,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        unlimited: Bool? = nil,
+        stylesheet: String? = nil,
+        highBitdepth: Bool? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -177,7 +221,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("stylesheet", value: stylesheet)
             }
             if let highBitdepth = highBitdepth {
-                opt.set("high-bitdepth", value: highBitdepth)
+                opt.set("high_bitdepth", value: highBitdepth)
             }
             if let memory = memory {
                 opt.set("memory", value: memory)
@@ -186,7 +230,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("access", value: access)
             }
             if let failOn = failOn {
-                opt.set("fail-on", value: failOn)
+                opt.set("fail_on", value: failOn)
             }
             if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)

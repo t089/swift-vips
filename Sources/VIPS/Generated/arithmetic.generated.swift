@@ -85,19 +85,19 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-#if SHIM_VIPS_VERSION_8_16
-    /// Append an alpha channel
-    public func addalpha() throws -> Self {
-        return try Self { out in
-            var opt = VIPSOption()
+    #if SHIM_VIPS_VERSION_8_16
+        /// Append an alpha channel
+        public func addalpha() throws -> Self {
+            return try Self { out in
+                var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            opt.set("out", value: &out)
+                opt.set("in", value: self)
+                opt.set("out", value: &out)
 
-            try Self.call("addalpha", options: &opt)
+                try Self.call("addalpha", options: &opt)
+            }
         }
-    }
-#endif
+    #endif
 
     /// Find image average
     public func avg() throws -> Double {
@@ -118,7 +118,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     ///   - boolean: Boolean to perform
-    public func boolean(_ rhs: some VIPSImageProtocol, boolean: VipsOperationBoolean) throws -> Self {
+    public func boolean(_ rhs: some VIPSImageProtocol, boolean: VipsOperationBoolean) throws -> Self
+    {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -170,7 +171,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     ///   - cmplx: Binary complex operation to perform
-    public func complex2(_ rhs: some VIPSImageProtocol, cmplx: VipsOperationComplex2) throws -> Self {
+    public func complex2(_ rhs: some VIPSImageProtocol, cmplx: VipsOperationComplex2) throws -> Self
+    {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -443,32 +445,34 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-#if SHIM_VIPS_VERSION_8_13
-    /// Premultiply image alpha
-    ///
-    /// - Parameters:
-    ///   - maxAlpha: Maximum value of alpha channel
-    public func premultiply(maxAlpha: Double? = nil) throws -> Self {
-        return try Self { out in
-            var opt = VIPSOption()
+    #if SHIM_VIPS_VERSION_8_13
+        /// Premultiply image alpha
+        ///
+        /// - Parameters:
+        ///   - maxAlpha: Maximum value of alpha channel
+        public func premultiply(maxAlpha: Double? = nil) throws -> Self {
+            return try Self { out in
+                var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            if let maxAlpha = maxAlpha {
-                opt.set("max-alpha", value: maxAlpha)
+                opt.set("in", value: self)
+                if let maxAlpha = maxAlpha {
+                    opt.set("max_alpha", value: maxAlpha)
+                }
+                opt.set("out", value: &out)
+
+                try Self.call("premultiply", options: &opt)
             }
-            opt.set("out", value: &out)
-
-            try Self.call("premultiply", options: &opt)
         }
-    }
-#endif
+    #endif
 
     /// Relational operation on two images
     ///
     /// - Parameters:
     ///   - `right`: Right-hand image argument
     ///   - relational: Relational to perform
-    public func relational(_ rhs: some VIPSImageProtocol, relational: VipsOperationRelational) throws -> Self {
+    public func relational(_ rhs: some VIPSImageProtocol, relational: VipsOperationRelational)
+        throws -> Self
+    {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -603,29 +607,29 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-#if SHIM_VIPS_VERSION_8_13
-    /// Unpremultiply image alpha
-    ///
-    /// - Parameters:
-    ///   - maxAlpha: Maximum value of alpha channel
-    ///   - alphaBand: Unpremultiply with this alpha
-    public func unpremultiply(maxAlpha: Double? = nil, alphaBand: Int? = nil) throws -> Self {
-        return try Self { out in
-            var opt = VIPSOption()
+    #if SHIM_VIPS_VERSION_8_13
+        /// Unpremultiply image alpha
+        ///
+        /// - Parameters:
+        ///   - maxAlpha: Maximum value of alpha channel
+        ///   - alphaBand: Unpremultiply with this alpha
+        public func unpremultiply(maxAlpha: Double? = nil, alphaBand: Int? = nil) throws -> Self {
+            return try Self { out in
+                var opt = VIPSOption()
 
-            opt.set("in", value: self)
-            if let maxAlpha = maxAlpha {
-                opt.set("max-alpha", value: maxAlpha)
-            }
-            if let alphaBand = alphaBand {
-                opt.set("alpha-band", value: alphaBand)
-            }
-            opt.set("out", value: &out)
+                opt.set("in", value: self)
+                if let maxAlpha = maxAlpha {
+                    opt.set("max_alpha", value: maxAlpha)
+                }
+                if let alphaBand = alphaBand {
+                    opt.set("alpha_band", value: alphaBand)
+                }
+                opt.set("out", value: &out)
 
-            try Self.call("unpremultiply", options: &opt)
+                try Self.call("unpremultiply", options: &opt)
+            }
         }
-    }
-#endif
+    #endif
 
     /// Test for equality
     ///
@@ -762,7 +766,6 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     public func rshift(_ amount: Int) throws -> Self {
         return try booleanConst(boolean: .rshift, c: [Double(amount)])
     }
-
 
 }
 

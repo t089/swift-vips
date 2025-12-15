@@ -19,6 +19,26 @@
             "preLaunchTask": "swift: Build Release vips-tool",
             "target": "vips-tool",
             "configuration": "release"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-vips-generator}",
+            "name": "Debug vips-generator",
+            "target": "vips-generator",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug vips-generator"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:swift-vips-generator}",
+            "name": "Release vips-generator",
+            "target": "vips-generator",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release vips-generator"
         }
     ]
 }

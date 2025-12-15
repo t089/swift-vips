@@ -300,10 +300,11 @@ struct CodeGenerator {
             ))
 
             // Set output parameter
+            let vipsOutputName = normalizeVipsParamName(firstOutput)
             if outputParam.parameterType == shim_VIPS_TYPE_BLOB() {
-                lines.append("        opt.set(\"\(firstOutput)\", value: out)")
+                lines.append("        opt.set(\"\(vipsOutputName)\", value: out)")
             } else {
-                lines.append("        opt.set(\"\(firstOutput)\", value: &out)")
+                lines.append("        opt.set(\"\(vipsOutputName)\", value: &out)")
             }
 
             lines.append("")
@@ -370,6 +371,12 @@ struct CodeGenerator {
 
     // MARK: - Parameter Setting
 
+    /// Normalize parameter name for VIPS C API
+    /// GObject introspection may return hyphens, but VIPS uses underscores internally
+    private func normalizeVipsParamName(_ name: String) -> String {
+        return name.replacingOccurrences(of: "-", with: "_")
+    }
+
     /// Generate code to set operation parameters
     private func generateParameterSetting(
         for details: VIPSOperationDetails,
@@ -381,15 +388,17 @@ struct CodeGenerator {
 
         // Set the input image if this is an instance method
         if let memberX = details.memberX {
+            let vipsParamName = normalizeVipsParamName(memberX)
             if useImageProperty {
-                lines.append("\(indent)opt.set(\"\(memberX)\", value: self.image)")
+                lines.append("\(indent)opt.set(\"\(vipsParamName)\", value: self.image)")
             } else {
-                lines.append("\(indent)opt.set(\"\(memberX)\", value: self)")
+                lines.append("\(indent)opt.set(\"\(vipsParamName)\", value: self)")
             }
         }
 
         // Set required parameters
         for paramName in details.methodArgs {
+            let vipsParamName = normalizeVipsParamName(paramName)
             let swiftParamName: String
             if paramName == "right" {
                 swiftParamName = "rhs"
@@ -401,24 +410,25 @@ struct CodeGenerator {
 
             // Special handling for blob parameters
             if paramName == blobParamName {
-                lines.append("\(indent)opt.set(\"\(paramName)\", value: blob)")
+                lines.append("\(indent)opt.set(\"\(vipsParamName)\", value: blob)")
             } else {
-                lines.append("\(indent)opt.set(\"\(paramName)\", value: \(swiftParamName))")
+                lines.append("\(indent)opt.set(\"\(vipsParamName)\", value: \(swiftParamName))")
             }
         }
 
         // Set optional parameters
         for paramName in details.optionalInput {
+            let vipsParamName = normalizeVipsParamName(paramName)
             let swiftParamName = swiftizeParam(paramName)
 
             // Special handling for blob parameters
             if paramName == blobParamName {
                 lines.append("\(indent)if let \(swiftParamName) = \(swiftParamName) {")
-                lines.append("\(indent)    opt.set(\"\(paramName)\", value: blob)")
+                lines.append("\(indent)    opt.set(\"\(vipsParamName)\", value: blob)")
                 lines.append("\(indent)}")
             } else {
                 lines.append("\(indent)if let \(swiftParamName) = \(swiftParamName) {")
-                lines.append("\(indent)    opt.set(\"\(paramName)\", value: \(swiftParamName))")
+                lines.append("\(indent)    opt.set(\"\(vipsParamName)\", value: \(swiftParamName))")
                 lines.append("\(indent)}")
             }
         }

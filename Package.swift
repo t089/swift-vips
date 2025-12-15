@@ -16,7 +16,8 @@ let package = Package(
         "FoundationSupport",
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-log.git", from: "1.6.0")
+        .package(url: "https://github.com/apple/swift-log.git", from: "1.6.0"),
+        .package(url: "https://github.com/swiftlang/swift-subprocess.git", from: "0.2.1"),
     ],
     targets: [
         .systemLibrary(name: "Cvips",
@@ -45,7 +46,10 @@ let package = Package(
                 "CvipsShim"
             ]),
         .executableTarget(name: "VIPSGenerator",
-            dependencies: ["VIPSIntrospection"]
+            dependencies: [
+                "VIPSIntrospection",
+                .product(name: "Subprocess", package: "swift-subprocess")
+            ]
         ),
         .executableTarget(name: "vips-tool",
             dependencies: ["VIPS", "Cvips"]

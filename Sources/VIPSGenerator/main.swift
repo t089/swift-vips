@@ -7,6 +7,7 @@
 
 import VIPSIntrospection
 import Foundation
+import Subprocess
 
 // MARK: - Command Line Arguments
 
@@ -72,9 +73,51 @@ func printHelp() {
     """)
 }
 
+// MARK: - Formatting
+
+/// Format generated Swift files using swift format
+func formatGeneratedFiles(outputDirectory: String, verbose: Bool) async {
+    do {
+        // Run swift format on all files in the output directory
+        // Collect stderr in case of errors
+        let result = try await run(
+            .name("swift"),
+            arguments: [
+                "format",
+                "--in-place",
+                "--recursive",
+                "--parallel",
+                outputDirectory
+            ],
+            output: .discarded,
+            error: .string(limit: 16384)
+        )
+
+        if result.terminationStatus.isSuccess {
+            if verbose {
+                print("  ✅ Formatted all generated files")
+            }
+        } else {
+            print("  ⚠️  swift format exited with status \(result.terminationStatus)")
+            if let stderr = result.standardError, !stderr.isEmpty {
+                print("  Error output:")
+                for line in stderr.split(separator: "\n") {
+                    print("    \(line)")
+                }
+            }
+        }
+    } catch {
+        // swift format might not be available in older toolchains
+        if verbose {
+            print("  ⚠️  Failed to run swift format: \(error)")
+            print("  ℹ️  Formatting requires Swift 6.0 or later")
+        }
+    }
+}
+
 // MARK: - Main Function
 
-func main() {
+func main() async {
     let args = parseArguments()
 
     do {
@@ -227,6 +270,13 @@ func main() {
         }
 
         print("\nGeneration complete!")
+
+        // Format generated files with swift format
+        if args.verbose {
+            print("\nFormatting generated files...")
+        }
+        await formatGeneratedFiles(outputDirectory: args.outputDir, verbose: args.verbose)
+
         print("\nSummary:")
         let totalOperations = categorizedMethods.values.reduce(0) { $0 + $1.count }
         print("  Total operations: \(totalOperations)")
@@ -238,4 +288,4 @@ func main() {
     }
 }
 
-main()
+await main()

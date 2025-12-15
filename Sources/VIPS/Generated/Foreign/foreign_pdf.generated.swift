@@ -24,7 +24,19 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func pdfload(filename: String, page: Int? = nil, n: Int? = nil, dpi: Double? = nil, scale: Double? = nil, background: [Double]? = nil, password: String? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
+    public static func pdfload(
+        filename: String,
+        page: Int? = nil,
+        n: Int? = nil,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        background: [Double]? = nil,
+        password: String? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -54,7 +66,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("access", value: access)
             }
             if let failOn = failOn {
-                opt.set("fail-on", value: failOn)
+                opt.set("fail_on", value: failOn)
             }
             if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
@@ -79,7 +91,19 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func pdfload(buffer: VIPSBlob, page: Int? = nil, n: Int? = nil, dpi: Double? = nil, scale: Double? = nil, background: [Double]? = nil, password: String? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
+    public static func pdfload(
+        buffer: VIPSBlob,
+        page: Int? = nil,
+        n: Int? = nil,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        background: [Double]? = nil,
+        password: String? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
             try Self { out in
@@ -111,7 +135,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                     opt.set("access", value: access)
                 }
                 if let failOn = failOn {
-                    opt.set("fail-on", value: failOn)
+                    opt.set("fail_on", value: failOn)
                 }
                 if let revalidate = revalidate {
                     opt.set("revalidate", value: revalidate)
@@ -139,7 +163,19 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
-    public static func pdfload(unsafeBuffer buffer: UnsafeRawBufferPointer, page: Int? = nil, n: Int? = nil, dpi: Double? = nil, scale: Double? = nil, background: [Double]? = nil, password: String? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
+    public static func pdfload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        page: Int? = nil,
+        n: Int? = nil,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        background: [Double]? = nil,
+        password: String? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
         let blob = VIPSBlob(noCopy: buffer)
         return try pdfload(
             buffer: blob,
@@ -170,7 +206,19 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func pdfload(source: VIPSSource, page: Int? = nil, n: Int? = nil, dpi: Double? = nil, scale: Double? = nil, background: [Double]? = nil, password: String? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
+    public static func pdfload(
+        source: VIPSSource,
+        page: Int? = nil,
+        n: Int? = nil,
+        dpi: Double? = nil,
+        scale: Double? = nil,
+        background: [Double]? = nil,
+        password: String? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -200,7 +248,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("access", value: access)
             }
             if let failOn = failOn {
-                opt.set("fail-on", value: failOn)
+                opt.set("fail_on", value: failOn)
             }
             if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)

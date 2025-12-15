@@ -26,7 +26,21 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func gifsave(filename: String, dither: Double? = nil, effort: Int? = nil, bitdepth: Int? = nil, interframeMaxerror: Double? = nil, reuse: Bool? = nil, interpaletteMaxerror: Double? = nil, interlace: Bool? = nil, keepDuplicateFrames: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func gifsave(
+        filename: String,
+        dither: Double? = nil,
+        effort: Int? = nil,
+        bitdepth: Int? = nil,
+        interframeMaxerror: Double? = nil,
+        reuse: Bool? = nil,
+        interpaletteMaxerror: Double? = nil,
+        interlace: Bool? = nil,
+        keepDuplicateFrames: Bool? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
         opt.set("in", value: self)
@@ -41,19 +55,19 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("bitdepth", value: bitdepth)
         }
         if let interframeMaxerror = interframeMaxerror {
-            opt.set("interframe-maxerror", value: interframeMaxerror)
+            opt.set("interframe_maxerror", value: interframeMaxerror)
         }
         if let reuse = reuse {
             opt.set("reuse", value: reuse)
         }
         if let interpaletteMaxerror = interpaletteMaxerror {
-            opt.set("interpalette-maxerror", value: interpaletteMaxerror)
+            opt.set("interpalette_maxerror", value: interpaletteMaxerror)
         }
         if let interlace = interlace {
             opt.set("interlace", value: interlace)
         }
         if let keepDuplicateFrames = keepDuplicateFrames {
-            opt.set("keep-duplicate-frames", value: keepDuplicateFrames)
+            opt.set("keep_duplicate_frames", value: keepDuplicateFrames)
         }
         if let keep = keep {
             opt.set("keep", value: keep)
@@ -62,7 +76,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("background", value: background)
         }
         if let pageHeight = pageHeight {
-            opt.set("page-height", value: pageHeight)
+            opt.set("page_height", value: pageHeight)
         }
         if let profile = profile {
             opt.set("profile", value: profile)
@@ -86,7 +100,20 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func gifsave(dither: Double? = nil, effort: Int? = nil, bitdepth: Int? = nil, interframeMaxerror: Double? = nil, reuse: Bool? = nil, interpaletteMaxerror: Double? = nil, interlace: Bool? = nil, keepDuplicateFrames: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
+    public func gifsave(
+        dither: Double? = nil,
+        effort: Int? = nil,
+        bitdepth: Int? = nil,
+        interframeMaxerror: Double? = nil,
+        reuse: Bool? = nil,
+        interpaletteMaxerror: Double? = nil,
+        interlace: Bool? = nil,
+        keepDuplicateFrames: Bool? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws -> VIPSBlob {
         var opt = VIPSOption()
 
         let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)
@@ -106,19 +133,19 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("bitdepth", value: bitdepth)
         }
         if let interframeMaxerror = interframeMaxerror {
-            opt.set("interframe-maxerror", value: interframeMaxerror)
+            opt.set("interframe_maxerror", value: interframeMaxerror)
         }
         if let reuse = reuse {
             opt.set("reuse", value: reuse)
         }
         if let interpaletteMaxerror = interpaletteMaxerror {
-            opt.set("interpalette-maxerror", value: interpaletteMaxerror)
+            opt.set("interpalette_maxerror", value: interpaletteMaxerror)
         }
         if let interlace = interlace {
             opt.set("interlace", value: interlace)
         }
         if let keepDuplicateFrames = keepDuplicateFrames {
-            opt.set("keep-duplicate-frames", value: keepDuplicateFrames)
+            opt.set("keep_duplicate_frames", value: keepDuplicateFrames)
         }
         if let keep = keep {
             opt.set("keep", value: keep)
@@ -127,7 +154,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("background", value: background)
         }
         if let pageHeight = pageHeight {
-            opt.set("page-height", value: pageHeight)
+            opt.set("page_height", value: pageHeight)
         }
         if let profile = profile {
             opt.set("profile", value: profile)
@@ -159,7 +186,21 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func gifsave(target: VIPSTarget, dither: Double? = nil, effort: Int? = nil, bitdepth: Int? = nil, interframeMaxerror: Double? = nil, reuse: Bool? = nil, interpaletteMaxerror: Double? = nil, interlace: Bool? = nil, keepDuplicateFrames: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
+    public func gifsave(
+        target: VIPSTarget,
+        dither: Double? = nil,
+        effort: Int? = nil,
+        bitdepth: Int? = nil,
+        interframeMaxerror: Double? = nil,
+        reuse: Bool? = nil,
+        interpaletteMaxerror: Double? = nil,
+        interlace: Bool? = nil,
+        keepDuplicateFrames: Bool? = nil,
+        keep: VipsForeignKeep? = nil,
+        background: [Double]? = nil,
+        pageHeight: Int? = nil,
+        profile: String? = nil
+    ) throws {
         var opt = VIPSOption()
 
         opt.set("in", value: self)
@@ -174,19 +215,19 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("bitdepth", value: bitdepth)
         }
         if let interframeMaxerror = interframeMaxerror {
-            opt.set("interframe-maxerror", value: interframeMaxerror)
+            opt.set("interframe_maxerror", value: interframeMaxerror)
         }
         if let reuse = reuse {
             opt.set("reuse", value: reuse)
         }
         if let interpaletteMaxerror = interpaletteMaxerror {
-            opt.set("interpalette-maxerror", value: interpaletteMaxerror)
+            opt.set("interpalette_maxerror", value: interpaletteMaxerror)
         }
         if let interlace = interlace {
             opt.set("interlace", value: interlace)
         }
         if let keepDuplicateFrames = keepDuplicateFrames {
-            opt.set("keep-duplicate-frames", value: keepDuplicateFrames)
+            opt.set("keep_duplicate_frames", value: keepDuplicateFrames)
         }
         if let keep = keep {
             opt.set("keep", value: keep)
@@ -195,7 +236,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("background", value: background)
         }
         if let pageHeight = pageHeight {
-            opt.set("page-height", value: pageHeight)
+            opt.set("page_height", value: pageHeight)
         }
         if let profile = profile {
             opt.set("profile", value: profile)
@@ -218,7 +259,15 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func gifload(filename: String, n: Int? = nil, page: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
+    public static func gifload(
+        filename: String,
+        n: Int? = nil,
+        page: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -236,7 +285,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("access", value: access)
             }
             if let failOn = failOn {
-                opt.set("fail-on", value: failOn)
+                opt.set("fail_on", value: failOn)
             }
             if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
@@ -257,7 +306,15 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func gifload(buffer: VIPSBlob, n: Int? = nil, page: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
+    public static func gifload(
+        buffer: VIPSBlob,
+        n: Int? = nil,
+        page: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
             try Self { out in
@@ -277,7 +334,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                     opt.set("access", value: access)
                 }
                 if let failOn = failOn {
-                    opt.set("fail-on", value: failOn)
+                    opt.set("fail_on", value: failOn)
                 }
                 if let revalidate = revalidate {
                     opt.set("revalidate", value: revalidate)
@@ -301,7 +358,15 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
-    public static func gifload(unsafeBuffer buffer: UnsafeRawBufferPointer, n: Int? = nil, page: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
+    public static func gifload(
+        unsafeBuffer buffer: UnsafeRawBufferPointer,
+        n: Int? = nil,
+        page: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
         let blob = VIPSBlob(noCopy: buffer)
         return try gifload(
             buffer: blob,
@@ -324,7 +389,15 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func gifload(source: VIPSSource, n: Int? = nil, page: Int? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
+    public static func gifload(
+        source: VIPSSource,
+        n: Int? = nil,
+        page: Int? = nil,
+        memory: Bool? = nil,
+        access: VipsAccess? = nil,
+        failOn: VipsFailOn? = nil,
+        revalidate: Bool? = nil
+    ) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -342,7 +415,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("access", value: access)
             }
             if let failOn = failOn {
-                opt.set("fail-on", value: failOn)
+                opt.set("fail_on", value: failOn)
             }
             if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)

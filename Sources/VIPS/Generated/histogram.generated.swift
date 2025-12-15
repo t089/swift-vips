@@ -76,7 +76,9 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     /// - Parameters:
     ///   - index: Index image
     ///   - combine: Combine bins like this
-    public func histFindIndexed(index: some VIPSImageProtocol, combine: VipsCombine? = nil) throws -> Self {
+    public func histFindIndexed(index: some VIPSImageProtocol, combine: VipsCombine? = nil) throws
+        -> Self
+    {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -137,7 +139,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("width", value: width)
             opt.set("height", value: height)
             if let maxSlope = maxSlope {
-                opt.set("max-slope", value: maxSlope)
+                opt.set("max_slope", value: maxSlope)
             }
             opt.set("out", value: &out)
 
@@ -191,7 +193,9 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - scale: Scale down dimensions by this factor
     ///   - minRadius: Smallest radius to search for
     ///   - maxRadius: Largest radius to search for
-    public func houghCircle(scale: Int? = nil, minRadius: Int? = nil, maxRadius: Int? = nil) throws -> Self {
+    public func houghCircle(scale: Int? = nil, minRadius: Int? = nil, maxRadius: Int? = nil) throws
+        -> Self
+    {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -200,10 +204,10 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("scale", value: scale)
             }
             if let minRadius = minRadius {
-                opt.set("min-radius", value: minRadius)
+                opt.set("min_radius", value: minRadius)
             }
             if let maxRadius = maxRadius {
-                opt.set("max-radius", value: maxRadius)
+                opt.set("max_radius", value: maxRadius)
             }
             opt.set("out", value: &out)
 

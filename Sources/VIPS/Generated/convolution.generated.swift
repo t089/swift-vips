@@ -38,7 +38,12 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - precision: Convolve with this precision
     ///   - layers: Use this many layers in approximation
     ///   - cluster: Cluster lines closer than this in approximation
-    public func conv(mask: some VIPSImageProtocol, precision: VipsPrecision? = nil, layers: Int? = nil, cluster: Int? = nil) throws -> Self {
+    public func conv(
+        mask: some VIPSImageProtocol,
+        precision: VipsPrecision? = nil,
+        layers: Int? = nil,
+        cluster: Int? = nil
+    ) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -65,7 +70,9 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - mask: Input matrix image
     ///   - layers: Use this many layers in approximation
     ///   - cluster: Cluster lines closer than this in approximation
-    public func conva(mask: some VIPSImageProtocol, layers: Int? = nil, cluster: Int? = nil) throws -> Self {
+    public func conva(mask: some VIPSImageProtocol, layers: Int? = nil, cluster: Int? = nil) throws
+        -> Self
+    {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -142,7 +149,12 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - precision: Convolve with this precision
     ///   - layers: Use this many layers in approximation
     ///   - cluster: Cluster lines closer than this in approximation
-    public func convsep(mask: some VIPSImageProtocol, precision: VipsPrecision? = nil, layers: Int? = nil, cluster: Int? = nil) throws -> Self {
+    public func convsep(
+        mask: some VIPSImageProtocol,
+        precision: VipsPrecision? = nil,
+        layers: Int? = nil,
+        cluster: Int? = nil
+    ) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -169,14 +181,16 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - sigma: Sigma of Gaussian
     ///   - minAmpl: Minimum amplitude of Gaussian
     ///   - precision: Convolve with this precision
-    public func gaussblur(sigma: Double, minAmpl: Double? = nil, precision: VipsPrecision? = nil) throws -> Self {
+    public func gaussblur(sigma: Double, minAmpl: Double? = nil, precision: VipsPrecision? = nil)
+        throws -> Self
+    {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("sigma", value: sigma)
             if let minAmpl = minAmpl {
-                opt.set("min-ampl", value: minAmpl)
+                opt.set("min_ampl", value: minAmpl)
             }
             if let precision = precision {
                 opt.set("precision", value: precision)
@@ -196,7 +210,14 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - y3: Maximum darkening
     ///   - m1: Slope for flat areas
     ///   - m2: Slope for jaggy areas
-    public func sharpen(sigma: Double? = nil, x1: Double? = nil, y2: Double? = nil, y3: Double? = nil, m1: Double? = nil, m2: Double? = nil) throws -> Self {
+    public func sharpen(
+        sigma: Double? = nil,
+        x1: Double? = nil,
+        y2: Double? = nil,
+        y3: Double? = nil,
+        m1: Double? = nil,
+        m2: Double? = nil
+    ) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
