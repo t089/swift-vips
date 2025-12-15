@@ -9,12 +9,15 @@ let package = Package(
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(name: "VIPS", targets: ["VIPS"]),
+        .library(name: "VIPSIntrospection", targets: ["VIPSIntrospection"]),
+        .executable(name: "vips-generator", targets: ["vips-generator"]),
     ],
     traits: [
         "FoundationSupport",
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-log.git", from: "1.6.0")
+        .package(url: "https://github.com/apple/swift-log.git", from: "1.6.0"),
+        .package(url: "https://github.com/swiftlang/swift-subprocess.git", from: "0.2.1"),
     ],
     targets: [
         .systemLibrary(name: "Cvips",
@@ -24,6 +27,12 @@ let package = Package(
             dependencies: [
                 "Cvips"
             ]),
+        // Build tool plugin that generates Swift wrappers from libvips introspection
+        .plugin(
+            name: "VIPSGeneratorPlugin",
+            capability: .buildTool(),
+            dependencies: ["vips-generator"]
+        ),
         .target(
             name: "VIPS",
             dependencies: [
@@ -35,7 +44,23 @@ let package = Package(
                 .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
                 .enableUpcomingFeature("InferIsolatedConformances"),
                 .enableExperimentalFeature("Lifetimes")
+            ],
+            plugins: [
+                .plugin(name: "VIPSGeneratorPlugin")
             ]),
+        .target(
+            name: "VIPSIntrospection",
+            dependencies: [
+                "Cvips",
+                "CvipsShim"
+            ]),
+        .executableTarget(name: "vips-generator",
+            dependencies: [
+                "VIPSIntrospection",
+                .product(name: "Subprocess", package: "swift-subprocess")
+            ],
+            path: "Sources/VIPSGenerator"
+        ),
         .executableTarget(name: "vips-tool",
             dependencies: ["VIPS", "Cvips"]
         ),

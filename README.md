@@ -290,7 +290,7 @@ swift build -c release
 
 ## Requirements
 
-- Swift 6.0+
+- Swift 6.2+
 - libvips 8.12+ installed on system
 - Linux or macOS
 
@@ -299,11 +299,12 @@ swift build -c release
 SwiftVIPS mirrors libvips' modular structure:
 
 - **`Core/`**: Initialization, memory management, fundamental types
-- **`Arithmetic/`**: Mathematical operations and operator overloading  
+- **`Arithmetic/`**: Mathematical operations and operator overloading
 - **`Conversion/`**: Image transformations and geometric operations
 - **`Foreign/`**: File format support (organized by format)
-- **`Generated/`**: Auto-generated bindings for libvips operations
 - **`CvipsShim/`**: C interoperability layer
+
+Code generation uses a SwiftPM build plugin that automatically generates Swift wrappers from libvips introspection at build time.
 
 ## Performance
 

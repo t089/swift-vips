@@ -25,8 +25,24 @@
 | func | `vipsFindLoader(path:)` |
 | typealias | `VIPSProgress` |
 | typealias | `VipsAccess` |
+| typealias | `VipsAlign` |
+| typealias | `VipsAngle` |
+| typealias | `VipsAngle45` |
+| typealias | `VipsArgumentFlags` |
 | typealias | `VipsBandFormat` |
+| typealias | `VipsBlendMode` |
+| typealias | `VipsCoding` |
+| typealias | `VipsCombine` |
+| typealias | `VipsCombineMode` |
+| typealias | `VipsCompassDirection` |
+| typealias | `VipsDemandStyle` |
+| typealias | `VipsDirection` |
+| typealias | `VipsExtend` |
+| typealias | `VipsFailOn` |
+| typealias | `VipsForeignFlags` |
 | typealias | `VipsForeignKeep` |
+| typealias | `VipsForeignSubsample` |
+| typealias | `VipsImageType` |
 | typealias | `VipsIntent` |
 | typealias | `VipsInteresting` |
 | typealias | `VipsInterpretation` |
@@ -35,13 +51,17 @@
 | typealias | `VipsOperationComplex` |
 | typealias | `VipsOperationComplex2` |
 | typealias | `VipsOperationComplexget` |
+| typealias | `VipsOperationFlags` |
 | typealias | `VipsOperationMath` |
 | typealias | `VipsOperationMath2` |
+| typealias | `VipsOperationMorphology` |
 | typealias | `VipsOperationRelational` |
 | typealias | `VipsOperationRound` |
 | typealias | `VipsPCS` |
 | typealias | `VipsPrecision` |
+| typealias | `VipsRegionShrink` |
 | typealias | `VipsSize` |
+| typealias | `VipsTextWrap` |
 | Array extension | `Array` |
 | Collection extension | `Collection` |
 
@@ -414,6 +434,9 @@ public final class VIPSImage: PointerWrapper, VIPSImageProtocol, VIPSObjectProto
 
   /// Calculate hyperbolic cosine of image values
   public func cosh() throws -> VIPSImage
+
+  /// Alias for extractArea - crop an image
+  public func crop(left: Int, top: Int, width: Int, height: Int) throws -> VIPSImage
 
   /// Bitwise XOR of image with a constant (integer overload)
   public func eorimage(_ value: Int) throws -> VIPSImage
@@ -1105,7 +1128,7 @@ public protocol VIPSImageProtocol : VIPSObjectProtocol, ~Copyable, ~Escapable {
   /// 
   public static func grey(width: Int, height: Int, uchar: Bool? = nil) throws -> Self
 
-  /// Make a 1d image where pixel values are indexes
+  /// Make a 1D image where pixel values are indexes
   /// 
   public static func identity(bands: Int? = nil, ushort: Bool? = nil, size: Int? = nil) throws -> Self
 
@@ -1159,11 +1182,11 @@ public protocol VIPSImageProtocol : VIPSObjectProtocol, ~Copyable, ~Escapable {
   /// 
   public static func perlin(width: Int, height: Int, cellSize: Int? = nil, uchar: Bool? = nil, seed: Int? = nil) throws -> Self
 
-  /// Load named icc profile
+  /// Load named ICC profile
   /// 
   public static func profileLoad(name: String) throws -> VIPSBlob
 
-  /// Make a 2d sine wave
+  /// Make a 2D sine wave
   /// 
   public static func sines(width: Int, height: Int, uchar: Bool? = nil, hfreq: Double? = nil, vfreq: Double? = nil) throws -> Self
 
@@ -1191,63 +1214,63 @@ public protocol VIPSImageProtocol : VIPSObjectProtocol, ~Copyable, ~Escapable {
   /// 
   public static func zone(width: Int, height: Int, uchar: Bool? = nil) throws -> Self
 
-  /// Transform lch to cmc
+  /// Transform LCh to CMC
   public func CMC2LCh() throws -> Self
 
-  /// Transform cmyk to xyz
+  /// Transform CMYK to XYZ
   public func CMYK2XYZ() throws -> Self
 
-  /// Transform hsv to srgb
+  /// Transform HSV to sRGB
   public func HSV2sRGB() throws -> Self
 
-  /// Transform lch to cmc
+  /// Transform LCh to CMC
   public func LCh2CMC() throws -> Self
 
-  /// Transform lch to lab
+  /// Transform LCh to Lab
   public func LCh2Lab() throws -> Self
 
-  /// Transform lab to lch
+  /// Transform Lab to LCh
   public func Lab2LCh() throws -> Self
 
-  /// Transform float lab to labq coding
+  /// Transform float Lab to LabQ coding
   public func Lab2LabQ() throws -> Self
 
-  /// Transform float lab to signed short
+  /// Transform float Lab to signed short
   public func Lab2LabS() throws -> Self
 
-  /// Transform cielab to xyz
+  /// Transform CIELAB to XYZ
   /// 
   public func Lab2XYZ(temp: [Double]? = nil) throws -> Self
 
-  /// Unpack a labq image to float lab
+  /// Unpack a LabQ image to float Lab
   public func LabQ2Lab() throws -> Self
 
-  /// Unpack a labq image to short lab
+  /// Unpack a LabQ image to short Lab
   public func LabQ2LabS() throws -> Self
 
-  /// Convert a labq image to srgb
+  /// Convert a LabQ image to sRGB
   public func LabQ2sRGB() throws -> Self
 
-  /// Transform signed short lab to float
+  /// Transform signed short Lab to float
   public func LabS2Lab() throws -> Self
 
-  /// Transform short lab to labq coding
+  /// Transform short Lab to LabQ coding
   public func LabS2LabQ() throws -> Self
 
-  /// Transform xyz to cmyk
+  /// Transform XYZ to CMYK
   public func XYZ2CMYK() throws -> Self
 
-  /// Transform xyz to lab
+  /// Transform XYZ to Lab
   /// 
   public func XYZ2Lab(temp: [Double]? = nil) throws -> Self
 
-  /// Transform xyz to yxy
+  /// Transform XYZ to Yxy
   public func XYZ2Yxy() throws -> Self
 
-  /// Transform xyz to scrgb
+  /// Transform XYZ to scRGB
   public func XYZ2scRGB() throws -> Self
 
-  /// Transform yxy to xyz
+  /// Transform Yxy to XYZ
   public func Yxy2XYZ() throws -> Self
 
   /// Absolute value of an image
@@ -1323,19 +1346,15 @@ public protocol VIPSImageProtocol : VIPSObjectProtocol, ~Copyable, ~Escapable {
   /// returns it.
   public func copyMemory() throws -> Self
 
-  /// Extract an area from an image
-  /// 
-  public func crop(left: Int, top: Int, width: Int, height: Int) throws -> Self
-
-  /// Calculate de00
+  /// Calculate dE00
   /// 
   public func dE00(_ rhs: some VIPSImageProtocol) throws -> Self
 
-  /// Calculate de76
+  /// Calculate dE76
   /// 
   public func dE76(_ rhs: some VIPSImageProtocol) throws -> Self
 
-  /// Calculate decmc
+  /// Calculate dECMC
   /// 
   public func dECMC(_ rhs: some VIPSImageProtocol) throws -> Self
 
@@ -1380,14 +1399,14 @@ public protocol VIPSImageProtocol : VIPSObjectProtocol, ~Copyable, ~Escapable {
   /// 
   public func flatten(background: [Double]? = nil, maxAlpha: Double? = nil) throws -> Self
 
-  /// Transform float rgb to radiance coding
+  /// Transform float RGB to Radiance coding
   public func float2rad() throws -> Self
 
   /// Frequency-domain filtering
   /// 
   public func freqmult(mask: some VIPSImageProtocol) throws -> Self
 
-  /// Forward fft
+  /// Forward FFT
   public func fwfft() throws -> Self
 
   /// Gamma an image
@@ -1464,7 +1483,7 @@ public protocol VIPSImageProtocol : VIPSObjectProtocol, ~Copyable, ~Escapable {
   /// 
   public func invertlut(size: Int? = nil) throws -> Self
 
-  /// Inverse fft
+  /// Inverse FFT
   /// 
   public func invfft(real: Bool? = nil) throws -> Self
 
@@ -1559,7 +1578,7 @@ public protocol VIPSImageProtocol : VIPSObjectProtocol, ~Copyable, ~Escapable {
   /// 
   public func quadratic(coeff: some VIPSImageProtocol, interpolate: VIPSInterpolate? = nil) throws -> Self
 
-  /// Unpack radiance coding to float rgb
+  /// Unpack Radiance coding to float RGB
   public func rad2float() throws -> Self
 
   /// Rank filter
@@ -1594,20 +1613,20 @@ public protocol VIPSImageProtocol : VIPSObjectProtocol, ~Copyable, ~Escapable {
   /// 
   public func rshift(_ amount: Int) throws -> Self
 
-  /// Transform srgb to hsv
+  /// Transform sRGB to HSV
   public func sRGB2HSV() throws -> Self
 
-  /// Convert an srgb image to scrgb
+  /// Convert an sRGB image to scRGB
   public func sRGB2scRGB() throws -> Self
 
-  /// Convert scrgb to bw
+  /// Convert scRGB to BW
   /// 
   public func scRGB2BW(depth: Int? = nil) throws -> Self
 
-  /// Transform scrgb to xyz
+  /// Transform scRGB to XYZ
   public func scRGB2XYZ() throws -> Self
 
-  /// Convert scrgb to srgb
+  /// Convert scRGB to sRGB
   /// 
   public func scRGB2sRGB(depth: Int? = nil) throws -> Self
 
@@ -1745,9 +1764,41 @@ public typealias VIPSProgress = Cvips.VipsProgress
 
 public typealias VipsAccess = Cvips.VipsAccess
 
+public typealias VipsAlign = Cvips.VipsAlign
+
+public typealias VipsAngle = Cvips.VipsAngle
+
+public typealias VipsAngle45 = Cvips.VipsAngle45
+
+public typealias VipsArgumentFlags = Cvips.VipsArgumentFlags
+
 public typealias VipsBandFormat = Cvips.VipsBandFormat
 
+public typealias VipsBlendMode = Cvips.VipsBlendMode
+
+public typealias VipsCoding = Cvips.VipsCoding
+
+public typealias VipsCombine = Cvips.VipsCombine
+
+public typealias VipsCombineMode = Cvips.VipsCombineMode
+
+public typealias VipsCompassDirection = Cvips.VipsCompassDirection
+
+public typealias VipsDemandStyle = Cvips.VipsDemandStyle
+
+public typealias VipsDirection = Cvips.VipsDirection
+
+public typealias VipsExtend = Cvips.VipsExtend
+
+public typealias VipsFailOn = Cvips.VipsFailOn
+
+public typealias VipsForeignFlags = Cvips.VipsForeignFlags
+
 public typealias VipsForeignKeep = Cvips.VipsForeignKeep
+
+public typealias VipsForeignSubsample = Cvips.VipsForeignSubsample
+
+public typealias VipsImageType = Cvips.VipsImageType
 
 public typealias VipsIntent = Cvips.VipsIntent
 
@@ -1765,9 +1816,13 @@ public typealias VipsOperationComplex2 = Cvips.VipsOperationComplex2
 
 public typealias VipsOperationComplexget = Cvips.VipsOperationComplexget
 
+public typealias VipsOperationFlags = Cvips.VipsOperationFlags
+
 public typealias VipsOperationMath = Cvips.VipsOperationMath
 
 public typealias VipsOperationMath2 = Cvips.VipsOperationMath2
+
+public typealias VipsOperationMorphology = Cvips.VipsOperationMorphology
 
 public typealias VipsOperationRelational = Cvips.VipsOperationRelational
 
@@ -1777,7 +1832,11 @@ public typealias VipsPCS = Cvips.VipsPCS
 
 public typealias VipsPrecision = Cvips.VipsPrecision
 
+public typealias VipsRegionShrink = Cvips.VipsRegionShrink
+
 public typealias VipsSize = Cvips.VipsSize
+
+public typealias VipsTextWrap = Cvips.VipsTextWrap
 ```
 
-<!-- Generated by interfazzle.swift on 2025-11-22 14:12:07 +0100 -->
+<!-- Generated by interfazzle.swift on 2025-12-15 22:40:04 +0100 -->

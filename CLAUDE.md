@@ -37,8 +37,8 @@ swift run vips-tool
 # Build for release
 swift build -c release
 
-# Generate Swift wrappers from libvips operations (requires PyVIPS)
-python3 tools/generate-swift-wrappers.py
+# Run the code generator manually (optional - runs automatically during build)
+swift run vips-generator --verbose
 ```
 
 Depending on the environment, swift might be installed in `$HOME/.local/share/swiftly/bin/swift`.
@@ -72,12 +72,17 @@ The Swift wrapper mirrors libvips' modular structure in `Sources/VIPS/`:
 - **Conversion/**: Image format and geometric conversions (resize, rotate, flip, etc.)  
 - **Create/**: Image creation and generation functions
 - **Draw/**: Drawing operations and compositing
-- **Generated/**: Auto-generated Swift wrappers for libvips operations (updated via `tools/generate-swift-wrappers.py`)
 - **Convolution/**: Convolution and filtering operations
 - **Histogram/**: Histogram analysis operations
 - **Morphology/**: Morphological image processing operations
 - **Resample/**: Image resampling and interpolation
 - **CvipsShim/**: C interop layer for functionality not directly accessible from Swift (uses C macros and GObject methods)
+
+Additional modules outside `Sources/VIPS/`:
+
+- **VIPSIntrospection/**: Swift library for introspecting libvips operations at runtime
+- **VIPSGenerator/**: Swift-based code generator that produces Swift wrappers from libvips introspection
+- **Plugins/VIPSGeneratorPlugin/**: SwiftPM build tool plugin that runs the generator during build
 
 ## Key Development Patterns
 
@@ -96,13 +101,15 @@ The Swift wrapper mirrors libvips' modular structure in `Sources/VIPS/`:
 
 ## Code Generation
 
-The project uses automated code generation to create Swift wrappers:
+The project uses a pure Swift code generator integrated as a SwiftPM build plugin:
 
-- **Generator**: `tools/generate-swift-wrappers.py` uses PyVIPS to introspect libvips operations
-- **Generated Files**: Located in `Sources/VIPS/Generated/` directory, organized by operation category
-- **Requirements**: Requires `pip install pyvips` to run the generator
-- **Usage**: Run `python3 tools/generate-swift-wrappers.py` to regenerate wrappers
+- **Build Plugin**: `VIPSGeneratorPlugin` automatically runs during `swift build` when outputs are missing
+- **Generator**: `vips-generator` executable uses `VIPSIntrospection` to query libvips operations at runtime
+- **Generated Files**: Created in the plugin work directory during build, organized by operation category
+- **Manual Usage**: Run `swift run vips-generator --verbose` to regenerate (or `--dry-run` to preview)
 - **Convention**: Generated code follows Swift naming conventions while preserving libvips operation names for searchability
+
+The generator introspects libvips directly at build time, ensuring wrappers match the installed libvips version.
 
 ## Testing Framework
 
@@ -129,6 +136,7 @@ Check `docs/operations_todo.md` for current implementation roadmap. Arithmetic o
 
 ## Swift 6 Compatibility
 
+- **Tools Version**: Requires Swift 6.2+ (`swift-tools-version:6.2`)
 - **Language Mode**: Built with Swift 6 language mode enabled (`swiftLanguageModes: [.v6]`)
-- **Concurrency**: Ready for strict concurrency checking
-- **Dependencies**: Uses swift-log for logging functionality
+- **Concurrency**: Ready for strict concurrency checking with experimental features enabled
+- **Dependencies**: Uses swift-log for logging and swift-subprocess for process execution
