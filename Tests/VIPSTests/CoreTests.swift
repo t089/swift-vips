@@ -64,7 +64,7 @@ extension VIPSTests {
                 
                 image.onEval { imageRef, progress in
                     if Task.isCancelled {
-                        imageRef.setKill(true)
+                        imageRef.kill = true
                     }
                 }
 
