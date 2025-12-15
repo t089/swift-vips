@@ -9,8 +9,8 @@ import Cvips
 
 extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
-    /// Transform lch to cmc
-    public func CMC2LCh() throws -> Self {
+    /// Transform LCh to CMC
+    public func cmc2lch() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -21,8 +21,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Transform cmyk to xyz
-    public func CMYK2XYZ() throws -> Self {
+    /// Transform CMYK to XYZ
+    public func cmyk2xyz() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -33,8 +33,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Transform hsv to srgb
-    public func HSV2sRGB() throws -> Self {
+    /// Transform HSV to sRGB
+    public func hsv2srgb() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -45,8 +45,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Transform lch to cmc
-    public func LCh2CMC() throws -> Self {
+    /// Transform LCh to CMC
+    public func lch2cmc() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -57,8 +57,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Transform lch to lab
-    public func LCh2Lab() throws -> Self {
+    /// Transform LCh to Lab
+    public func lch2lab() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -69,8 +69,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Transform lab to lch
-    public func Lab2LCh() throws -> Self {
+    /// Transform Lab to LCh
+    public func lab2lch() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -81,8 +81,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Transform float lab to labq coding
-    public func Lab2LabQ() throws -> Self {
+    /// Transform float Lab to LabQ coding
+    public func lab2labq() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -93,11 +93,11 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Transform cielab to xyz
+    /// Transform CIELAB to XYZ
     ///
     /// - Parameters:
     ///   - temp: Color temperature
-    public func Lab2XYZ(temp: [Double]? = nil) throws -> Self {
+    public func lab2xyz(temp: [Double]? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -111,8 +111,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Unpack a labq image to float lab
-    public func LabQ2Lab() throws -> Self {
+    /// Unpack a LabQ image to float Lab
+    public func labq2lab() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -123,8 +123,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Convert a labq image to srgb
-    public func LabQ2sRGB() throws -> Self {
+    /// Convert a LabQ image to sRGB
+    public func labq2srgb() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -135,8 +135,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Transform xyz to cmyk
-    public func XYZ2CMYK() throws -> Self {
+    /// Transform XYZ to CMYK
+    public func xyz2cmyk() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -147,11 +147,11 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Transform xyz to lab
+    /// Transform XYZ to Lab
     ///
     /// - Parameters:
     ///   - temp: Colour temperature
-    public func XYZ2Lab(temp: [Double]? = nil) throws -> Self {
+    public func xyz2lab(temp: [Double]? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -165,8 +165,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Transform xyz to yxy
-    public func XYZ2Yxy() throws -> Self {
+    /// Transform XYZ to Yxy
+    public func xyz2yxy() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -177,8 +177,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Transform xyz to scrgb
-    public func XYZ2scRGB() throws -> Self {
+    /// Transform XYZ to scRGB
+    public func xyz2scrgb() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -189,8 +189,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Transform yxy to xyz
-    public func Yxy2XYZ() throws -> Self {
+    /// Transform Yxy to XYZ
+    public func yxy2xyz() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -206,16 +206,14 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     /// - Parameters:
     ///   - space: Destination color space
     ///   - sourceSpace: Source color space
-    public func colourspace(space: VipsInterpretation, sourceSpace: VipsInterpretation? = nil)
-        throws -> Self
-    {
+    public func colourspace(space: VipsInterpretation, sourceSpace: VipsInterpretation? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             opt.set("space", value: space)
             if let sourceSpace = sourceSpace {
-                opt.set("source_space", value: sourceSpace)
+                opt.set("source-space", value: sourceSpace)
             }
             opt.set("out", value: &out)
 
@@ -235,7 +233,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Output to device with icc profile
+    /// Output to device with ICC profile
     ///
     /// - Parameters:
     ///   - pcs: Set Profile Connection Space
@@ -243,13 +241,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - blackPointCompensation: Enable black point compensation
     ///   - outputProfile: Filename to load output profile from
     ///   - depth: Output device space depth in bits
-    public func iccExport(
-        pcs: VipsPCS? = nil,
-        intent: VipsIntent? = nil,
-        blackPointCompensation: Bool? = nil,
-        outputProfile: String? = nil,
-        depth: Int? = nil
-    ) throws -> Self {
+    public func iccExport(pcs: VipsPCS? = nil, intent: VipsIntent? = nil, blackPointCompensation: Bool? = nil, outputProfile: String? = nil, depth: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -261,10 +253,10 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("intent", value: intent)
             }
             if let blackPointCompensation = blackPointCompensation {
-                opt.set("black_point_compensation", value: blackPointCompensation)
+                opt.set("black-point-compensation", value: blackPointCompensation)
             }
             if let outputProfile = outputProfile {
-                opt.set("output_profile", value: outputProfile)
+                opt.set("output-profile", value: outputProfile)
             }
             if let depth = depth {
                 opt.set("depth", value: depth)
@@ -275,7 +267,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Import from device with icc profile
+    /// Import from device with ICC profile
     ///
     /// - Parameters:
     ///   - pcs: Set Profile Connection Space
@@ -283,13 +275,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - blackPointCompensation: Enable black point compensation
     ///   - embedded: Use embedded input profile, if available
     ///   - inputProfile: Filename to load input profile from
-    public func iccImport(
-        pcs: VipsPCS? = nil,
-        intent: VipsIntent? = nil,
-        blackPointCompensation: Bool? = nil,
-        embedded: Bool? = nil,
-        inputProfile: String? = nil
-    ) throws -> Self {
+    public func iccImport(pcs: VipsPCS? = nil, intent: VipsIntent? = nil, blackPointCompensation: Bool? = nil, embedded: Bool? = nil, inputProfile: String? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -301,13 +287,13 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("intent", value: intent)
             }
             if let blackPointCompensation = blackPointCompensation {
-                opt.set("black_point_compensation", value: blackPointCompensation)
+                opt.set("black-point-compensation", value: blackPointCompensation)
             }
             if let embedded = embedded {
                 opt.set("embedded", value: embedded)
             }
             if let inputProfile = inputProfile {
-                opt.set("input_profile", value: inputProfile)
+                opt.set("input-profile", value: inputProfile)
             }
             opt.set("out", value: &out)
 
@@ -315,7 +301,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Transform between devices with icc profiles
+    /// Transform between devices with ICC profiles
     ///
     /// - Parameters:
     ///   - outputProfile: Filename to load output profile from
@@ -325,20 +311,12 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - embedded: Use embedded input profile, if available
     ///   - inputProfile: Filename to load input profile from
     ///   - depth: Output device space depth in bits
-    public func iccTransform(
-        outputProfile: String,
-        pcs: VipsPCS? = nil,
-        intent: VipsIntent? = nil,
-        blackPointCompensation: Bool? = nil,
-        embedded: Bool? = nil,
-        inputProfile: String? = nil,
-        depth: Int? = nil
-    ) throws -> Self {
+    public func iccTransform(outputProfile: String, pcs: VipsPCS? = nil, intent: VipsIntent? = nil, blackPointCompensation: Bool? = nil, embedded: Bool? = nil, inputProfile: String? = nil, depth: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
-            opt.set("output_profile", value: outputProfile)
+            opt.set("output-profile", value: outputProfile)
             if let pcs = pcs {
                 opt.set("pcs", value: pcs)
             }
@@ -346,13 +324,13 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("intent", value: intent)
             }
             if let blackPointCompensation = blackPointCompensation {
-                opt.set("black_point_compensation", value: blackPointCompensation)
+                opt.set("black-point-compensation", value: blackPointCompensation)
             }
             if let embedded = embedded {
                 opt.set("embedded", value: embedded)
             }
             if let inputProfile = inputProfile {
-                opt.set("input_profile", value: inputProfile)
+                opt.set("input-profile", value: inputProfile)
             }
             if let depth = depth {
                 opt.set("depth", value: depth)
@@ -369,14 +347,14 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             var opt = VIPSOption()
 
             opt.set("in", value: self)
-            opt.set("mask", value: &out)
+            opt.set("out", value: &out)
 
             try Self.call("labelregions", options: &opt)
         }
     }
 
-    /// Transform srgb to hsv
-    public func sRGB2HSV() throws -> Self {
+    /// Transform sRGB to HSV
+    public func srgb2hsv() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -387,8 +365,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Convert an srgb image to scrgb
-    public func sRGB2scRGB() throws -> Self {
+    /// Convert an sRGB image to scRGB
+    public func srgb2scrgb() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -399,11 +377,11 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Convert scrgb to bw
+    /// Convert scRGB to BW
     ///
     /// - Parameters:
     ///   - depth: Output device space depth in bits
-    public func scRGB2BW(depth: Int? = nil) throws -> Self {
+    public func scrgb2bw(depth: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -417,8 +395,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Transform scrgb to xyz
-    public func scRGB2XYZ() throws -> Self {
+    /// Transform scRGB to XYZ
+    public func scrgb2xyz() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -429,11 +407,11 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Convert scrgb to srgb
+    /// Convert scRGB to sRGB
     ///
     /// - Parameters:
     ///   - depth: Output device space depth in bits
-    public func scRGB2sRGB(depth: Int? = nil) throws -> Self {
+    public func scrgb2srgb(depth: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -459,13 +437,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - csize: Size of third dimension
     ///   - dsize: Size of fourth dimension
     ///   - esize: Size of fifth dimension
-    public static func xyz(
-        width: Int,
-        height: Int,
-        csize: Int? = nil,
-        dsize: Int? = nil,
-        esize: Int? = nil
-    ) throws -> Self {
+    public static func xyz(width: Int, height: Int, csize: Int? = nil, dsize: Int? = nil, esize: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 

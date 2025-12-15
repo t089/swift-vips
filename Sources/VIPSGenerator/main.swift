@@ -8,42 +8,229 @@
 import VIPSIntrospection
 import Foundation
 
+// MARK: - Command Line Arguments
+
+struct Arguments {
+    var outputDir: String = "Sources/VIPS/Generated"
+    var dryRun: Bool = false
+    var verbose: Bool = false
+    var operation: String? = nil
+}
+
+func parseArguments() -> Arguments {
+    var args = Arguments()
+    let commandLineArgs = CommandLine.arguments
+    var i = 1
+
+    while i < commandLineArgs.count {
+        let arg = commandLineArgs[i]
+
+        switch arg {
+        case "--output-dir", "-o":
+            i += 1
+            if i < commandLineArgs.count {
+                args.outputDir = commandLineArgs[i]
+            }
+        case "--dry-run":
+            args.dryRun = true
+        case "--verbose":
+            args.verbose = true
+        case "--operation":
+            i += 1
+            if i < commandLineArgs.count {
+                args.operation = commandLineArgs[i]
+            }
+        case "--help", "-h":
+            printHelp()
+            exit(0)
+        default:
+            if arg.hasPrefix("-") {
+                print("Unknown option: \(arg)")
+                printHelp()
+                exit(1)
+            }
+        }
+
+        i += 1
+    }
+
+    return args
+}
+
+func printHelp() {
+    print("""
+    VIPS Swift Code Generator
+
+    Usage: vips-generator [options]
+
+    Options:
+        --output-dir, -o <path>    Output directory (default: Sources/VIPS/Generated)
+        --dry-run                  Print what would be generated without writing
+        --verbose                  Print progress information
+        --operation <name>         Generate single operation (for testing)
+        --help, -h                 Show this help message
+    """)
+}
+
+// MARK: - Main Function
+
 func main() {
+    let args = parseArguments()
+
     do {
-        print("Initializing VIPS library...")
+        if args.verbose {
+            print("Initializing VIPS library...")
+        }
         try VIPSIntrospection.initialize()
         defer { VIPSIntrospection.shutdown() }
 
-        print("Discovering VIPS operations...")
-        let operations = try VIPSIntrospection.getAllOperations()
+        if args.verbose {
+            print("Discovering VIPS operations...")
+        }
+        var operations = try VIPSIntrospection.getAllOperations()
+
+        // Note: Don't add "crop" as synonym - it would duplicate "extract_area"
+        // The Python generator adds it but handles deduplication differently
+
         print("Found \(operations.count) operations")
 
-        // Print first 10 operations as a test
-        print("\nFirst 10 operations:")
-        for (index, nickname) in operations.prefix(10).enumerated() {
-            print("  \(index + 1). \(nickname)")
+        // Filter to single operation if requested
+        if let singleOp = args.operation {
+            operations = operations.filter { $0 == singleOp }
+            if operations.isEmpty {
+                print("Error: Operation '\(singleOp)' not found")
+                exit(1)
+            }
+            print("Generating single operation: \(singleOp)")
         }
 
-        // Get detailed info for the first operation
-        if let firstOp = operations.first {
-            print("\nDetails for '\(firstOp)':")
-            let opInfo = try VIPSIntrospection.getOperationInfo(firstOp)
+        let generator = CodeGenerator()
+        let overloads = OverloadGenerators()
+        var categorizedMethods: [String: [(nickname: String, code: String)]] = [:]
 
-            print("  Description: \(opInfo.description)")
-            print("  Deprecated: \(opInfo.isDeprecated)")
-            print("  Parameters: \(opInfo.parameters.count)")
+        // Operations to exclude (matching Python generator)
+        let excludedOperations = Set([
+            "avifsave_target",
+            "magicksave_bmp",
+            "magicksave_bmp_buffer",
+            "pbmsave_target",
+            "pfmsave_target",
+            "pgmsave_target",
+            "pnmsave_target",
+            "linear",      // Has manual implementation with multiple overloads
+            "project",     // Has manual implementation with tuple return type
+            "profile"      // Has manual implementation with tuple return type
+        ])
 
-            for param in opInfo.parameters.prefix(5) {
-                let typeInfo = VIPSIntrospection.getTypeInfo(param.parameterType)
-                print("    - \(param.name): \(typeInfo.name) (flags: \(param.flags))")
+        // Const variant mapping
+        let constVariants = ["remainder": "remainder_const"]
+
+        if args.verbose {
+            print("Generating wrappers...")
+        }
+
+        for nickname in operations {
+            // Skip excluded operations
+            if excludedOperations.contains(nickname) {
+                continue
             }
 
-            if opInfo.parameters.count > 5 {
-                print("    ... and \(opInfo.parameters.count - 5) more parameters")
+            // Get operation details - skip abstract types that fail introspection
+            let details: VIPSOperationDetails
+            do {
+                details = try VIPSIntrospection.getOperationDetails(nickname)
+            } catch {
+                // Can fail for abstract types, skip them
+                if args.verbose {
+                    print("  Skipping \(nickname) (abstract type)")
+                }
+                continue
+            }
+
+            // Generate main wrapper
+            if let wrapper = generator.generateWrapper(for: details) {
+                let category = getOperationCategory(nickname)
+
+                // Apply version guards if needed
+                var code = wrapper
+                if let versionGuard = getOperationVersionGuard(nickname) {
+                    code = "\(versionGuard)\n\(code)\n#endif"
+                }
+
+                categorizedMethods[category, default: []].append((nickname, code))
+
+                if args.verbose {
+                    print("  Generated \(nickname) -> \(category)")
+                }
+            }
+
+            // Generate UnsafeRawBufferPointer overload if this operation has blob parameters
+            if let unsafeBufferOverload = overloads.generateUnsafeBufferOverload(for: details) {
+                let category = getOperationCategory(nickname)
+                var code = unsafeBufferOverload
+                if let versionGuard = getOperationVersionGuard(nickname) {
+                    code = "\(versionGuard)\n\(code)\n#endif"
+                }
+                categorizedMethods[category, default: []].append((
+                    nickname: "\(nickname)_unsafe_buffer_overload",
+                    code: code
+                ))
+            }
+
+            // Generate const overloads if this operation has them
+            if let constOpName = constVariants[nickname] {
+                let constDetails = try VIPSIntrospection.getOperationDetails(constOpName)
+                let constOverloads = overloads.generateSimpleConstOverloads(
+                    baseOp: nickname,
+                    constOp: constDetails
+                )
+
+                let category = getOperationCategory(nickname)
+                for (i, overloadCode) in constOverloads.enumerated() {
+                    var code = overloadCode
+                    if let versionGuard = getOperationVersionGuard(nickname) {
+                        code = "\(versionGuard)\n\(code)\n#endif"
+                    }
+                    categorizedMethods[category, default: []].append((
+                        nickname: "\(nickname)_overload_\(i)",
+                        code: code
+                    ))
+                }
             }
         }
 
-        print("\nIntrospection complete!")
+        if args.dryRun {
+            print("\nOperations by category:")
+            for category in categorizedMethods.keys.sorted() {
+                let methods = categorizedMethods[category]!
+                print("  \(category): \(methods.count) operations")
+                for (nickname, _) in methods.prefix(3) {
+                    print("    - \(nickname)")
+                }
+                if methods.count > 3 {
+                    print("    ... and \(methods.count - 3) more")
+                }
+            }
+            return
+        }
+
+        // Write files
+        if args.verbose {
+            print("\nWriting files to \(args.outputDir)...")
+        }
+
+        let writer = FileWriter(outputDirectory: args.outputDir)
+        for category in categorizedMethods.keys.sorted() {
+            let methods = categorizedMethods[category]!
+            try writer.writeCategory(category, methods: methods)
+            print("  ✅ Generated \(category.lowercased().replacingOccurrences(of: "/", with: "_")).generated.swift (\(methods.count) operations)")
+        }
+
+        print("\nGeneration complete!")
+        print("\nSummary:")
+        let totalOperations = categorizedMethods.values.reduce(0) { $0 + $1.count }
+        print("  Total operations: \(totalOperations)")
+        print("  Total categories: \(categorizedMethods.count)")
 
     } catch {
         print("Error: \(error)")

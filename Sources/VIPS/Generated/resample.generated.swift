@@ -18,13 +18,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - background: Background value
     ///   - premultiplied: Images have premultiplied alpha
     ///   - extend: How to generate the extra pixels
-    public func mapim(
-        index: some VIPSImageProtocol,
-        interpolate: VIPSInterpolate? = nil,
-        background: [Double]? = nil,
-        premultiplied: Bool? = nil,
-        extend: VipsExtend? = nil
-    ) throws -> Self {
+    public func mapim(index: some VIPSImageProtocol, interpolate: VIPSInterpolate? = nil, background: [Double]? = nil, premultiplied: Bool? = nil, extend: VipsExtend? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -53,9 +47,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     /// - Parameters:
     ///   - coeff: Coefficient matrix
     ///   - interpolate: Interpolate values with this
-    public func quadratic(coeff: some VIPSImageProtocol, interpolate: VIPSInterpolate? = nil) throws
-        -> Self
-    {
+    public func quadratic(coeff: some VIPSImageProtocol, interpolate: VIPSInterpolate? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -83,18 +75,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - outputProfile: Fallback output profile
     ///   - intent: Rendering intent
     ///   - failOn: Error level to fail on
-    public func thumbnailImage(
-        width: Int,
-        height: Int? = nil,
-        size: VipsSize? = nil,
-        noRotate: Bool? = nil,
-        crop: VipsInteresting? = nil,
-        linear: Bool? = nil,
-        inputProfile: String? = nil,
-        outputProfile: String? = nil,
-        intent: VipsIntent? = nil,
-        failOn: VipsFailOn? = nil
-    ) throws -> Self {
+    public func thumbnailImage(width: Int, height: Int? = nil, size: VipsSize? = nil, noRotate: Bool? = nil, crop: VipsInteresting? = nil, linear: Bool? = nil, inputProfile: String? = nil, outputProfile: String? = nil, intent: VipsIntent? = nil, failOn: VipsFailOn? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -107,7 +88,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("size", value: size)
             }
             if let noRotate = noRotate {
-                opt.set("no_rotate", value: noRotate)
+                opt.set("no-rotate", value: noRotate)
             }
             if let crop = crop {
                 opt.set("crop", value: crop)
@@ -116,16 +97,16 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("linear", value: linear)
             }
             if let inputProfile = inputProfile {
-                opt.set("input_profile", value: inputProfile)
+                opt.set("input-profile", value: inputProfile)
             }
             if let outputProfile = outputProfile {
-                opt.set("output_profile", value: outputProfile)
+                opt.set("output-profile", value: outputProfile)
             }
             if let intent = intent {
                 opt.set("intent", value: intent)
             }
             if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
+                opt.set("fail-on", value: failOn)
             }
             opt.set("out", value: &out)
 
@@ -151,19 +132,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - outputProfile: Fallback output profile
     ///   - intent: Rendering intent
     ///   - failOn: Error level to fail on
-    public static func thumbnail(
-        filename: String,
-        width: Int,
-        height: Int? = nil,
-        size: VipsSize? = nil,
-        noRotate: Bool? = nil,
-        crop: VipsInteresting? = nil,
-        linear: Bool? = nil,
-        inputProfile: String? = nil,
-        outputProfile: String? = nil,
-        intent: VipsIntent? = nil,
-        failOn: VipsFailOn? = nil
-    ) throws -> Self {
+    public static func thumbnail(filename: String, width: Int, height: Int? = nil, size: VipsSize? = nil, noRotate: Bool? = nil, crop: VipsInteresting? = nil, linear: Bool? = nil, inputProfile: String? = nil, outputProfile: String? = nil, intent: VipsIntent? = nil, failOn: VipsFailOn? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -176,7 +145,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("size", value: size)
             }
             if let noRotate = noRotate {
-                opt.set("no_rotate", value: noRotate)
+                opt.set("no-rotate", value: noRotate)
             }
             if let crop = crop {
                 opt.set("crop", value: crop)
@@ -185,16 +154,16 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("linear", value: linear)
             }
             if let inputProfile = inputProfile {
-                opt.set("input_profile", value: inputProfile)
+                opt.set("input-profile", value: inputProfile)
             }
             if let outputProfile = outputProfile {
-                opt.set("output_profile", value: outputProfile)
+                opt.set("output-profile", value: outputProfile)
             }
             if let intent = intent {
                 opt.set("intent", value: intent)
             }
             if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
+                opt.set("fail-on", value: failOn)
             }
             opt.set("out", value: &out)
 
@@ -217,21 +186,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - outputProfile: Fallback output profile
     ///   - intent: Rendering intent
     ///   - failOn: Error level to fail on
-    @inlinable
-    public static func thumbnail(
-        buffer: VIPSBlob,
-        width: Int,
-        optionString: String? = nil,
-        height: Int? = nil,
-        size: VipsSize? = nil,
-        noRotate: Bool? = nil,
-        crop: VipsInteresting? = nil,
-        linear: Bool? = nil,
-        inputProfile: String? = nil,
-        outputProfile: String? = nil,
-        intent: VipsIntent? = nil,
-        failOn: VipsFailOn? = nil
-    ) throws -> Self {
+    public static func thumbnail(buffer: VIPSBlob, width: Int, optionString: String? = nil, height: Int? = nil, size: VipsSize? = nil, noRotate: Bool? = nil, crop: VipsInteresting? = nil, linear: Bool? = nil, inputProfile: String? = nil, outputProfile: String? = nil, intent: VipsIntent? = nil, failOn: VipsFailOn? = nil) throws -> Self {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
             try Self { out in
@@ -240,7 +195,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("buffer", value: blob)
                 opt.set("width", value: width)
                 if let optionString = optionString {
-                    opt.set("option_string", value: optionString)
+                    opt.set("option-string", value: optionString)
                 }
                 if let height = height {
                     opt.set("height", value: height)
@@ -249,7 +204,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                     opt.set("size", value: size)
                 }
                 if let noRotate = noRotate {
-                    opt.set("no_rotate", value: noRotate)
+                    opt.set("no-rotate", value: noRotate)
                 }
                 if let crop = crop {
                     opt.set("crop", value: crop)
@@ -258,16 +213,16 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                     opt.set("linear", value: linear)
                 }
                 if let inputProfile = inputProfile {
-                    opt.set("input_profile", value: inputProfile)
+                    opt.set("input-profile", value: inputProfile)
                 }
                 if let outputProfile = outputProfile {
-                    opt.set("output_profile", value: outputProfile)
+                    opt.set("output-profile", value: outputProfile)
                 }
                 if let intent = intent {
                     opt.set("intent", value: intent)
                 }
                 if let failOn = failOn {
-                    opt.set("fail_on", value: failOn)
+                    opt.set("fail-on", value: failOn)
                 }
                 opt.set("out", value: &out)
 
@@ -291,27 +246,14 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - outputProfile: Fallback output profile
     ///   - intent: Rendering intent
     ///   - failOn: Error level to fail on
-    public static func thumbnail(
-        source: VIPSSource,
-        width: Int,
-        optionString: String? = nil,
-        height: Int? = nil,
-        size: VipsSize? = nil,
-        noRotate: Bool? = nil,
-        crop: VipsInteresting? = nil,
-        linear: Bool? = nil,
-        inputProfile: String? = nil,
-        outputProfile: String? = nil,
-        intent: VipsIntent? = nil,
-        failOn: VipsFailOn? = nil
-    ) throws -> Self {
+    public static func thumbnail(source: VIPSSource, width: Int, optionString: String? = nil, height: Int? = nil, size: VipsSize? = nil, noRotate: Bool? = nil, crop: VipsInteresting? = nil, linear: Bool? = nil, inputProfile: String? = nil, outputProfile: String? = nil, intent: VipsIntent? = nil, failOn: VipsFailOn? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("source", value: source)
             opt.set("width", value: width)
             if let optionString = optionString {
-                opt.set("option_string", value: optionString)
+                opt.set("option-string", value: optionString)
             }
             if let height = height {
                 opt.set("height", value: height)
@@ -320,7 +262,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("size", value: size)
             }
             if let noRotate = noRotate {
-                opt.set("no_rotate", value: noRotate)
+                opt.set("no-rotate", value: noRotate)
             }
             if let crop = crop {
                 opt.set("crop", value: crop)
@@ -329,16 +271,16 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("linear", value: linear)
             }
             if let inputProfile = inputProfile {
-                opt.set("input_profile", value: inputProfile)
+                opt.set("input-profile", value: inputProfile)
             }
             if let outputProfile = outputProfile {
-                opt.set("output_profile", value: outputProfile)
+                opt.set("output-profile", value: outputProfile)
             }
             if let intent = intent {
                 opt.set("intent", value: intent)
             }
             if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
+                opt.set("fail-on", value: failOn)
             }
             opt.set("out", value: &out)
 

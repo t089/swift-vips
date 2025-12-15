@@ -53,9 +53,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - height: Image height in pixels
     ///   - uchar: Output an unsigned char image
     ///   - factor: Maximum spatial frequency
-    public static func eye(width: Int, height: Int, uchar: Bool? = nil, factor: Double? = nil)
-        throws -> Self
-    {
+    public static func eye(width: Int, height: Int, uchar: Bool? = nil, factor: Double? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -85,7 +83,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            opt.set("fractal_dimension", value: fractalDimension)
+            opt.set("fractal-dimension", value: fractalDimension)
             opt.set("out", value: &out)
 
             try Self.call("fractsurf", options: &opt)
@@ -99,17 +97,12 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - minAmpl: Minimum amplitude of Gaussian
     ///   - separable: Generate separable Gaussian
     ///   - precision: Generate with this precision
-    public static func gaussmat(
-        sigma: Double,
-        minAmpl: Double,
-        separable: Bool? = nil,
-        precision: VipsPrecision? = nil
-    ) throws -> Self {
+    public static func gaussmat(sigma: Double, minAmpl: Double, separable: Bool? = nil, precision: VipsPrecision? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("sigma", value: sigma)
-            opt.set("min_ampl", value: minAmpl)
+            opt.set("min-ampl", value: minAmpl)
             if let separable = separable {
                 opt.set("separable", value: separable)
             }
@@ -130,13 +123,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - sigma: Standard deviation of pixels in generated image
     ///   - mean: Mean of pixels in generated image
     ///   - seed: Random number seed
-    public static func gaussnoise(
-        width: Int,
-        height: Int,
-        sigma: Double? = nil,
-        mean: Double? = nil,
-        seed: Int? = nil
-    ) throws -> Self {
+    public static func gaussnoise(width: Int, height: Int, sigma: Double? = nil, mean: Double? = nil, seed: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -178,15 +165,13 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Make a 1d image where pixel values are indexes
+    /// Make a 1D image where pixel values are indexes
     ///
     /// - Parameters:
     ///   - bands: Number of bands in LUT
     ///   - ushort: Create a 16-bit LUT
     ///   - size: Size of 16-bit LUT
-    public static func identity(bands: Int? = nil, ushort: Bool? = nil, size: Int? = nil) throws
-        -> Self
-    {
+    public static func identity(bands: Int? = nil, ushort: Bool? = nil, size: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -205,24 +190,19 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Make a laplacian of gaussian image
+    /// Make a Laplacian of Gaussian image
     ///
     /// - Parameters:
     ///   - sigma: Radius of Gaussian
     ///   - minAmpl: Minimum amplitude of Gaussian
     ///   - separable: Generate separable Gaussian
     ///   - precision: Generate with this precision
-    public static func logmat(
-        sigma: Double,
-        minAmpl: Double,
-        separable: Bool? = nil,
-        precision: VipsPrecision? = nil
-    ) throws -> Self {
+    public static func logmat(sigma: Double, minAmpl: Double, separable: Bool? = nil, precision: VipsPrecision? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("sigma", value: sigma)
-            opt.set("min_ampl", value: minAmpl)
+            opt.set("min-ampl", value: minAmpl)
             if let separable = separable {
                 opt.set("separable", value: separable)
             }
@@ -247,25 +227,15 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskButterworth(
-        width: Int,
-        height: Int,
-        order: Double,
-        frequencyCutoff: Double,
-        amplitudeCutoff: Double,
-        uchar: Bool? = nil,
-        nodc: Bool? = nil,
-        reject: Bool? = nil,
-        optical: Bool? = nil
-    ) throws -> Self {
+    public static func maskButterworth(width: Int, height: Int, order: Double, frequencyCutoff: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
             opt.set("order", value: order)
-            opt.set("frequency_cutoff", value: frequencyCutoff)
-            opt.set("amplitude_cutoff", value: amplitudeCutoff)
+            opt.set("frequency-cutoff", value: frequencyCutoff)
+            opt.set("amplitude-cutoff", value: amplitudeCutoff)
             if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
@@ -298,29 +268,17 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskButterworthBand(
-        width: Int,
-        height: Int,
-        order: Double,
-        frequencyCutoffX: Double,
-        frequencyCutoffY: Double,
-        radius: Double,
-        amplitudeCutoff: Double,
-        uchar: Bool? = nil,
-        nodc: Bool? = nil,
-        reject: Bool? = nil,
-        optical: Bool? = nil
-    ) throws -> Self {
+    public static func maskButterworthBand(width: Int, height: Int, order: Double, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
             opt.set("order", value: order)
-            opt.set("frequency_cutoff_x", value: frequencyCutoffX)
-            opt.set("frequency_cutoff_y", value: frequencyCutoffY)
+            opt.set("frequency-cutoff-x", value: frequencyCutoffX)
+            opt.set("frequency-cutoff-y", value: frequencyCutoffY)
             opt.set("radius", value: radius)
-            opt.set("amplitude_cutoff", value: amplitudeCutoff)
+            opt.set("amplitude-cutoff", value: amplitudeCutoff)
             if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
@@ -352,26 +310,15 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskButterworthRing(
-        width: Int,
-        height: Int,
-        order: Double,
-        frequencyCutoff: Double,
-        amplitudeCutoff: Double,
-        ringwidth: Double,
-        uchar: Bool? = nil,
-        nodc: Bool? = nil,
-        reject: Bool? = nil,
-        optical: Bool? = nil
-    ) throws -> Self {
+    public static func maskButterworthRing(width: Int, height: Int, order: Double, frequencyCutoff: Double, amplitudeCutoff: Double, ringwidth: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
             opt.set("order", value: order)
-            opt.set("frequency_cutoff", value: frequencyCutoff)
-            opt.set("amplitude_cutoff", value: amplitudeCutoff)
+            opt.set("frequency-cutoff", value: frequencyCutoff)
+            opt.set("amplitude-cutoff", value: amplitudeCutoff)
             opt.set("ringwidth", value: ringwidth)
             if let uchar = uchar {
                 opt.set("uchar", value: uchar)
@@ -401,21 +348,13 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskFractal(
-        width: Int,
-        height: Int,
-        fractalDimension: Double,
-        uchar: Bool? = nil,
-        nodc: Bool? = nil,
-        reject: Bool? = nil,
-        optical: Bool? = nil
-    ) throws -> Self {
+    public static func maskFractal(width: Int, height: Int, fractalDimension: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            opt.set("fractal_dimension", value: fractalDimension)
+            opt.set("fractal-dimension", value: fractalDimension)
             if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
@@ -445,23 +384,14 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskGaussian(
-        width: Int,
-        height: Int,
-        frequencyCutoff: Double,
-        amplitudeCutoff: Double,
-        uchar: Bool? = nil,
-        nodc: Bool? = nil,
-        reject: Bool? = nil,
-        optical: Bool? = nil
-    ) throws -> Self {
+    public static func maskGaussian(width: Int, height: Int, frequencyCutoff: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            opt.set("frequency_cutoff", value: frequencyCutoff)
-            opt.set("amplitude_cutoff", value: amplitudeCutoff)
+            opt.set("frequency-cutoff", value: frequencyCutoff)
+            opt.set("amplitude-cutoff", value: amplitudeCutoff)
             if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
@@ -493,27 +423,16 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskGaussianBand(
-        width: Int,
-        height: Int,
-        frequencyCutoffX: Double,
-        frequencyCutoffY: Double,
-        radius: Double,
-        amplitudeCutoff: Double,
-        uchar: Bool? = nil,
-        nodc: Bool? = nil,
-        reject: Bool? = nil,
-        optical: Bool? = nil
-    ) throws -> Self {
+    public static func maskGaussianBand(width: Int, height: Int, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, amplitudeCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            opt.set("frequency_cutoff_x", value: frequencyCutoffX)
-            opt.set("frequency_cutoff_y", value: frequencyCutoffY)
+            opt.set("frequency-cutoff-x", value: frequencyCutoffX)
+            opt.set("frequency-cutoff-y", value: frequencyCutoffY)
             opt.set("radius", value: radius)
-            opt.set("amplitude_cutoff", value: amplitudeCutoff)
+            opt.set("amplitude-cutoff", value: amplitudeCutoff)
             if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
@@ -544,24 +463,14 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskGaussianRing(
-        width: Int,
-        height: Int,
-        frequencyCutoff: Double,
-        amplitudeCutoff: Double,
-        ringwidth: Double,
-        uchar: Bool? = nil,
-        nodc: Bool? = nil,
-        reject: Bool? = nil,
-        optical: Bool? = nil
-    ) throws -> Self {
+    public static func maskGaussianRing(width: Int, height: Int, frequencyCutoff: Double, amplitudeCutoff: Double, ringwidth: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            opt.set("frequency_cutoff", value: frequencyCutoff)
-            opt.set("amplitude_cutoff", value: amplitudeCutoff)
+            opt.set("frequency-cutoff", value: frequencyCutoff)
+            opt.set("amplitude-cutoff", value: amplitudeCutoff)
             opt.set("ringwidth", value: ringwidth)
             if let uchar = uchar {
                 opt.set("uchar", value: uchar)
@@ -591,21 +500,13 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskIdeal(
-        width: Int,
-        height: Int,
-        frequencyCutoff: Double,
-        uchar: Bool? = nil,
-        nodc: Bool? = nil,
-        reject: Bool? = nil,
-        optical: Bool? = nil
-    ) throws -> Self {
+    public static func maskIdeal(width: Int, height: Int, frequencyCutoff: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            opt.set("frequency_cutoff", value: frequencyCutoff)
+            opt.set("frequency-cutoff", value: frequencyCutoff)
             if let uchar = uchar {
                 opt.set("uchar", value: uchar)
             }
@@ -636,24 +537,14 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskIdealBand(
-        width: Int,
-        height: Int,
-        frequencyCutoffX: Double,
-        frequencyCutoffY: Double,
-        radius: Double,
-        uchar: Bool? = nil,
-        nodc: Bool? = nil,
-        reject: Bool? = nil,
-        optical: Bool? = nil
-    ) throws -> Self {
+    public static func maskIdealBand(width: Int, height: Int, frequencyCutoffX: Double, frequencyCutoffY: Double, radius: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            opt.set("frequency_cutoff_x", value: frequencyCutoffX)
-            opt.set("frequency_cutoff_y", value: frequencyCutoffY)
+            opt.set("frequency-cutoff-x", value: frequencyCutoffX)
+            opt.set("frequency-cutoff-y", value: frequencyCutoffY)
             opt.set("radius", value: radius)
             if let uchar = uchar {
                 opt.set("uchar", value: uchar)
@@ -684,22 +575,13 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - nodc: Remove DC component
     ///   - reject: Invert the sense of the filter
     ///   - optical: Rotate quadrants to optical space
-    public static func maskIdealRing(
-        width: Int,
-        height: Int,
-        frequencyCutoff: Double,
-        ringwidth: Double,
-        uchar: Bool? = nil,
-        nodc: Bool? = nil,
-        reject: Bool? = nil,
-        optical: Bool? = nil
-    ) throws -> Self {
+    public static func maskIdealRing(width: Int, height: Int, frequencyCutoff: Double, ringwidth: Double, uchar: Bool? = nil, nodc: Bool? = nil, reject: Bool? = nil, optical: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
-            opt.set("frequency_cutoff", value: frequencyCutoff)
+            opt.set("frequency-cutoff", value: frequencyCutoff)
             opt.set("ringwidth", value: ringwidth)
             if let uchar = uchar {
                 opt.set("uchar", value: uchar)
@@ -727,20 +609,14 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - cellSize: Size of Perlin cells
     ///   - uchar: Output an unsigned char image
     ///   - seed: Random number seed
-    public static func perlin(
-        width: Int,
-        height: Int,
-        cellSize: Int? = nil,
-        uchar: Bool? = nil,
-        seed: Int? = nil
-    ) throws -> Self {
+    public static func perlin(width: Int, height: Int, cellSize: Int? = nil, uchar: Bool? = nil, seed: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
             if let cellSize = cellSize {
-                opt.set("cell_size", value: cellSize)
+                opt.set("cell-size", value: cellSize)
             }
             if let uchar = uchar {
                 opt.set("uchar", value: uchar)
@@ -754,7 +630,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Make a 2d sine wave
+    /// Make a 2D sine wave
     ///
     /// - Parameters:
     ///   - width: Image width in pixels
@@ -762,13 +638,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - uchar: Output an unsigned char image
     ///   - hfreq: Horizontal spatial frequency
     ///   - vfreq: Vertical spatial frequency
-    public static func sines(
-        width: Int,
-        height: Int,
-        uchar: Bool? = nil,
-        hfreq: Double? = nil,
-        vfreq: Double? = nil
-    ) throws -> Self {
+    public static func sines(width: Int, height: Int, uchar: Bool? = nil, hfreq: Double? = nil, vfreq: Double? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -803,19 +673,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - fontfile: Load this font file
     ///   - rgba: Enable RGBA output
     ///   - wrap: Wrap lines on word or character boundaries
-    public static func text(
-        _ text: String,
-        font: String? = nil,
-        width: Int? = nil,
-        height: Int? = nil,
-        align: VipsAlign? = nil,
-        justify: Bool? = nil,
-        dpi: Int? = nil,
-        spacing: Int? = nil,
-        fontfile: String? = nil,
-        rgba: Bool? = nil,
-        wrap: VipsTextWrap? = nil
-    ) throws -> Self {
+    public static func text(_ text: String, font: String? = nil, width: Int? = nil, height: Int? = nil, align: VipsAlign? = nil, justify: Bool? = nil, dpi: Int? = nil, spacing: Int? = nil, fontfile: String? = nil, rgba: Bool? = nil, wrap: VipsTextWrap? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -861,58 +719,47 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     /// - Parameters:
     ///   - inMax: Size of LUT to build
     ///   - outMax: Maximum value in output LUT
-    ///   - Lb: Lowest value in output
-    ///   - Lw: Highest value in output
-    ///   - Ps: Position of shadow
-    ///   - Pm: Position of mid-tones
-    ///   - Ph: Position of highlights
-    ///   - S: Adjust shadows by this much
-    ///   - M: Adjust mid-tones by this much
-    ///   - H: Adjust highlights by this much
-    public static func tonelut(
-        inMax: Int? = nil,
-        outMax: Int? = nil,
-        Lb: Double? = nil,
-        Lw: Double? = nil,
-        Ps: Double? = nil,
-        Pm: Double? = nil,
-        Ph: Double? = nil,
-        S: Double? = nil,
-        M: Double? = nil,
-        H: Double? = nil
-    ) throws -> Self {
+    ///   - lb: Lowest value in output
+    ///   - lw: Highest value in output
+    ///   - ps: Position of shadow
+    ///   - pm: Position of mid-tones
+    ///   - ph: Position of highlights
+    ///   - s: Adjust shadows by this much
+    ///   - m: Adjust mid-tones by this much
+    ///   - h: Adjust highlights by this much
+    public static func tonelut(inMax: Int? = nil, outMax: Int? = nil, lb: Double? = nil, lw: Double? = nil, ps: Double? = nil, pm: Double? = nil, ph: Double? = nil, s: Double? = nil, m: Double? = nil, h: Double? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             if let inMax = inMax {
-                opt.set("in_max", value: inMax)
+                opt.set("in-max", value: inMax)
             }
             if let outMax = outMax {
-                opt.set("out_max", value: outMax)
+                opt.set("out-max", value: outMax)
             }
-            if let Lb = Lb {
-                opt.set("Lb", value: Lb)
+            if let lb = lb {
+                opt.set("Lb", value: lb)
             }
-            if let Lw = Lw {
-                opt.set("Lw", value: Lw)
+            if let lw = lw {
+                opt.set("Lw", value: lw)
             }
-            if let Ps = Ps {
-                opt.set("Ps", value: Ps)
+            if let ps = ps {
+                opt.set("Ps", value: ps)
             }
-            if let Pm = Pm {
-                opt.set("Pm", value: Pm)
+            if let pm = pm {
+                opt.set("Pm", value: pm)
             }
-            if let Ph = Ph {
-                opt.set("Ph", value: Ph)
+            if let ph = ph {
+                opt.set("Ph", value: ph)
             }
-            if let S = S {
-                opt.set("S", value: S)
+            if let s = s {
+                opt.set("S", value: s)
             }
-            if let M = M {
-                opt.set("M", value: M)
+            if let m = m {
+                opt.set("M", value: m)
             }
-            if let H = H {
-                opt.set("H", value: H)
+            if let h = h {
+                opt.set("H", value: h)
             }
             opt.set("out", value: &out)
 
@@ -927,16 +774,14 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - height: Image height in pixels
     ///   - cellSize: Size of Worley cells
     ///   - seed: Random number seed
-    public static func worley(width: Int, height: Int, cellSize: Int? = nil, seed: Int? = nil)
-        throws -> Self
-    {
+    public static func worley(width: Int, height: Int, cellSize: Int? = nil, seed: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("width", value: width)
             opt.set("height", value: height)
             if let cellSize = cellSize {
-                opt.set("cell_size", value: cellSize)
+                opt.set("cell-size", value: cellSize)
             }
             if let seed = seed {
                 opt.set("seed", value: seed)

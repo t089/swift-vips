@@ -38,33 +38,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func tiffsave(
-        filename: String,
-        compression: VipsForeignTiffCompression? = nil,
-        quality: Int? = nil,
-        predictor: VipsForeignTiffPredictor? = nil,
-        tile: Bool? = nil,
-        tileWidth: Int? = nil,
-        tileHeight: Int? = nil,
-        pyramid: Bool? = nil,
-        miniswhite: Bool? = nil,
-        bitdepth: Int? = nil,
-        resunit: VipsForeignTiffResunit? = nil,
-        xres: Double? = nil,
-        yres: Double? = nil,
-        bigtiff: Bool? = nil,
-        properties: Bool? = nil,
-        regionShrink: VipsRegionShrink? = nil,
-        level: Int? = nil,
-        lossless: Bool? = nil,
-        depth: VipsForeignDzDepth? = nil,
-        subifd: Bool? = nil,
-        premultiply: Bool? = nil,
-        keep: VipsForeignKeep? = nil,
-        background: [Double]? = nil,
-        pageHeight: Int? = nil,
-        profile: String? = nil
-    ) throws {
+    public func tiffsave(filename: String, compression: VipsForeignTiffCompression? = nil, quality: Int? = nil, predictor: VipsForeignTiffPredictor? = nil, tile: Bool? = nil, tileWidth: Int? = nil, tileHeight: Int? = nil, pyramid: Bool? = nil, miniswhite: Bool? = nil, bitdepth: Int? = nil, resunit: VipsForeignTiffResunit? = nil, xres: Double? = nil, yres: Double? = nil, bigtiff: Bool? = nil, properties: Bool? = nil, regionShrink: VipsRegionShrink? = nil, level: Int? = nil, lossless: Bool? = nil, depth: VipsForeignDzDepth? = nil, subifd: Bool? = nil, premultiply: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
         var opt = VIPSOption()
 
         opt.set("in", value: self)
@@ -82,10 +56,10 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("tile", value: tile)
         }
         if let tileWidth = tileWidth {
-            opt.set("tile_width", value: tileWidth)
+            opt.set("tile-width", value: tileWidth)
         }
         if let tileHeight = tileHeight {
-            opt.set("tile_height", value: tileHeight)
+            opt.set("tile-height", value: tileHeight)
         }
         if let pyramid = pyramid {
             opt.set("pyramid", value: pyramid)
@@ -112,7 +86,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("properties", value: properties)
         }
         if let regionShrink = regionShrink {
-            opt.set("region_shrink", value: regionShrink)
+            opt.set("region-shrink", value: regionShrink)
         }
         if let level = level {
             opt.set("level", value: level)
@@ -136,7 +110,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("background", value: background)
         }
         if let pageHeight = pageHeight {
-            opt.set("page_height", value: pageHeight)
+            opt.set("page-height", value: pageHeight)
         }
         if let profile = profile {
             opt.set("profile", value: profile)
@@ -172,32 +146,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func tiffsave(
-        compression: VipsForeignTiffCompression? = nil,
-        quality: Int? = nil,
-        predictor: VipsForeignTiffPredictor? = nil,
-        tile: Bool? = nil,
-        tileWidth: Int? = nil,
-        tileHeight: Int? = nil,
-        pyramid: Bool? = nil,
-        miniswhite: Bool? = nil,
-        bitdepth: Int? = nil,
-        resunit: VipsForeignTiffResunit? = nil,
-        xres: Double? = nil,
-        yres: Double? = nil,
-        bigtiff: Bool? = nil,
-        properties: Bool? = nil,
-        regionShrink: VipsRegionShrink? = nil,
-        level: Int? = nil,
-        lossless: Bool? = nil,
-        depth: VipsForeignDzDepth? = nil,
-        subifd: Bool? = nil,
-        premultiply: Bool? = nil,
-        keep: VipsForeignKeep? = nil,
-        background: [Double]? = nil,
-        pageHeight: Int? = nil,
-        profile: String? = nil
-    ) throws -> VIPSBlob {
+    public func tiffsave(compression: VipsForeignTiffCompression? = nil, quality: Int? = nil, predictor: VipsForeignTiffPredictor? = nil, tile: Bool? = nil, tileWidth: Int? = nil, tileHeight: Int? = nil, pyramid: Bool? = nil, miniswhite: Bool? = nil, bitdepth: Int? = nil, resunit: VipsForeignTiffResunit? = nil, xres: Double? = nil, yres: Double? = nil, bigtiff: Bool? = nil, properties: Bool? = nil, regionShrink: VipsRegionShrink? = nil, level: Int? = nil, lossless: Bool? = nil, depth: VipsForeignDzDepth? = nil, subifd: Bool? = nil, premultiply: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
         var opt = VIPSOption()
 
         let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)
@@ -220,10 +169,10 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("tile", value: tile)
         }
         if let tileWidth = tileWidth {
-            opt.set("tile_width", value: tileWidth)
+            opt.set("tile-width", value: tileWidth)
         }
         if let tileHeight = tileHeight {
-            opt.set("tile_height", value: tileHeight)
+            opt.set("tile-height", value: tileHeight)
         }
         if let pyramid = pyramid {
             opt.set("pyramid", value: pyramid)
@@ -250,7 +199,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("properties", value: properties)
         }
         if let regionShrink = regionShrink {
-            opt.set("region_shrink", value: regionShrink)
+            opt.set("region-shrink", value: regionShrink)
         }
         if let level = level {
             opt.set("level", value: level)
@@ -274,7 +223,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("background", value: background)
         }
         if let pageHeight = pageHeight {
-            opt.set("page_height", value: pageHeight)
+            opt.set("page-height", value: pageHeight)
         }
         if let profile = profile {
             opt.set("profile", value: profile)
@@ -318,33 +267,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func tiffsave(
-        target: VIPSTarget,
-        compression: VipsForeignTiffCompression? = nil,
-        quality: Int? = nil,
-        predictor: VipsForeignTiffPredictor? = nil,
-        tile: Bool? = nil,
-        tileWidth: Int? = nil,
-        tileHeight: Int? = nil,
-        pyramid: Bool? = nil,
-        miniswhite: Bool? = nil,
-        bitdepth: Int? = nil,
-        resunit: VipsForeignTiffResunit? = nil,
-        xres: Double? = nil,
-        yres: Double? = nil,
-        bigtiff: Bool? = nil,
-        properties: Bool? = nil,
-        regionShrink: VipsRegionShrink? = nil,
-        level: Int? = nil,
-        lossless: Bool? = nil,
-        depth: VipsForeignDzDepth? = nil,
-        subifd: Bool? = nil,
-        premultiply: Bool? = nil,
-        keep: VipsForeignKeep? = nil,
-        background: [Double]? = nil,
-        pageHeight: Int? = nil,
-        profile: String? = nil
-    ) throws {
+    public func tiffsave(target: VIPSTarget, compression: VipsForeignTiffCompression? = nil, quality: Int? = nil, predictor: VipsForeignTiffPredictor? = nil, tile: Bool? = nil, tileWidth: Int? = nil, tileHeight: Int? = nil, pyramid: Bool? = nil, miniswhite: Bool? = nil, bitdepth: Int? = nil, resunit: VipsForeignTiffResunit? = nil, xres: Double? = nil, yres: Double? = nil, bigtiff: Bool? = nil, properties: Bool? = nil, regionShrink: VipsRegionShrink? = nil, level: Int? = nil, lossless: Bool? = nil, depth: VipsForeignDzDepth? = nil, subifd: Bool? = nil, premultiply: Bool? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
         var opt = VIPSOption()
 
         opt.set("in", value: self)
@@ -362,10 +285,10 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("tile", value: tile)
         }
         if let tileWidth = tileWidth {
-            opt.set("tile_width", value: tileWidth)
+            opt.set("tile-width", value: tileWidth)
         }
         if let tileHeight = tileHeight {
-            opt.set("tile_height", value: tileHeight)
+            opt.set("tile-height", value: tileHeight)
         }
         if let pyramid = pyramid {
             opt.set("pyramid", value: pyramid)
@@ -392,7 +315,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("properties", value: properties)
         }
         if let regionShrink = regionShrink {
-            opt.set("region_shrink", value: regionShrink)
+            opt.set("region-shrink", value: regionShrink)
         }
         if let level = level {
             opt.set("level", value: level)
@@ -416,7 +339,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("background", value: background)
         }
         if let pageHeight = pageHeight {
-            opt.set("page_height", value: pageHeight)
+            opt.set("page-height", value: pageHeight)
         }
         if let profile = profile {
             opt.set("profile", value: profile)
@@ -442,18 +365,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func tiffload(
-        filename: String,
-        page: Int? = nil,
-        n: Int? = nil,
-        autorotate: Bool? = nil,
-        subifd: Int? = nil,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> Self {
+    public static func tiffload(filename: String, page: Int? = nil, n: Int? = nil, autorotate: Bool? = nil, subifd: Int? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -480,7 +392,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("access", value: access)
             }
             if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
+                opt.set("fail-on", value: failOn)
             }
             if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
@@ -504,19 +416,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func tiffload(
-        buffer: VIPSBlob,
-        page: Int? = nil,
-        n: Int? = nil,
-        autorotate: Bool? = nil,
-        subifd: Int? = nil,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> Self {
+    public static func tiffload(buffer: VIPSBlob, page: Int? = nil, n: Int? = nil, autorotate: Bool? = nil, subifd: Int? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
             try Self { out in
@@ -545,7 +445,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                     opt.set("access", value: access)
                 }
                 if let failOn = failOn {
-                    opt.set("fail_on", value: failOn)
+                    opt.set("fail-on", value: failOn)
                 }
                 if let revalidate = revalidate {
                     opt.set("revalidate", value: revalidate)
@@ -572,18 +472,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
-    public static func tiffload(
-        unsafeBuffer buffer: UnsafeRawBufferPointer,
-        page: Int? = nil,
-        n: Int? = nil,
-        autorotate: Bool? = nil,
-        subifd: Int? = nil,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> Self {
+    public static func tiffload(unsafeBuffer buffer: UnsafeRawBufferPointer, page: Int? = nil, n: Int? = nil, autorotate: Bool? = nil, subifd: Int? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
         let blob = VIPSBlob(noCopy: buffer)
         return try tiffload(
             buffer: blob,
@@ -612,18 +501,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func tiffload(
-        source: VIPSSource,
-        page: Int? = nil,
-        n: Int? = nil,
-        autorotate: Bool? = nil,
-        subifd: Int? = nil,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> Self {
+    public static func tiffload(source: VIPSSource, page: Int? = nil, n: Int? = nil, autorotate: Bool? = nil, subifd: Int? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -650,7 +528,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("access", value: access)
             }
             if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
+                opt.set("fail-on", value: failOn)
             }
             if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)

@@ -25,7 +25,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Forward fft
+    /// Forward FFT
     public func fwfft() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
@@ -37,7 +37,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Inverse fft
+    /// Inverse FFT
     ///
     /// - Parameters:
     ///   - real: Output only the real part of the transform

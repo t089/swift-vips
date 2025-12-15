@@ -10,7 +10,7 @@ import CvipsShim
 
 extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
-    /// Save as webp
+    /// Save as WebP
     ///
     /// - Parameters:
     ///   - filename: Filename to save to
@@ -32,27 +32,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func webpsave(
-        filename: String,
-        quality: Int? = nil,
-        lossless: Bool? = nil,
-        preset: VipsForeignWebpPreset? = nil,
-        smartSubsample: Bool? = nil,
-        nearLossless: Bool? = nil,
-        alphaQ: Int? = nil,
-        minSize: Bool? = nil,
-        kmin: Int? = nil,
-        kmax: Int? = nil,
-        effort: Int? = nil,
-        targetSize: Int? = nil,
-        mixed: Bool? = nil,
-        smartDeblock: Bool? = nil,
-        passes: Int? = nil,
-        keep: VipsForeignKeep? = nil,
-        background: [Double]? = nil,
-        pageHeight: Int? = nil,
-        profile: String? = nil
-    ) throws {
+    public func webpsave(filename: String, quality: Int? = nil, lossless: Bool? = nil, preset: VipsForeignWebpPreset? = nil, smartSubsample: Bool? = nil, nearLossless: Bool? = nil, alphaQ: Int? = nil, minSize: Bool? = nil, kmin: Int? = nil, kmax: Int? = nil, effort: Int? = nil, targetSize: Int? = nil, mixed: Bool? = nil, smartDeblock: Bool? = nil, passes: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
         var opt = VIPSOption()
 
         opt.set("in", value: self)
@@ -67,16 +47,16 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("preset", value: preset)
         }
         if let smartSubsample = smartSubsample {
-            opt.set("smart_subsample", value: smartSubsample)
+            opt.set("smart-subsample", value: smartSubsample)
         }
         if let nearLossless = nearLossless {
-            opt.set("near_lossless", value: nearLossless)
+            opt.set("near-lossless", value: nearLossless)
         }
         if let alphaQ = alphaQ {
-            opt.set("alpha_q", value: alphaQ)
+            opt.set("alpha-q", value: alphaQ)
         }
         if let minSize = minSize {
-            opt.set("min_size", value: minSize)
+            opt.set("min-size", value: minSize)
         }
         if let kmin = kmin {
             opt.set("kmin", value: kmin)
@@ -88,13 +68,13 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("effort", value: effort)
         }
         if let targetSize = targetSize {
-            opt.set("target_size", value: targetSize)
+            opt.set("target-size", value: targetSize)
         }
         if let mixed = mixed {
             opt.set("mixed", value: mixed)
         }
         if let smartDeblock = smartDeblock {
-            opt.set("smart_deblock", value: smartDeblock)
+            opt.set("smart-deblock", value: smartDeblock)
         }
         if let passes = passes {
             opt.set("passes", value: passes)
@@ -106,7 +86,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("background", value: background)
         }
         if let pageHeight = pageHeight {
-            opt.set("page_height", value: pageHeight)
+            opt.set("page-height", value: pageHeight)
         }
         if let profile = profile {
             opt.set("profile", value: profile)
@@ -115,7 +95,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         try Self.call("webpsave", options: &opt)
     }
 
-    /// Save as webp
+    /// Save as WebP
     ///
     /// - Parameters:
     ///   - quality: Q factor
@@ -136,26 +116,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func webpsave(
-        quality: Int? = nil,
-        lossless: Bool? = nil,
-        preset: VipsForeignWebpPreset? = nil,
-        smartSubsample: Bool? = nil,
-        nearLossless: Bool? = nil,
-        alphaQ: Int? = nil,
-        minSize: Bool? = nil,
-        kmin: Int? = nil,
-        kmax: Int? = nil,
-        effort: Int? = nil,
-        targetSize: Int? = nil,
-        mixed: Bool? = nil,
-        smartDeblock: Bool? = nil,
-        passes: Int? = nil,
-        keep: VipsForeignKeep? = nil,
-        background: [Double]? = nil,
-        pageHeight: Int? = nil,
-        profile: String? = nil
-    ) throws -> VIPSBlob {
+    public func webpsave(quality: Int? = nil, lossless: Bool? = nil, preset: VipsForeignWebpPreset? = nil, smartSubsample: Bool? = nil, nearLossless: Bool? = nil, alphaQ: Int? = nil, minSize: Bool? = nil, kmin: Int? = nil, kmax: Int? = nil, effort: Int? = nil, targetSize: Int? = nil, mixed: Bool? = nil, smartDeblock: Bool? = nil, passes: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
         var opt = VIPSOption()
 
         let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)
@@ -175,16 +136,16 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("preset", value: preset)
         }
         if let smartSubsample = smartSubsample {
-            opt.set("smart_subsample", value: smartSubsample)
+            opt.set("smart-subsample", value: smartSubsample)
         }
         if let nearLossless = nearLossless {
-            opt.set("near_lossless", value: nearLossless)
+            opt.set("near-lossless", value: nearLossless)
         }
         if let alphaQ = alphaQ {
-            opt.set("alpha_q", value: alphaQ)
+            opt.set("alpha-q", value: alphaQ)
         }
         if let minSize = minSize {
-            opt.set("min_size", value: minSize)
+            opt.set("min-size", value: minSize)
         }
         if let kmin = kmin {
             opt.set("kmin", value: kmin)
@@ -196,13 +157,13 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("effort", value: effort)
         }
         if let targetSize = targetSize {
-            opt.set("target_size", value: targetSize)
+            opt.set("target-size", value: targetSize)
         }
         if let mixed = mixed {
             opt.set("mixed", value: mixed)
         }
         if let smartDeblock = smartDeblock {
-            opt.set("smart_deblock", value: smartDeblock)
+            opt.set("smart-deblock", value: smartDeblock)
         }
         if let passes = passes {
             opt.set("passes", value: passes)
@@ -214,7 +175,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("background", value: background)
         }
         if let pageHeight = pageHeight {
-            opt.set("page_height", value: pageHeight)
+            opt.set("page-height", value: pageHeight)
         }
         if let profile = profile {
             opt.set("profile", value: profile)
@@ -251,26 +212,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func webpsaveMime(
-        quality: Int? = nil,
-        lossless: Bool? = nil,
-        preset: VipsForeignWebpPreset? = nil,
-        smartSubsample: Bool? = nil,
-        nearLossless: Bool? = nil,
-        alphaQ: Int? = nil,
-        minSize: Bool? = nil,
-        kmin: Int? = nil,
-        kmax: Int? = nil,
-        effort: Int? = nil,
-        targetSize: Int? = nil,
-        mixed: Bool? = nil,
-        smartDeblock: Bool? = nil,
-        passes: Int? = nil,
-        keep: VipsForeignKeep? = nil,
-        background: [Double]? = nil,
-        pageHeight: Int? = nil,
-        profile: String? = nil
-    ) throws {
+    public func webpsaveMime(quality: Int? = nil, lossless: Bool? = nil, preset: VipsForeignWebpPreset? = nil, smartSubsample: Bool? = nil, nearLossless: Bool? = nil, alphaQ: Int? = nil, minSize: Bool? = nil, kmin: Int? = nil, kmax: Int? = nil, effort: Int? = nil, targetSize: Int? = nil, mixed: Bool? = nil, smartDeblock: Bool? = nil, passes: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
         var opt = VIPSOption()
 
         opt.set("in", value: self)
@@ -284,16 +226,16 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("preset", value: preset)
         }
         if let smartSubsample = smartSubsample {
-            opt.set("smart_subsample", value: smartSubsample)
+            opt.set("smart-subsample", value: smartSubsample)
         }
         if let nearLossless = nearLossless {
-            opt.set("near_lossless", value: nearLossless)
+            opt.set("near-lossless", value: nearLossless)
         }
         if let alphaQ = alphaQ {
-            opt.set("alpha_q", value: alphaQ)
+            opt.set("alpha-q", value: alphaQ)
         }
         if let minSize = minSize {
-            opt.set("min_size", value: minSize)
+            opt.set("min-size", value: minSize)
         }
         if let kmin = kmin {
             opt.set("kmin", value: kmin)
@@ -305,13 +247,13 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("effort", value: effort)
         }
         if let targetSize = targetSize {
-            opt.set("target_size", value: targetSize)
+            opt.set("target-size", value: targetSize)
         }
         if let mixed = mixed {
             opt.set("mixed", value: mixed)
         }
         if let smartDeblock = smartDeblock {
-            opt.set("smart_deblock", value: smartDeblock)
+            opt.set("smart-deblock", value: smartDeblock)
         }
         if let passes = passes {
             opt.set("passes", value: passes)
@@ -323,7 +265,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("background", value: background)
         }
         if let pageHeight = pageHeight {
-            opt.set("page_height", value: pageHeight)
+            opt.set("page-height", value: pageHeight)
         }
         if let profile = profile {
             opt.set("profile", value: profile)
@@ -332,7 +274,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         try Self.call("webpsave_mime", options: &opt)
     }
 
-    /// Save as webp
+    /// Save as WebP
     ///
     /// - Parameters:
     ///   - target: Target to save to
@@ -354,27 +296,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func webpsave(
-        target: VIPSTarget,
-        quality: Int? = nil,
-        lossless: Bool? = nil,
-        preset: VipsForeignWebpPreset? = nil,
-        smartSubsample: Bool? = nil,
-        nearLossless: Bool? = nil,
-        alphaQ: Int? = nil,
-        minSize: Bool? = nil,
-        kmin: Int? = nil,
-        kmax: Int? = nil,
-        effort: Int? = nil,
-        targetSize: Int? = nil,
-        mixed: Bool? = nil,
-        smartDeblock: Bool? = nil,
-        passes: Int? = nil,
-        keep: VipsForeignKeep? = nil,
-        background: [Double]? = nil,
-        pageHeight: Int? = nil,
-        profile: String? = nil
-    ) throws {
+    public func webpsave(target: VIPSTarget, quality: Int? = nil, lossless: Bool? = nil, preset: VipsForeignWebpPreset? = nil, smartSubsample: Bool? = nil, nearLossless: Bool? = nil, alphaQ: Int? = nil, minSize: Bool? = nil, kmin: Int? = nil, kmax: Int? = nil, effort: Int? = nil, targetSize: Int? = nil, mixed: Bool? = nil, smartDeblock: Bool? = nil, passes: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
         var opt = VIPSOption()
 
         opt.set("in", value: self)
@@ -389,16 +311,16 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("preset", value: preset)
         }
         if let smartSubsample = smartSubsample {
-            opt.set("smart_subsample", value: smartSubsample)
+            opt.set("smart-subsample", value: smartSubsample)
         }
         if let nearLossless = nearLossless {
-            opt.set("near_lossless", value: nearLossless)
+            opt.set("near-lossless", value: nearLossless)
         }
         if let alphaQ = alphaQ {
-            opt.set("alpha_q", value: alphaQ)
+            opt.set("alpha-q", value: alphaQ)
         }
         if let minSize = minSize {
-            opt.set("min_size", value: minSize)
+            opt.set("min-size", value: minSize)
         }
         if let kmin = kmin {
             opt.set("kmin", value: kmin)
@@ -410,13 +332,13 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("effort", value: effort)
         }
         if let targetSize = targetSize {
-            opt.set("target_size", value: targetSize)
+            opt.set("target-size", value: targetSize)
         }
         if let mixed = mixed {
             opt.set("mixed", value: mixed)
         }
         if let smartDeblock = smartDeblock {
-            opt.set("smart_deblock", value: smartDeblock)
+            opt.set("smart-deblock", value: smartDeblock)
         }
         if let passes = passes {
             opt.set("passes", value: passes)
@@ -428,7 +350,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("background", value: background)
         }
         if let pageHeight = pageHeight {
-            opt.set("page_height", value: pageHeight)
+            opt.set("page-height", value: pageHeight)
         }
         if let profile = profile {
             opt.set("profile", value: profile)
@@ -452,16 +374,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func webpload(
-        filename: String,
-        page: Int? = nil,
-        n: Int? = nil,
-        scale: Double? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> Self {
+    public static func webpload(filename: String, page: Int? = nil, n: Int? = nil, scale: Double? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -482,7 +395,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("access", value: access)
             }
             if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
+                opt.set("fail-on", value: failOn)
             }
             if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
@@ -504,17 +417,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func webpload(
-        buffer: VIPSBlob,
-        page: Int? = nil,
-        n: Int? = nil,
-        scale: Double? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> Self {
+    public static func webpload(buffer: VIPSBlob, page: Int? = nil, n: Int? = nil, scale: Double? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
             try Self { out in
@@ -537,7 +440,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                     opt.set("access", value: access)
                 }
                 if let failOn = failOn {
-                    opt.set("fail_on", value: failOn)
+                    opt.set("fail-on", value: failOn)
                 }
                 if let revalidate = revalidate {
                     opt.set("revalidate", value: revalidate)
@@ -562,16 +465,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
-    public static func webpload(
-        unsafeBuffer buffer: UnsafeRawBufferPointer,
-        page: Int? = nil,
-        n: Int? = nil,
-        scale: Double? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> Self {
+    public static func webpload(unsafeBuffer buffer: UnsafeRawBufferPointer, page: Int? = nil, n: Int? = nil, scale: Double? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
         let blob = VIPSBlob(noCopy: buffer)
         return try webpload(
             buffer: blob,
@@ -596,16 +490,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func webpload(
-        source: VIPSSource,
-        page: Int? = nil,
-        n: Int? = nil,
-        scale: Double? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> Self {
+    public static func webpload(source: VIPSSource, page: Int? = nil, n: Int? = nil, scale: Double? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -626,7 +511,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("access", value: access)
             }
             if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
+                opt.set("fail-on", value: failOn)
             }
             if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)

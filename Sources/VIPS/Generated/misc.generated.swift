@@ -134,15 +134,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - precision: Convolve with this precision
     ///   - layers: Use this many layers in approximation
     ///   - cluster: Cluster lines closer than this in approximation
-    public func compass(
-        mask: some VIPSImageProtocol,
-        times: Int? = nil,
-        angle: VipsAngle45? = nil,
-        combine: VipsCombine? = nil,
-        precision: VipsPrecision? = nil,
-        layers: Int? = nil,
-        cluster: Int? = nil
-    ) throws -> Self {
+    public func compass(mask: some VIPSImageProtocol, times: Int? = nil, angle: VipsAngle45? = nil, combine: VipsCombine? = nil, precision: VipsPrecision? = nil, layers: Int? = nil, cluster: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -172,11 +164,11 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Calculate de00
+    /// Calculate dE00
     ///
     /// - Parameters:
     ///   - `right`: Right-hand input image
-    public func dE00(_ rhs: some VIPSImageProtocol) throws -> Self {
+    public func de00(_ rhs: some VIPSImageProtocol) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -188,11 +180,11 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Calculate de76
+    /// Calculate dE76
     ///
     /// - Parameters:
     ///   - `right`: Right-hand input image
-    public func dE76(_ rhs: some VIPSImageProtocol) throws -> Self {
+    public func de76(_ rhs: some VIPSImageProtocol) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -204,11 +196,11 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Calculate decmc
+    /// Calculate dECMC
     ///
     /// - Parameters:
     ///   - `right`: Right-hand input image
-    public func dECMC(_ rhs: some VIPSImageProtocol) throws -> Self {
+    public func decmc(_ rhs: some VIPSImageProtocol) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -254,11 +246,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - threshold: Object threshold
     ///   - background: Color for background pixels
     ///   - lineArt: Enable line art mode
-    public func findTrim(
-        threshold: Double? = nil,
-        background: [Double]? = nil,
-        lineArt: Bool? = nil
-    ) throws -> Int {
+    public func findTrim(threshold: Double? = nil, background: [Double]? = nil, lineArt: Bool? = nil) throws -> Int {
         var opt = VIPSOption()
 
         var out: Int = 0
@@ -271,7 +259,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("background", value: background)
         }
         if let lineArt = lineArt {
-            opt.set("line_art", value: lineArt)
+            opt.set("line-art", value: lineArt)
         }
         opt.set("left", value: &out)
 
@@ -294,7 +282,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("background", value: background)
             }
             if let maxAlpha = maxAlpha {
-                opt.set("max_alpha", value: maxAlpha)
+                opt.set("max-alpha", value: maxAlpha)
             }
             opt.set("out", value: &out)
 
@@ -302,7 +290,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Transform float rgb to radiance coding
+    /// Transform float RGB to Radiance coding
     public func float2rad() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
@@ -347,9 +335,9 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         opt.set("x", value: x)
         opt.set("y", value: y)
         if let unpackComplex = unpackComplex {
-            opt.set("unpack_complex", value: unpackComplex)
+            opt.set("unpack-complex", value: unpackComplex)
         }
-        opt.set("out_array", value: &out)
+        opt.set("out-array", value: &out)
 
         try Self.call("getpoint", options: &opt)
 
@@ -360,7 +348,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         defer {
             vips_area_unref(shim_vips_area(out))
         }
-
+        
         var length = Int32(0)
         let doubles = vips_array_double_get(out, &length)
         let buffer = UnsafeBufferPointer(start: doubles, count: Int(length))
@@ -381,7 +369,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("gamma", value: gamma)
             }
             if let intOutput = intOutput {
-                opt.set("int_output", value: intOutput)
+                opt.set("int-output", value: intOutput)
             }
             opt.set("out", value: &out)
 
@@ -397,13 +385,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - height: Image height in pixels
     ///   - extend: How to generate the extra pixels
     ///   - background: Color for background pixels
-    public func gravity(
-        direction: VipsCompassDirection,
-        width: Int,
-        height: Int,
-        extend: VipsExtend? = nil,
-        background: [Double]? = nil
-    ) throws -> Self {
+    public func gravity(direction: VipsCompassDirection, width: Int, height: Int, extend: VipsExtend? = nil, background: [Double]? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -429,11 +411,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - in1: Source for TRUE pixels
     ///   - in2: Source for FALSE pixels
     ///   - blend: Blend smoothly between then and else parts
-    public func ifthenelse(
-        in1: some VIPSImageProtocol,
-        in2: some VIPSImageProtocol,
-        blend: Bool? = nil
-    ) throws -> Self {
+    public func ifthenelse(in1: some VIPSImageProtocol, in2: some VIPSImageProtocol, blend: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -456,18 +434,13 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Expected access pattern
     ///   - threaded: Allow threaded access
     ///   - persistent: Keep cache between evaluations
-    public func linecache(
-        tileHeight: Int? = nil,
-        access: VipsAccess? = nil,
-        threaded: Bool? = nil,
-        persistent: Bool? = nil
-    ) throws -> Self {
+    public func linecache(tileHeight: Int? = nil, access: VipsAccess? = nil, threaded: Bool? = nil, persistent: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
             opt.set("in", value: self)
             if let tileHeight = tileHeight {
-                opt.set("tile_height", value: tileHeight)
+                opt.set("tile-height", value: tileHeight)
             }
             if let access = access {
                 opt.set("access", value: access)
@@ -520,21 +493,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - harea: Half area size
     ///   - search: Search to improve tie-points
     ///   - interpolate: Interpolate pixels with this
-    public func match(
-        sec: some VIPSImageProtocol,
-        xr1: Int,
-        yr1: Int,
-        xs1: Int,
-        ys1: Int,
-        xr2: Int,
-        yr2: Int,
-        xs2: Int,
-        ys2: Int,
-        hwindow: Int? = nil,
-        harea: Int? = nil,
-        search: Bool? = nil,
-        interpolate: VIPSInterpolate? = nil
-    ) throws -> Self {
+    public func match(sec: some VIPSImageProtocol, xr1: Int, yr1: Int, xs1: Int, ys1: Int, xr2: Int, yr2: Int, xs2: Int, ys2: Int, hwindow: Int? = nil, harea: Int? = nil, search: Bool? = nil, interpolate: VIPSInterpolate? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -575,14 +534,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - top: Top edge of extract area
     ///   - width: Width of extract area
     ///   - height: Height of extract area
-    public func measure(
-        h: Int,
-        v: Int,
-        `left`: Int? = nil,
-        top: Int? = nil,
-        width: Int? = nil,
-        height: Int? = nil
-    ) throws -> Self {
+    public func measure(h: Int, v: Int, `left`: Int? = nil, top: Int? = nil, width: Int? = nil, height: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -615,13 +567,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - dx: Horizontal displacement from sec to ref
     ///   - dy: Vertical displacement from sec to ref
     ///   - mblend: Maximum blend size
-    public func merge(
-        sec: some VIPSImageProtocol,
-        direction: VipsDirection,
-        dx: Int,
-        dy: Int,
-        mblend: Int? = nil
-    ) throws -> Self {
+    public func merge(sec: some VIPSImageProtocol, direction: VipsDirection, dx: Int, dy: Int, mblend: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -652,18 +598,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - harea: Half area size
     ///   - mblend: Maximum blend size
     ///   - bandno: Band to search for features on
-    public func mosaic(
-        sec: some VIPSImageProtocol,
-        direction: VipsDirection,
-        xref: Int,
-        yref: Int,
-        xsec: Int,
-        ysec: Int,
-        hwindow: Int? = nil,
-        harea: Int? = nil,
-        mblend: Int? = nil,
-        bandno: Int? = nil
-    ) throws -> Self {
+    public func mosaic(sec: some VIPSImageProtocol, direction: VipsDirection, xref: Int, yref: Int, xsec: Int, ysec: Int, hwindow: Int? = nil, harea: Int? = nil, mblend: Int? = nil, bandno: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -710,23 +645,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - search: Search to improve tie-points
     ///   - interpolate: Interpolate pixels with this
     ///   - mblend: Maximum blend size
-    public func mosaic1(
-        sec: some VIPSImageProtocol,
-        direction: VipsDirection,
-        xr1: Int,
-        yr1: Int,
-        xs1: Int,
-        ys1: Int,
-        xr2: Int,
-        yr2: Int,
-        xs2: Int,
-        ys2: Int,
-        hwindow: Int? = nil,
-        harea: Int? = nil,
-        search: Bool? = nil,
-        interpolate: VIPSInterpolate? = nil,
-        mblend: Int? = nil
-    ) throws -> Self {
+    public func mosaic1(sec: some VIPSImageProtocol, direction: VipsDirection, xr1: Int, yr1: Int, xs1: Int, ys1: Int, xr2: Int, yr2: Int, xs2: Int, ys2: Int, hwindow: Int? = nil, harea: Int? = nil, search: Bool? = nil, interpolate: VIPSInterpolate? = nil, mblend: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -810,7 +729,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
         }
     }
 
-    /// Unpack radiance coding to float rgb
+    /// Unpack Radiance coding to float RGB
     public func rad2float() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
@@ -832,8 +751,8 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             var opt = VIPSOption()
 
             opt.set("in", value: self)
-            opt.set("old_str", value: oldStr)
-            opt.set("new_str", value: newStr)
+            opt.set("old-str", value: oldStr)
+            opt.set("new-str", value: newStr)
             opt.set("out", value: &out)
 
             try Self.call("remosaic", options: &opt)
@@ -880,7 +799,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
             opt.set("in", value: self)
             if let tileHeight = tileHeight {
-                opt.set("tile_height", value: tileHeight)
+                opt.set("tile-height", value: tileHeight)
             }
             opt.set("out", value: &out)
 
@@ -913,14 +832,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - b: Weight of new deviation
     ///   - m0: New mean
     ///   - a: Weight of new mean
-    public func stdif(
-        width: Int,
-        height: Int,
-        s0: Double? = nil,
-        b: Double? = nil,
-        m0: Double? = nil,
-        a: Double? = nil
-    ) throws -> Self {
+    public func stdif(width: Int, height: Int, s0: Double? = nil, b: Double? = nil, m0: Double? = nil, a: Double? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -971,50 +883,42 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
 extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
-    #if SHIM_VIPS_VERSION_8_17
-        /// Create an sdf image
-        ///
-        /// - Parameters:
-        ///   - width: Image width in pixels
-        ///   - height: Image height in pixels
-        ///   - shape: SDF shape to create
-        ///   - r: Radius
-        ///   - a: Point a
-        ///   - b: Point b
-        ///   - corners: Corner radii
-        public static func sdf(
-            width: Int,
-            height: Int,
-            shape: VipsSdfShape,
-            r: Double? = nil,
-            a: [Double]? = nil,
-            b: [Double]? = nil,
-            corners: [Double]? = nil
-        ) throws -> Self {
-            return try Self { out in
-                var opt = VIPSOption()
+#if SHIM_VIPS_VERSION_8_17
+    /// Create an SDF image
+    ///
+    /// - Parameters:
+    ///   - width: Image width in pixels
+    ///   - height: Image height in pixels
+    ///   - shape: SDF shape to create
+    ///   - r: Radius
+    ///   - a: Point a
+    ///   - b: Point b
+    ///   - corners: Corner radii
+    public static func sdf(width: Int, height: Int, shape: VipsSdfShape, r: Double? = nil, a: [Double]? = nil, b: [Double]? = nil, corners: [Double]? = nil) throws -> Self {
+        return try Self { out in
+            var opt = VIPSOption()
 
-                opt.set("width", value: width)
-                opt.set("height", value: height)
-                opt.set("shape", value: shape)
-                if let r = r {
-                    opt.set("r", value: r)
-                }
-                if let a = a {
-                    opt.set("a", value: a)
-                }
-                if let b = b {
-                    opt.set("b", value: b)
-                }
-                if let corners = corners {
-                    opt.set("corners", value: corners)
-                }
-                opt.set("out", value: &out)
-
-                try Self.call("sdf", options: &opt)
+            opt.set("width", value: width)
+            opt.set("height", value: height)
+            opt.set("shape", value: shape)
+            if let r = r {
+                opt.set("r", value: r)
             }
+            if let a = a {
+                opt.set("a", value: a)
+            }
+            if let b = b {
+                opt.set("b", value: b)
+            }
+            if let corners = corners {
+                opt.set("corners", value: corners)
+            }
+            opt.set("out", value: &out)
+
+            try Self.call("sdf", options: &opt)
         }
-    #endif
+    }
+#endif
 
     /// Find the index of the first non-zero pixel in tests
     ///

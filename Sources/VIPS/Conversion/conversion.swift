@@ -3,6 +3,17 @@ extension VIPSImage {
         try self.cast(format: format, shift: shift)
     }
 
+    /// Alias for extractArea - crop an image
+    /// - Parameters:
+    ///   - left: Left edge of extract area
+    ///   - top: Top edge of extract area
+    ///   - width: Width of extract area
+    ///   - height: Height of extract area
+    /// - Returns: Cropped image
+    public func crop(left: Int, top: Int, width: Int, height: Int) throws -> VIPSImage {
+        try extractArea(left: left, top: top, width: width, height: height)
+    }
+
     /// See VIPSImage.bandjoin(`in`:)
     public func bandjoin(_ other: [VIPSImage]) throws -> VIPSImage {
         return try VIPSImage { out in

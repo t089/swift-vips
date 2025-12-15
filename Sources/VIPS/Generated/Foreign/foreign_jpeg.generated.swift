@@ -27,22 +27,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func jpegsave(
-        filename: String,
-        quality: Int? = nil,
-        optimizeCoding: Bool? = nil,
-        interlace: Bool? = nil,
-        trellisQuant: Bool? = nil,
-        overshootDeringing: Bool? = nil,
-        optimizeScans: Bool? = nil,
-        quantTable: Int? = nil,
-        subsampleMode: VipsForeignSubsample? = nil,
-        restartInterval: Int? = nil,
-        keep: VipsForeignKeep? = nil,
-        background: [Double]? = nil,
-        pageHeight: Int? = nil,
-        profile: String? = nil
-    ) throws {
+    public func jpegsave(filename: String, quality: Int? = nil, optimizeCoding: Bool? = nil, interlace: Bool? = nil, trellisQuant: Bool? = nil, overshootDeringing: Bool? = nil, optimizeScans: Bool? = nil, quantTable: Int? = nil, subsampleMode: VipsForeignSubsample? = nil, restartInterval: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
         var opt = VIPSOption()
 
         opt.set("in", value: self)
@@ -51,28 +36,28 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("Q", value: quality)
         }
         if let optimizeCoding = optimizeCoding {
-            opt.set("optimize_coding", value: optimizeCoding)
+            opt.set("optimize-coding", value: optimizeCoding)
         }
         if let interlace = interlace {
             opt.set("interlace", value: interlace)
         }
         if let trellisQuant = trellisQuant {
-            opt.set("trellis_quant", value: trellisQuant)
+            opt.set("trellis-quant", value: trellisQuant)
         }
         if let overshootDeringing = overshootDeringing {
-            opt.set("overshoot_deringing", value: overshootDeringing)
+            opt.set("overshoot-deringing", value: overshootDeringing)
         }
         if let optimizeScans = optimizeScans {
-            opt.set("optimize_scans", value: optimizeScans)
+            opt.set("optimize-scans", value: optimizeScans)
         }
         if let quantTable = quantTable {
-            opt.set("quant_table", value: quantTable)
+            opt.set("quant-table", value: quantTable)
         }
         if let subsampleMode = subsampleMode {
-            opt.set("subsample_mode", value: subsampleMode)
+            opt.set("subsample-mode", value: subsampleMode)
         }
         if let restartInterval = restartInterval {
-            opt.set("restart_interval", value: restartInterval)
+            opt.set("restart-interval", value: restartInterval)
         }
         if let keep = keep {
             opt.set("keep", value: keep)
@@ -81,7 +66,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("background", value: background)
         }
         if let pageHeight = pageHeight {
-            opt.set("page_height", value: pageHeight)
+            opt.set("page-height", value: pageHeight)
         }
         if let profile = profile {
             opt.set("profile", value: profile)
@@ -106,21 +91,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func jpegsave(
-        quality: Int? = nil,
-        optimizeCoding: Bool? = nil,
-        interlace: Bool? = nil,
-        trellisQuant: Bool? = nil,
-        overshootDeringing: Bool? = nil,
-        optimizeScans: Bool? = nil,
-        quantTable: Int? = nil,
-        subsampleMode: VipsForeignSubsample? = nil,
-        restartInterval: Int? = nil,
-        keep: VipsForeignKeep? = nil,
-        background: [Double]? = nil,
-        pageHeight: Int? = nil,
-        profile: String? = nil
-    ) throws -> VIPSBlob {
+    public func jpegsave(quality: Int? = nil, optimizeCoding: Bool? = nil, interlace: Bool? = nil, trellisQuant: Bool? = nil, overshootDeringing: Bool? = nil, optimizeScans: Bool? = nil, quantTable: Int? = nil, subsampleMode: VipsForeignSubsample? = nil, restartInterval: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws -> VIPSBlob {
         var opt = VIPSOption()
 
         let out: UnsafeMutablePointer<UnsafeMutablePointer<VipsBlob>?> = .allocate(capacity: 1)
@@ -134,28 +105,28 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("Q", value: quality)
         }
         if let optimizeCoding = optimizeCoding {
-            opt.set("optimize_coding", value: optimizeCoding)
+            opt.set("optimize-coding", value: optimizeCoding)
         }
         if let interlace = interlace {
             opt.set("interlace", value: interlace)
         }
         if let trellisQuant = trellisQuant {
-            opt.set("trellis_quant", value: trellisQuant)
+            opt.set("trellis-quant", value: trellisQuant)
         }
         if let overshootDeringing = overshootDeringing {
-            opt.set("overshoot_deringing", value: overshootDeringing)
+            opt.set("overshoot-deringing", value: overshootDeringing)
         }
         if let optimizeScans = optimizeScans {
-            opt.set("optimize_scans", value: optimizeScans)
+            opt.set("optimize-scans", value: optimizeScans)
         }
         if let quantTable = quantTable {
-            opt.set("quant_table", value: quantTable)
+            opt.set("quant-table", value: quantTable)
         }
         if let subsampleMode = subsampleMode {
-            opt.set("subsample_mode", value: subsampleMode)
+            opt.set("subsample-mode", value: subsampleMode)
         }
         if let restartInterval = restartInterval {
-            opt.set("restart_interval", value: restartInterval)
+            opt.set("restart-interval", value: restartInterval)
         }
         if let keep = keep {
             opt.set("keep", value: keep)
@@ -164,7 +135,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("background", value: background)
         }
         if let pageHeight = pageHeight {
-            opt.set("page_height", value: pageHeight)
+            opt.set("page-height", value: pageHeight)
         }
         if let profile = profile {
             opt.set("profile", value: profile)
@@ -196,21 +167,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func jpegsaveMime(
-        quality: Int? = nil,
-        optimizeCoding: Bool? = nil,
-        interlace: Bool? = nil,
-        trellisQuant: Bool? = nil,
-        overshootDeringing: Bool? = nil,
-        optimizeScans: Bool? = nil,
-        quantTable: Int? = nil,
-        subsampleMode: VipsForeignSubsample? = nil,
-        restartInterval: Int? = nil,
-        keep: VipsForeignKeep? = nil,
-        background: [Double]? = nil,
-        pageHeight: Int? = nil,
-        profile: String? = nil
-    ) throws {
+    public func jpegsaveMime(quality: Int? = nil, optimizeCoding: Bool? = nil, interlace: Bool? = nil, trellisQuant: Bool? = nil, overshootDeringing: Bool? = nil, optimizeScans: Bool? = nil, quantTable: Int? = nil, subsampleMode: VipsForeignSubsample? = nil, restartInterval: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
         var opt = VIPSOption()
 
         opt.set("in", value: self)
@@ -218,28 +175,28 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("Q", value: quality)
         }
         if let optimizeCoding = optimizeCoding {
-            opt.set("optimize_coding", value: optimizeCoding)
+            opt.set("optimize-coding", value: optimizeCoding)
         }
         if let interlace = interlace {
             opt.set("interlace", value: interlace)
         }
         if let trellisQuant = trellisQuant {
-            opt.set("trellis_quant", value: trellisQuant)
+            opt.set("trellis-quant", value: trellisQuant)
         }
         if let overshootDeringing = overshootDeringing {
-            opt.set("overshoot_deringing", value: overshootDeringing)
+            opt.set("overshoot-deringing", value: overshootDeringing)
         }
         if let optimizeScans = optimizeScans {
-            opt.set("optimize_scans", value: optimizeScans)
+            opt.set("optimize-scans", value: optimizeScans)
         }
         if let quantTable = quantTable {
-            opt.set("quant_table", value: quantTable)
+            opt.set("quant-table", value: quantTable)
         }
         if let subsampleMode = subsampleMode {
-            opt.set("subsample_mode", value: subsampleMode)
+            opt.set("subsample-mode", value: subsampleMode)
         }
         if let restartInterval = restartInterval {
-            opt.set("restart_interval", value: restartInterval)
+            opt.set("restart-interval", value: restartInterval)
         }
         if let keep = keep {
             opt.set("keep", value: keep)
@@ -248,7 +205,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("background", value: background)
         }
         if let pageHeight = pageHeight {
-            opt.set("page_height", value: pageHeight)
+            opt.set("page-height", value: pageHeight)
         }
         if let profile = profile {
             opt.set("profile", value: profile)
@@ -274,22 +231,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - background: Background value
     ///   - pageHeight: Set page height for multipage save
     ///   - profile: Filename of ICC profile to embed
-    public func jpegsave(
-        target: VIPSTarget,
-        quality: Int? = nil,
-        optimizeCoding: Bool? = nil,
-        interlace: Bool? = nil,
-        trellisQuant: Bool? = nil,
-        overshootDeringing: Bool? = nil,
-        optimizeScans: Bool? = nil,
-        quantTable: Int? = nil,
-        subsampleMode: VipsForeignSubsample? = nil,
-        restartInterval: Int? = nil,
-        keep: VipsForeignKeep? = nil,
-        background: [Double]? = nil,
-        pageHeight: Int? = nil,
-        profile: String? = nil
-    ) throws {
+    public func jpegsave(target: VIPSTarget, quality: Int? = nil, optimizeCoding: Bool? = nil, interlace: Bool? = nil, trellisQuant: Bool? = nil, overshootDeringing: Bool? = nil, optimizeScans: Bool? = nil, quantTable: Int? = nil, subsampleMode: VipsForeignSubsample? = nil, restartInterval: Int? = nil, keep: VipsForeignKeep? = nil, background: [Double]? = nil, pageHeight: Int? = nil, profile: String? = nil) throws {
         var opt = VIPSOption()
 
         opt.set("in", value: self)
@@ -298,28 +240,28 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("Q", value: quality)
         }
         if let optimizeCoding = optimizeCoding {
-            opt.set("optimize_coding", value: optimizeCoding)
+            opt.set("optimize-coding", value: optimizeCoding)
         }
         if let interlace = interlace {
             opt.set("interlace", value: interlace)
         }
         if let trellisQuant = trellisQuant {
-            opt.set("trellis_quant", value: trellisQuant)
+            opt.set("trellis-quant", value: trellisQuant)
         }
         if let overshootDeringing = overshootDeringing {
-            opt.set("overshoot_deringing", value: overshootDeringing)
+            opt.set("overshoot-deringing", value: overshootDeringing)
         }
         if let optimizeScans = optimizeScans {
-            opt.set("optimize_scans", value: optimizeScans)
+            opt.set("optimize-scans", value: optimizeScans)
         }
         if let quantTable = quantTable {
-            opt.set("quant_table", value: quantTable)
+            opt.set("quant-table", value: quantTable)
         }
         if let subsampleMode = subsampleMode {
-            opt.set("subsample_mode", value: subsampleMode)
+            opt.set("subsample-mode", value: subsampleMode)
         }
         if let restartInterval = restartInterval {
-            opt.set("restart_interval", value: restartInterval)
+            opt.set("restart-interval", value: restartInterval)
         }
         if let keep = keep {
             opt.set("keep", value: keep)
@@ -328,7 +270,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             opt.set("background", value: background)
         }
         if let pageHeight = pageHeight {
-            opt.set("page_height", value: pageHeight)
+            opt.set("page-height", value: pageHeight)
         }
         if let profile = profile {
             opt.set("profile", value: profile)
@@ -352,16 +294,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func jpegload(
-        filename: String,
-        shrink: Int? = nil,
-        autorotate: Bool? = nil,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> Self {
+    public static func jpegload(filename: String, shrink: Int? = nil, autorotate: Bool? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -382,7 +315,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("access", value: access)
             }
             if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
+                opt.set("fail-on", value: failOn)
             }
             if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)
@@ -404,17 +337,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    @inlinable
-    public static func jpegload(
-        buffer: VIPSBlob,
-        shrink: Int? = nil,
-        autorotate: Bool? = nil,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> Self {
+    public static func jpegload(buffer: VIPSBlob, shrink: Int? = nil, autorotate: Bool? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
         // the operation will retain the blob
         try buffer.withVipsBlob { blob in
             try Self { out in
@@ -437,7 +360,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                     opt.set("access", value: access)
                 }
                 if let failOn = failOn {
-                    opt.set("fail_on", value: failOn)
+                    opt.set("fail-on", value: failOn)
                 }
                 if let revalidate = revalidate {
                     opt.set("revalidate", value: revalidate)
@@ -462,16 +385,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
     @inlinable
-    public static func jpegload(
-        unsafeBuffer buffer: UnsafeRawBufferPointer,
-        shrink: Int? = nil,
-        autorotate: Bool? = nil,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> Self {
+    public static func jpegload(unsafeBuffer buffer: UnsafeRawBufferPointer, shrink: Int? = nil, autorotate: Bool? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
         let blob = VIPSBlob(noCopy: buffer)
         return try jpegload(
             buffer: blob,
@@ -496,16 +410,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///   - access: Required access pattern for this file
     ///   - failOn: Error level to fail on
     ///   - revalidate: Don't use a cached result for this operation
-    public static func jpegload(
-        source: VIPSSource,
-        shrink: Int? = nil,
-        autorotate: Bool? = nil,
-        unlimited: Bool? = nil,
-        memory: Bool? = nil,
-        access: VipsAccess? = nil,
-        failOn: VipsFailOn? = nil,
-        revalidate: Bool? = nil
-    ) throws -> Self {
+    public static func jpegload(source: VIPSSource, shrink: Int? = nil, autorotate: Bool? = nil, unlimited: Bool? = nil, memory: Bool? = nil, access: VipsAccess? = nil, failOn: VipsFailOn? = nil, revalidate: Bool? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -526,7 +431,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
                 opt.set("access", value: access)
             }
             if let failOn = failOn {
-                opt.set("fail_on", value: failOn)
+                opt.set("fail-on", value: failOn)
             }
             if let revalidate = revalidate {
                 opt.set("revalidate", value: revalidate)

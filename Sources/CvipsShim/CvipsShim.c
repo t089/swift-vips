@@ -169,7 +169,7 @@ gboolean shim_vips_source_is_pipe(VipsSource *source) {
     return source->is_pipe;
 }
 
-// Callback for collecting operation types
+// Callback for collecting operation types recursively
 static void* collect_operation_type(GType type, void* a, void* b) {
     GArray* types = (GArray*)a;
     const char* nickname = vips_nickname_find(type);
@@ -178,6 +178,9 @@ static void* collect_operation_type(GType type, void* a, void* b) {
         g_array_append_val(types, type);
     }
 
+    // Recursively walk children to get all operations in the hierarchy
+    vips_type_map(type, collect_operation_type, types, NULL);
+
     return NULL;
 }
 
@@ -185,7 +188,7 @@ static void* collect_operation_type(GType type, void* a, void* b) {
 GType* shim_get_all_operation_types(int* count) {
     GArray* types = g_array_new(FALSE, FALSE, sizeof(GType));
 
-    // Map over all VipsOperation subclasses
+    // Map over all VipsOperation subclasses recursively
     vips_type_map(vips_operation_get_type(), collect_operation_type, types, NULL);
 
     *count = types->len;
