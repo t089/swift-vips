@@ -32,7 +32,7 @@ let image = try VIPSImage.jpegload(buffer: blob, autorotate: true)
     
 byteBuffer.clear()
 
-try image.write(toFilePath: "/tmp/balloons.jpg", quality: 95)
+try image.writeToFile("/tmp/balloons.jpg", quality: 95)
 
 let thumbnail = try VIPSImage.jpegload(filename: "/tmp/balloons.jpg")
 
