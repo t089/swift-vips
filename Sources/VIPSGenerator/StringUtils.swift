@@ -18,8 +18,8 @@ func snakeToCamel(_ name: String) -> String {
         return name
     }
 
-    // First component stays lowercase, rest are capitalized
-    return components[0].lowercased() + components[1...].map { $0.capitalized }.joined()
+    // First component preserves its case, rest are capitalized
+    return String(components[0]) + components[1...].map { $0.capitalized }.joined()
 }
 
 /// Convert parameter name to Swift-safe version

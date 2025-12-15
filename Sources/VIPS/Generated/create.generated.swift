@@ -719,15 +719,15 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     /// - Parameters:
     ///   - inMax: Size of LUT to build
     ///   - outMax: Maximum value in output LUT
-    ///   - lb: Lowest value in output
-    ///   - lw: Highest value in output
-    ///   - ps: Position of shadow
-    ///   - pm: Position of mid-tones
-    ///   - ph: Position of highlights
-    ///   - s: Adjust shadows by this much
-    ///   - m: Adjust mid-tones by this much
-    ///   - h: Adjust highlights by this much
-    public static func tonelut(inMax: Int? = nil, outMax: Int? = nil, lb: Double? = nil, lw: Double? = nil, ps: Double? = nil, pm: Double? = nil, ph: Double? = nil, s: Double? = nil, m: Double? = nil, h: Double? = nil) throws -> Self {
+    ///   - Lb: Lowest value in output
+    ///   - Lw: Highest value in output
+    ///   - Ps: Position of shadow
+    ///   - Pm: Position of mid-tones
+    ///   - Ph: Position of highlights
+    ///   - S: Adjust shadows by this much
+    ///   - M: Adjust mid-tones by this much
+    ///   - H: Adjust highlights by this much
+    public static func tonelut(inMax: Int? = nil, outMax: Int? = nil, Lb: Double? = nil, Lw: Double? = nil, Ps: Double? = nil, Pm: Double? = nil, Ph: Double? = nil, S: Double? = nil, M: Double? = nil, H: Double? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -737,29 +737,29 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
             if let outMax = outMax {
                 opt.set("out-max", value: outMax)
             }
-            if let lb = lb {
-                opt.set("Lb", value: lb)
+            if let Lb = Lb {
+                opt.set("Lb", value: Lb)
             }
-            if let lw = lw {
-                opt.set("Lw", value: lw)
+            if let Lw = Lw {
+                opt.set("Lw", value: Lw)
             }
-            if let ps = ps {
-                opt.set("Ps", value: ps)
+            if let Ps = Ps {
+                opt.set("Ps", value: Ps)
             }
-            if let pm = pm {
-                opt.set("Pm", value: pm)
+            if let Pm = Pm {
+                opt.set("Pm", value: Pm)
             }
-            if let ph = ph {
-                opt.set("Ph", value: ph)
+            if let Ph = Ph {
+                opt.set("Ph", value: Ph)
             }
-            if let s = s {
-                opt.set("S", value: s)
+            if let S = S {
+                opt.set("S", value: S)
             }
-            if let m = m {
-                opt.set("M", value: m)
+            if let M = M {
+                opt.set("M", value: M)
             }
-            if let h = h {
-                opt.set("H", value: h)
+            if let H = H {
+                opt.set("H", value: H)
             }
             opt.set("out", value: &out)
 

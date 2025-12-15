@@ -10,7 +10,7 @@ import Cvips
 extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Transform float Lab to signed short
-    public func lab2labs() throws -> Self {
+    public func Lab2LabS() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -22,7 +22,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Unpack a LabQ image to short Lab
-    public func labq2labs() throws -> Self {
+    public func LabQ2LabS() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -34,7 +34,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Transform signed short Lab to float
-    public func labs2lab() throws -> Self {
+    public func LabS2Lab() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -46,7 +46,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Transform short Lab to LabQ coding
-    public func labs2labq() throws -> Self {
+    public func LabS2LabQ() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 

@@ -168,7 +168,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///
     /// - Parameters:
     ///   - `right`: Right-hand input image
-    public func de00(_ rhs: some VIPSImageProtocol) throws -> Self {
+    public func dE00(_ rhs: some VIPSImageProtocol) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -184,7 +184,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///
     /// - Parameters:
     ///   - `right`: Right-hand input image
-    public func de76(_ rhs: some VIPSImageProtocol) throws -> Self {
+    public func dE76(_ rhs: some VIPSImageProtocol) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -200,7 +200,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///
     /// - Parameters:
     ///   - `right`: Right-hand input image
-    public func decmc(_ rhs: some VIPSImageProtocol) throws -> Self {
+    public func dECMC(_ rhs: some VIPSImageProtocol) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 

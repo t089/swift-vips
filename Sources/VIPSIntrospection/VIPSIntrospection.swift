@@ -5,6 +5,11 @@
 //  Swift API for libvips GObject introspection
 //
 
+#if canImport(Darwin)
+import Darwin
+#elseif canImport(Glibc)
+import Glibc
+#endif
 import Cvips
 import CvipsShim
 import Foundation
@@ -104,6 +109,10 @@ public class VIPSIntrospection {
 
     /// Initialize VIPS library for introspection
     public static func initialize() throws {
+        // Force English locale for consistent code generation
+        setenv("LANG", "C", 1)
+        setenv("LC_ALL", "C", 1)
+
         if vips_init("swift-vips-introspection") != 0 {
             throw VIPSIntrospectionError.initializationFailed
         }
@@ -204,7 +213,12 @@ public class VIPSIntrospection {
             }
 
             // Classify based on flags
-            if param.isRequired && param.isInput {
+            // IMPORTANT: Check for outputs FIRST, because "out" parameter has both INPUT and OUTPUT flags
+            if param.isOutput && param.isRequired {
+                requiredOutput.append(param.name)
+            } else if param.isOutput && !param.isRequired {
+                optionalOutput.append(param.name)
+            } else if param.isRequired && param.isInput {
                 // If memberX is nil AND parameter type is VipsImage, this is memberX
                 if memberX == nil && param.parameterType == imageType {
                     memberX = param.name
@@ -213,10 +227,6 @@ public class VIPSIntrospection {
                 }
             } else if !param.isRequired && param.isInput {
                 optionalInput.append(param.name)
-            } else if param.isRequired && param.isOutput {
-                requiredOutput.append(param.name)
-            } else if !param.isRequired && param.isOutput {
-                optionalOutput.append(param.name)
             }
         }
 

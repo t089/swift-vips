@@ -10,7 +10,7 @@ import Cvips
 extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
 
     /// Transform LCh to CMC
-    public func cmc2lch() throws -> Self {
+    public func CMC2LCh() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -22,7 +22,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Transform CMYK to XYZ
-    public func cmyk2xyz() throws -> Self {
+    public func CMYK2XYZ() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -34,7 +34,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Transform HSV to sRGB
-    public func hsv2srgb() throws -> Self {
+    public func HSV2sRGB() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -46,7 +46,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Transform LCh to CMC
-    public func lch2cmc() throws -> Self {
+    public func LCh2CMC() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -58,7 +58,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Transform LCh to Lab
-    public func lch2lab() throws -> Self {
+    public func LCh2Lab() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -70,7 +70,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Transform Lab to LCh
-    public func lab2lch() throws -> Self {
+    public func Lab2LCh() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -82,7 +82,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Transform float Lab to LabQ coding
-    public func lab2labq() throws -> Self {
+    public func Lab2LabQ() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -97,7 +97,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///
     /// - Parameters:
     ///   - temp: Color temperature
-    public func lab2xyz(temp: [Double]? = nil) throws -> Self {
+    public func Lab2XYZ(temp: [Double]? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -112,7 +112,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Unpack a LabQ image to float Lab
-    public func labq2lab() throws -> Self {
+    public func LabQ2Lab() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -124,7 +124,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Convert a LabQ image to sRGB
-    public func labq2srgb() throws -> Self {
+    public func LabQ2sRGB() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -136,7 +136,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Transform XYZ to CMYK
-    public func xyz2cmyk() throws -> Self {
+    public func XYZ2CMYK() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -151,7 +151,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///
     /// - Parameters:
     ///   - temp: Colour temperature
-    public func xyz2lab(temp: [Double]? = nil) throws -> Self {
+    public func XYZ2Lab(temp: [Double]? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -166,7 +166,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Transform XYZ to Yxy
-    public func xyz2yxy() throws -> Self {
+    public func XYZ2Yxy() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -178,7 +178,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Transform XYZ to scRGB
-    public func xyz2scrgb() throws -> Self {
+    public func XYZ2scRGB() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -190,7 +190,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Transform Yxy to XYZ
-    public func yxy2xyz() throws -> Self {
+    public func Yxy2XYZ() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -354,7 +354,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Transform sRGB to HSV
-    public func srgb2hsv() throws -> Self {
+    public func sRGB2HSV() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -366,7 +366,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Convert an sRGB image to scRGB
-    public func srgb2scrgb() throws -> Self {
+    public func sRGB2scRGB() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -381,7 +381,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///
     /// - Parameters:
     ///   - depth: Output device space depth in bits
-    public func scrgb2bw(depth: Int? = nil) throws -> Self {
+    public func scRGB2BW(depth: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -396,7 +396,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     }
 
     /// Transform scRGB to XYZ
-    public func scrgb2xyz() throws -> Self {
+    public func scRGB2XYZ() throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
@@ -411,7 +411,7 @@ extension VIPSImageProtocol where Self: ~Copyable /*, Self: ~Escapable */ {
     ///
     /// - Parameters:
     ///   - depth: Output device space depth in bits
-    public func scrgb2srgb(depth: Int? = nil) throws -> Self {
+    public func scRGB2sRGB(depth: Int? = nil) throws -> Self {
         return try Self { out in
             var opt = VIPSOption()
 
