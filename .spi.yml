@@ -1,0 +1,6 @@
+version: 1
+builder:
+  configs:
+  - platform: linux
+    swift_version: '6.2'
+    image: ghcr.io/t089/swift-vips-builder:swift-6.2.3-vips-8.17.3
