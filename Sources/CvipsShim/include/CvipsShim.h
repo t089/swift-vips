@@ -77,24 +77,7 @@ int shim_vips_major_version();
 
 const char* shim_vips_version();
 
-#if VIPS_MAJOR_VERSION >= 8
-#if VIPS_MINOR_VERSION >= 18
-#define SHIM_VIPS_VERSION_8_18
-#endif
-#if VIPS_MINOR_VERSION >= 17
-#define SHIM_VIPS_VERSION_8_17
-#endif
-#if VIPS_MINOR_VERSION >= 16
-#define SHIM_VIPS_VERSION_8_16
-#endif
-#if VIPS_MINOR_VERSION >= 15
-#define SHIM_VIPS_VERSION_8_15
-#endif
-#if VIPS_MINOR_VERSION >= 14
-#define SHIM_VIPS_VERSION_8_14
-#endif
-#if VIPS_MINOR_VERSION >= 13
-#define SHIM_VIPS_VERSION_8_13
+
 // VipsSource helper functions
 const char* shim_vips_connection_filename(VipsSource *source);
 const char* shim_vips_connection_nick(VipsSource *source);
@@ -103,8 +86,6 @@ gint64 shim_vips_source_length_internal(VipsSource *source);
 gboolean shim_vips_source_decode_status(VipsSource *source);
 gboolean shim_vips_source_is_pipe(VipsSource *source);
 
-#endif
-#endif
 
 // Introspection functions for operation discovery
 typedef struct {

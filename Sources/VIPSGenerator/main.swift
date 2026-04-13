@@ -199,14 +199,7 @@ func main() async {
             // Generate main wrapper
             if let wrapper = generator.generateWrapper(for: details) {
                 let category = getOperationCategory(nickname)
-
-                // Apply version guards if needed
-                var code = wrapper
-                if let versionGuard = getOperationVersionGuard(nickname) {
-                    code = "\(versionGuard)\n\(code)\n#endif"
-                }
-
-                categorizedMethods[category, default: []].append((nickname, code))
+                categorizedMethods[category, default: []].append((nickname, wrapper))
 
                 if args.verbose && !args.listOutputs {
                     print("  Generated \(nickname) -> \(category)")
@@ -216,13 +209,9 @@ func main() async {
             // Generate UnsafeRawBufferPointer overload if this operation has blob parameters
             if let unsafeBufferOverload = overloads.generateUnsafeBufferOverload(for: details) {
                 let category = getOperationCategory(nickname)
-                var code = unsafeBufferOverload
-                if let versionGuard = getOperationVersionGuard(nickname) {
-                    code = "\(versionGuard)\n\(code)\n#endif"
-                }
                 categorizedMethods[category, default: []].append((
                     nickname: "\(nickname)_unsafe_buffer_overload",
-                    code: code
+                    code: unsafeBufferOverload
                 ))
             }
 
@@ -236,13 +225,9 @@ func main() async {
 
                 let category = getOperationCategory(nickname)
                 for (i, overloadCode) in constOverloads.enumerated() {
-                    var code = overloadCode
-                    if let versionGuard = getOperationVersionGuard(nickname) {
-                        code = "\(versionGuard)\n\(code)\n#endif"
-                    }
                     categorizedMethods[category, default: []].append((
                         nickname: "\(nickname)_overload_\(i)",
-                        code: code
+                        code: overloadCode
                     ))
                 }
             }

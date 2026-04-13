@@ -233,7 +233,7 @@ extension VIPSTests {
             #expect(bands12.bands == 2)
         }
 
-        #if SHIM_VIPS_VERSION_8_16
+        
             // MARK: - Alpha Channel Operations
             @Test
             func testAlphaOperations() throws {
@@ -256,7 +256,7 @@ extension VIPSTests {
                 let unpremultiplied = try premultiplied.unpremultiply()
                 #expect(unpremultiplied.bands == 4)
             }
-        #endif
+        
 
         // MARK: - Area Operations
 
