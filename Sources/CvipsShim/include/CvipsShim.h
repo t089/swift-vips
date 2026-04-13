@@ -123,4 +123,25 @@ GType shim_gtype_fundamental(GType gtype);
 gboolean shim_gtype_is_enum(GType gtype);
 gboolean shim_gtype_is_flags(GType gtype);
 
+// Enum / flags introspection
+typedef struct {
+    const char* name;   // e.g. "VIPS_FORMAT_UCHAR"
+    const char* nick;   // e.g. "uchar"
+    int value;          // numeric value
+} ShimEnumValue;
+
+// Discover all enum and flags GTypes registered in the current process
+// that start with the "Vips" prefix. Forces registration of all operation
+// classes first so enums reachable through VipsOperation params are loaded.
+// Caller must free the returned array with shim_free_gtypes().
+GType* shim_get_all_vips_enum_types(int* count);
+
+// Get all values for an enum or flags GType. Caller must free with
+// shim_free_enum_values(). Returns NULL and sets count=0 if gtype is
+// neither enum nor flags.
+ShimEnumValue* shim_get_enum_values(GType gtype, int* count);
+
+void shim_free_gtypes(GType* types);
+void shim_free_enum_values(ShimEnumValue* values);
+
 #endif /* C_vips_shim_h */

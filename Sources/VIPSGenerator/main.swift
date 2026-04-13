@@ -248,12 +248,26 @@ func main() async {
             return
         }
 
+        // Discover enum/flags types for generation.
+        let enumTypes = VIPSIntrospection.getAllEnumTypes()
+        let enumGenerator = EnumGenerator()
+        var enumFiles: [(name: String, code: String)] = []
+        for type in enumTypes {
+            if let code = enumGenerator.generate(type) {
+                enumFiles.append((name: type.name, code: code))
+            }
+        }
+
         // If --list-outputs, just print the file paths and exit
         if args.listOutputs {
             let writer = FileWriter(outputDirectory: args.outputDir)
             for category in categorizedMethods.keys.sorted() {
                 let (filepath, _) = writer.getFilePath(for: category)
                 print(filepath.path())
+            }
+            for enumFile in enumFiles {
+                let path = writer.getEnumFilePath(for: enumFile.name)
+                print(path.path())
             }
             return
         }
@@ -268,6 +282,13 @@ func main() async {
             let methods = categorizedMethods[category]!
             try writer.writeCategory(category, methods: methods)
             print("  ✅ Generated \(category.lowercased().replacingOccurrences(of: "/", with: "_")).generated.swift (\(methods.count) operations)")
+        }
+
+        for enumFile in enumFiles {
+            try writer.writeEnum(name: enumFile.name, code: enumFile.code)
+        }
+        if !enumFiles.isEmpty {
+            print("  ✅ Generated \(enumFiles.count) enum extensions")
         }
 
         print("\nGeneration complete!")
