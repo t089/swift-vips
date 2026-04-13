@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
         swift-version: ["6.2.4", "6.3.0"]
-        vips-version: ["8.15.5", "8.16.1", "8.17.3", "8.18.2"]
+        vips-version: ["8.16.1", "8.17.3", "8.18.2"]
     container:
       image: ghcr.io/t089/swift-vips-builder:swift-${{ matrix.swift-version }}-vips-${{ matrix.vips-version }}
     
