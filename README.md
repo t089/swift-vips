@@ -291,7 +291,7 @@ swift build -c release
 ## Requirements
 
 - Swift 6.2+
-- libvips 8.12+ installed on system
+- libvips 8.16+ installed on system (oldest version covered by CI is 8.16.1)
 - Linux or macOS
 
 ## Architecture

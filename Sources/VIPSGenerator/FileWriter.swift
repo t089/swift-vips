@@ -130,6 +130,20 @@ struct FileWriter {
         }
     }
 
+    /// Path for a generated enum extension file.
+    public func getEnumFilePath(for enumName: String) -> URL {
+        return outputDirectory
+            .appendingPathComponent("Enums")
+            .appendingPathComponent("\(enumName).generated.swift")
+    }
+
+    /// Write a single enum extension file.
+    func writeEnum(name: String, code: String) throws {
+        let filepath = getEnumFilePath(for: name)
+        try ensureDirectoryExists(filepath.deletingLastPathComponent())
+        try code.write(to: filepath, atomically: true, encoding: .utf8)
+    }
+
     /// Check if any methods need CvipsShim import
     /// - Parameter methods: The methods to check
     /// - Returns: true if CvipsShim is needed

@@ -1,7 +1,8 @@
 import Cvips
 import CvipsShim
 
-final class ClosureHolder<Input, Output> where Input: ~Copyable, Input: ~Escapable, Output: ~Copyable, Output: ~Escapable {
+final class ClosureHolder<Input, Output>
+where Input: ~Copyable, Input: ~Escapable, Output: ~Copyable, Output: ~Escapable {
     let closure: (borrowing Input) -> Output
 
     init(_ closure: @escaping (borrowing Input) -> Output) {
@@ -47,7 +48,7 @@ public protocol VIPSObjectProtocol: PointerWrapper, ~Copyable, ~Escapable {
     var object: UnsafeMutablePointer<VipsObject>! { get }
 }
 
-extension VIPSObjectProtocol where Self : ~Copyable, Self: ~Escapable {
+extension VIPSObjectProtocol where Self: ~Copyable, Self: ~Escapable {
     public var object: UnsafeMutablePointer<VipsObject>! {
         return self.ptr.assumingMemoryBound(to: VipsObject.self)
     }
@@ -62,8 +63,49 @@ extension VIPSObjectProtocol where Self : ~Copyable, Self: ~Escapable {
         return try body(self.object)
     }
 
+    /// Connect a handler to be called just before the object is closed.
+    ///
+    /// The `preclose` signal is emitted once before object close. The object is
+    /// still functional and can be read from.
+    ///
+    /// - Parameter handler: Closure invoked before close
+    /// - Returns: Signal handler ID that can be used with `disconnect(signalHandler:)`
     @discardableResult
     public func onPreClose(_ handler: @escaping (UnownedVIPSObjectRef) -> Void) -> Int {
+        self.onObjectLifecycle(signal: "preclose", handler: handler)
+    }
+
+    /// Connect a handler to be called while the object is closing.
+    ///
+    /// The `close` signal is emitted once during object close. The object is
+    /// dying — its pointer is still valid, but operations on it may not work.
+    /// Use this for cleanup that must observe teardown; read state in
+    /// `onPreClose(_:)` instead if the object needs to be functional.
+    ///
+    /// - Parameter handler: Closure invoked during close
+    /// - Returns: Signal handler ID that can be used with `disconnect(signalHandler:)`
+    @discardableResult
+    public func onClose(_ handler: @escaping (UnownedVIPSObjectRef) -> Void) -> Int {
+        self.onObjectLifecycle(signal: "close", handler: handler)
+    }
+
+    /// Connect a handler to be called after the object has been closed.
+    ///
+    /// The `postclose` signal is emitted once after object close. The object
+    /// pointer is still valid, but nothing else is — do not access fields or
+    /// invoke operations.
+    ///
+    /// - Parameter handler: Closure invoked after close
+    /// - Returns: Signal handler ID that can be used with `disconnect(signalHandler:)`
+    @discardableResult
+    public func onPostClose(_ handler: @escaping (UnownedVIPSObjectRef) -> Void) -> Int {
+        self.onObjectLifecycle(signal: "postclose", handler: handler)
+    }
+
+    private func onObjectLifecycle(
+        signal: String,
+        handler: @escaping (UnownedVIPSObjectRef) -> Void
+    ) -> Int {
         let closureHolder = ClosureHolder(handler)
         let gpointer = Unmanaged.passRetained(closureHolder).toOpaque()
 
@@ -88,16 +130,15 @@ extension VIPSObjectProtocol where Self : ~Copyable, Self: ~Escapable {
         }
 
         return self.connect(
-            signal: "preclose",
+            signal: signal,
             callback: unsafeBitCast(callback, to: GCallback.self),
             userData: gpointer,
             destroyData: { userData, _ in
                 if let userData {
                     Unmanaged<
-                        ClosureHolder<(VIPSObjectRef), Void>
+                        ClosureHolder<(UnownedVIPSObjectRef), Void>
                     >
                     .fromOpaque(userData).release()
-                    print("ClosureHolder released")
                 }
             },
             flags: .default

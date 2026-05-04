@@ -306,3 +306,110 @@ gboolean shim_gtype_is_enum(GType gtype) {
 gboolean shim_gtype_is_flags(GType gtype) {
     return G_TYPE_IS_FLAGS(gtype);
 }
+
+// Ensure an operation class and, transitively, every enum/flags GType
+// referenced by its parameters is registered with the type system.
+static void* force_register_op_types(GType type, void* a, void* b) {
+    if (vips_nickname_find(type)) {
+        gpointer klass = g_type_class_ref(type);
+        if (klass) {
+            g_type_class_unref(klass);
+        }
+    }
+    vips_type_map(type, force_register_op_types, NULL, NULL);
+    return NULL;
+}
+
+GType* shim_get_all_vips_enum_types(int* count) {
+    // Step 1: force-ref every VipsOperation class so their GParamSpec
+    // types (including every enum/flags used) get registered.
+    vips_type_map(vips_operation_get_type(), force_register_op_types, NULL, NULL);
+
+    // A few enums live on class metadata (VipsOperationClass.flags,
+    // VipsArgumentClass.flags, VipsImage.type/demand) rather than on any
+    // GParamSpec, so walking operation params doesn't reach them. Force
+    // their GType registration explicitly. These *_get_type functions are
+    // declared G_GNUC_CONST, so discarding the result lets the optimizer
+    // elide the call — route through a volatile sink to prevent that.
+    volatile GType extra_types[4];
+    extra_types[0] = vips_argument_flags_get_type();
+    extra_types[1] = vips_operation_flags_get_type();
+    extra_types[2] = vips_demand_style_get_type();
+    extra_types[3] = vips_image_type_get_type();
+    (void)extra_types;
+
+    GArray* result = g_array_new(FALSE, FALSE, sizeof(GType));
+
+    // Step 2: enumerate all registered descendants of G_TYPE_ENUM and G_TYPE_FLAGS.
+    GType fundamentals[2] = { G_TYPE_ENUM, G_TYPE_FLAGS };
+    for (int f = 0; f < 2; f++) {
+        guint n = 0;
+        GType* children = g_type_children(fundamentals[f], &n);
+        if (children) {
+            for (guint i = 0; i < n; i++) {
+                const char* name = g_type_name(children[i]);
+                if (name && g_str_has_prefix(name, "Vips")) {
+                    g_array_append_val(result, children[i]);
+                }
+            }
+            g_free(children);
+        }
+    }
+
+    *count = result->len;
+    GType* out = g_malloc(sizeof(GType) * result->len);
+    for (guint i = 0; i < result->len; i++) {
+        out[i] = g_array_index(result, GType, i);
+    }
+    g_array_free(result, TRUE);
+    return out;
+}
+
+ShimEnumValue* shim_get_enum_values(GType gtype, int* count) {
+    *count = 0;
+
+    if (G_TYPE_IS_ENUM(gtype)) {
+        GEnumClass* klass = (GEnumClass*)g_type_class_ref(gtype);
+        if (!klass) return NULL;
+
+        guint n = klass->n_values;
+        ShimEnumValue* out = g_malloc(sizeof(ShimEnumValue) * (n > 0 ? n : 1));
+        for (guint i = 0; i < n; i++) {
+            out[i].name = g_strdup(klass->values[i].value_name);
+            out[i].nick = g_strdup(klass->values[i].value_nick);
+            out[i].value = klass->values[i].value;
+        }
+        *count = (int)n;
+        g_type_class_unref(klass);
+        return out;
+    }
+
+    if (G_TYPE_IS_FLAGS(gtype)) {
+        GFlagsClass* klass = (GFlagsClass*)g_type_class_ref(gtype);
+        if (!klass) return NULL;
+
+        guint n = klass->n_values;
+        ShimEnumValue* out = g_malloc(sizeof(ShimEnumValue) * (n > 0 ? n : 1));
+        for (guint i = 0; i < n; i++) {
+            out[i].name = g_strdup(klass->values[i].value_name);
+            out[i].nick = g_strdup(klass->values[i].value_nick);
+            out[i].value = (int)klass->values[i].value;
+        }
+        *count = (int)n;
+        g_type_class_unref(klass);
+        return out;
+    }
+
+    return NULL;
+}
+
+void shim_free_gtypes(GType* types) {
+    g_free(types);
+}
+
+void shim_free_enum_values(ShimEnumValue* values) {
+    // Note: individual strings duplicated with g_strdup, but we keep the
+    // API simple and leak them intentionally — they live for the lifetime
+    // of code generation, which is a short-lived process.
+    g_free(values);
+}

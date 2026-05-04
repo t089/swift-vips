@@ -199,14 +199,7 @@ func main() async {
             // Generate main wrapper
             if let wrapper = generator.generateWrapper(for: details) {
                 let category = getOperationCategory(nickname)
-
-                // Apply version guards if needed
-                var code = wrapper
-                if let versionGuard = getOperationVersionGuard(nickname) {
-                    code = "\(versionGuard)\n\(code)\n#endif"
-                }
-
-                categorizedMethods[category, default: []].append((nickname, code))
+                categorizedMethods[category, default: []].append((nickname, wrapper))
 
                 if args.verbose && !args.listOutputs {
                     print("  Generated \(nickname) -> \(category)")
@@ -216,13 +209,9 @@ func main() async {
             // Generate UnsafeRawBufferPointer overload if this operation has blob parameters
             if let unsafeBufferOverload = overloads.generateUnsafeBufferOverload(for: details) {
                 let category = getOperationCategory(nickname)
-                var code = unsafeBufferOverload
-                if let versionGuard = getOperationVersionGuard(nickname) {
-                    code = "\(versionGuard)\n\(code)\n#endif"
-                }
                 categorizedMethods[category, default: []].append((
                     nickname: "\(nickname)_unsafe_buffer_overload",
-                    code: code
+                    code: unsafeBufferOverload
                 ))
             }
 
@@ -236,13 +225,9 @@ func main() async {
 
                 let category = getOperationCategory(nickname)
                 for (i, overloadCode) in constOverloads.enumerated() {
-                    var code = overloadCode
-                    if let versionGuard = getOperationVersionGuard(nickname) {
-                        code = "\(versionGuard)\n\(code)\n#endif"
-                    }
                     categorizedMethods[category, default: []].append((
                         nickname: "\(nickname)_overload_\(i)",
-                        code: code
+                        code: overloadCode
                     ))
                 }
             }
@@ -263,12 +248,26 @@ func main() async {
             return
         }
 
+        // Discover enum/flags types for generation.
+        let enumTypes = VIPSIntrospection.getAllEnumTypes()
+        let enumGenerator = EnumGenerator()
+        var enumFiles: [(name: String, code: String)] = []
+        for type in enumTypes {
+            if let code = enumGenerator.generate(type) {
+                enumFiles.append((name: type.name, code: code))
+            }
+        }
+
         // If --list-outputs, just print the file paths and exit
         if args.listOutputs {
             let writer = FileWriter(outputDirectory: args.outputDir)
             for category in categorizedMethods.keys.sorted() {
                 let (filepath, _) = writer.getFilePath(for: category)
                 print(filepath.path())
+            }
+            for enumFile in enumFiles {
+                let path = writer.getEnumFilePath(for: enumFile.name)
+                print(path.path())
             }
             return
         }
@@ -283,6 +282,13 @@ func main() async {
             let methods = categorizedMethods[category]!
             try writer.writeCategory(category, methods: methods)
             print("  ✅ Generated \(category.lowercased().replacingOccurrences(of: "/", with: "_")).generated.swift (\(methods.count) operations)")
+        }
+
+        for enumFile in enumFiles {
+            try writer.writeEnum(name: enumFile.name, code: enumFile.code)
+        }
+        if !enumFiles.isEmpty {
+            print("  ✅ Generated \(enumFiles.count) enum extensions")
         }
 
         print("\nGeneration complete!")

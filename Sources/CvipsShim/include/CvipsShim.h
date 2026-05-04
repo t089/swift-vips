@@ -77,24 +77,7 @@ int shim_vips_major_version();
 
 const char* shim_vips_version();
 
-#if VIPS_MAJOR_VERSION >= 8
-#if VIPS_MINOR_VERSION >= 18
-#define SHIM_VIPS_VERSION_8_18
-#endif
-#if VIPS_MINOR_VERSION >= 17
-#define SHIM_VIPS_VERSION_8_17
-#endif
-#if VIPS_MINOR_VERSION >= 16
-#define SHIM_VIPS_VERSION_8_16
-#endif
-#if VIPS_MINOR_VERSION >= 15
-#define SHIM_VIPS_VERSION_8_15
-#endif
-#if VIPS_MINOR_VERSION >= 14
-#define SHIM_VIPS_VERSION_8_14
-#endif
-#if VIPS_MINOR_VERSION >= 13
-#define SHIM_VIPS_VERSION_8_13
+
 // VipsSource helper functions
 const char* shim_vips_connection_filename(VipsSource *source);
 const char* shim_vips_connection_nick(VipsSource *source);
@@ -103,8 +86,6 @@ gint64 shim_vips_source_length_internal(VipsSource *source);
 gboolean shim_vips_source_decode_status(VipsSource *source);
 gboolean shim_vips_source_is_pipe(VipsSource *source);
 
-#endif
-#endif
 
 // Introspection functions for operation discovery
 typedef struct {
@@ -141,5 +122,26 @@ const char* shim_gtype_name(GType gtype);
 GType shim_gtype_fundamental(GType gtype);
 gboolean shim_gtype_is_enum(GType gtype);
 gboolean shim_gtype_is_flags(GType gtype);
+
+// Enum / flags introspection
+typedef struct {
+    const char* name;   // e.g. "VIPS_FORMAT_UCHAR"
+    const char* nick;   // e.g. "uchar"
+    int value;          // numeric value
+} ShimEnumValue;
+
+// Discover all enum and flags GTypes registered in the current process
+// that start with the "Vips" prefix. Forces registration of all operation
+// classes first so enums reachable through VipsOperation params are loaded.
+// Caller must free the returned array with shim_free_gtypes().
+GType* shim_get_all_vips_enum_types(int* count);
+
+// Get all values for an enum or flags GType. Caller must free with
+// shim_free_enum_values(). Returns NULL and sets count=0 if gtype is
+// neither enum nor flags.
+ShimEnumValue* shim_get_enum_values(GType gtype, int* count);
+
+void shim_free_gtypes(GType* types);
+void shim_free_enum_values(ShimEnumValue* values);
 
 #endif /* C_vips_shim_h */

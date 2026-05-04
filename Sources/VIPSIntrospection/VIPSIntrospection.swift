@@ -249,6 +249,77 @@ public class VIPSIntrospection {
     }
 }
 
+/// A single enum or flags value discovered via introspection.
+public struct VIPSEnumValue {
+    public var name: String   // e.g. "VIPS_FORMAT_UCHAR"
+    public var nick: String   // e.g. "uchar"
+    public var value: Int32
+}
+
+/// A discovered enum or flags type with all of its members.
+public struct VIPSEnumType {
+    public var gtype: UInt
+    public var name: String   // e.g. "VipsBandFormat"
+    public var isFlags: Bool
+    public var values: [VIPSEnumValue]
+}
+
+extension VIPSIntrospection {
+
+    /// Discover every Vips-prefixed enum and flags GType registered in the
+    /// current process, along with all of their members.
+    ///
+    /// Internally this first forces registration of every `VipsOperation`
+    /// subclass so that enums reachable via operation parameters are loaded,
+    /// then walks `g_type_children(G_TYPE_ENUM)` and `G_TYPE_FLAGS`.
+    public static func getAllEnumTypes() -> [VIPSEnumType] {
+        var count: Int32 = 0
+        guard let types = shim_get_all_vips_enum_types(&count) else {
+            return []
+        }
+        defer { shim_free_gtypes(types) }
+
+        var result: [VIPSEnumType] = []
+        for i in 0..<Int(count) {
+            let gtype = types[i]
+            let name: String
+            if let cStr = shim_gtype_name(gtype) {
+                name = String(cString: cStr)
+            } else {
+                continue
+            }
+
+            let isFlags = shim_gtype_is_flags(gtype) != 0
+
+            var valueCount: Int32 = 0
+            guard let rawValues = shim_get_enum_values(gtype, &valueCount) else {
+                continue
+            }
+            defer { shim_free_enum_values(rawValues) }
+
+            var values: [VIPSEnumValue] = []
+            values.reserveCapacity(Int(valueCount))
+            for j in 0..<Int(valueCount) {
+                let raw = rawValues[j]
+                values.append(VIPSEnumValue(
+                    name: String(cString: raw.name),
+                    nick: String(cString: raw.nick),
+                    value: raw.value
+                ))
+            }
+
+            result.append(VIPSEnumType(
+                gtype: gtype,
+                name: name,
+                isFlags: isFlags,
+                values: values
+            ))
+        }
+
+        return result.sorted { $0.name < $1.name }
+    }
+}
+
 /// Errors that can occur during introspection
 public enum VIPSIntrospectionError: Error, CustomStringConvertible {
     case initializationFailed
