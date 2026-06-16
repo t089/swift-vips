@@ -20,8 +20,13 @@ public enum VIPS {
         
         if let loggingDelegate = loggingDelegate {
             let box = Unmanaged.passRetained(loggingDelegate as AnyObject)
-            
-            g_log_set_handler("VIPS", G_LOG_LEVEL_MASK, logfunc, box.toOpaque())
+
+            // glib 2.88 marks GLogLevelFlags with __attribute__((flag_enum)), so Swift
+            // imports it as an OptionSet and no longer exposes the bare G_LOG_LEVEL_MASK
+            // constant. G_LOG_LEVEL_MASK == ~(G_LOG_FLAG_RECURSION | G_LOG_FLAG_FATAL),
+            // i.e. all bits except 1<<0 and 1<<1; build it from that stable ABI value.
+            let mask = GLogLevelFlags(rawValue: ~((1 << 0) | (1 << 1)))
+            g_log_set_handler("VIPS", mask, logfunc, box.toOpaque())
         }
         
     }
