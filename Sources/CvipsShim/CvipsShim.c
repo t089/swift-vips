@@ -413,3 +413,19 @@ void shim_free_enum_values(ShimEnumValue* values) {
     // of code generation, which is a short-lived process.
     g_free(values);
 }
+
+guint shim_G_LOG_LEVEL_ERROR(void) { return (guint) G_LOG_LEVEL_ERROR; }
+
+guint shim_G_LOG_LEVEL_WARNING(void) { return (guint) G_LOG_LEVEL_WARNING; }
+
+guint shim_G_LOG_LEVEL_INFO(void) { return (guint) G_LOG_LEVEL_INFO; }
+
+guint shim_g_log_set_handler_all(const gchar *domain, GLogFunc func, gpointer data) {
+    return g_log_set_handler(domain, G_LOG_LEVEL_MASK, func, data);
+}
+
+GConnectFlags shim_G_CONNECT_DEFAULT(void) { return (GConnectFlags) 0; }
+
+GConnectFlags shim_G_CONNECT_AFTER(void) { return G_CONNECT_AFTER; }
+
+GConnectFlags shim_G_CONNECT_SWAPPED(void) { return G_CONNECT_SWAPPED; }

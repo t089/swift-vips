@@ -144,4 +144,21 @@ ShimEnumValue* shim_get_enum_values(GType gtype, int* count);
 void shim_free_gtypes(GType* types);
 void shim_free_enum_values(ShimEnumValue* values);
 
+// glib >= 2.86 tags GLogLevelFlags and GConnectFlags with
+// __attribute__((flag_enum)), which changes how Swift's ClangImporter surfaces
+// them: the G_LOG_LEVEL_* / G_CONNECT_* enumerators stop being importable as
+// globals. C sees the same constants either way, so reading them through the
+// shim keeps one Swift source building against both old and new glib.
+guint shim_G_LOG_LEVEL_ERROR(void);
+guint shim_G_LOG_LEVEL_WARNING(void);
+guint shim_G_LOG_LEVEL_INFO(void);
+
+// g_log_set_handler with G_LOG_LEVEL_MASK, which likewise cannot be named from
+// Swift on new glib.
+guint shim_g_log_set_handler_all(const gchar *domain, GLogFunc func, gpointer data);
+
+GConnectFlags shim_G_CONNECT_DEFAULT(void);
+GConnectFlags shim_G_CONNECT_AFTER(void);
+GConnectFlags shim_G_CONNECT_SWAPPED(void);
+
 #endif /* C_vips_shim_h */
