@@ -10,7 +10,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../../"),
-        .package(url: "https://github.com/apple/swift-nio.git", from: "2.86.0")
+        .package(url: "https://github.com/apple/swift-nio.git", from: "2.86.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -19,10 +19,11 @@ let package = Package(
             name: "NIOCompat",
             dependencies: [
                 .product(name: "VIPS", package: "swift-vips"),
-                .product(name: "NIOCore", package: "swift-nio")
+                .product(name: "NIOCore", package: "swift-nio"),
             ],
             resources: [
                 .copy("../Resources/balloons.jpg")
-            ]),
+            ]
+        )
     ]
 )
