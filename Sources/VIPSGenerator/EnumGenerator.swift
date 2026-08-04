@@ -27,7 +27,7 @@ struct EnumGenerator {
         body += "public typealias \(type.name) = Cvips.\(type.name)\n\n"
         body += "extension \(type.name) {\n"
 
-        for value in type.values {
+        for value in type.values where !value.name.contains("UNBUFFERED") {
             let swiftName = swiftMemberName(cName: value.name, prefix: prefix)
             body += "    public static var \(swiftName): Self { \(value.name) }\n"
         }
