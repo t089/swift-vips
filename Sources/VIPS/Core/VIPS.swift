@@ -2,6 +2,8 @@ import Cvips
 import CvipsShim
 import Logging
 
+private let logLevelMask = GLogLevelFlags(rawValue: ~3)
+
 public enum VIPS {
     public static func start(concurrency: Int = 0, logger: Logger = Logger(label: "VIPS"), loggingDelegate: VIPSLoggingDelegate? = nil) throws {
         if vips_init(CommandLine.arguments[0]) != 0 {
@@ -21,7 +23,7 @@ public enum VIPS {
         if let loggingDelegate = loggingDelegate {
             let box = Unmanaged.passRetained(loggingDelegate as AnyObject)
             
-            g_log_set_handler("VIPS", G_LOG_LEVEL_MASK, logfunc, box.toOpaque())
+            g_log_set_handler("VIPS", logLevelMask, logfunc, box.toOpaque())
         }
         
     }
