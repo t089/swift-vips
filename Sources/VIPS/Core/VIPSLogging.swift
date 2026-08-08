@@ -1,13 +1,20 @@
 import Cvips
 
-func logfunc(_ domain: UnsafePointer<gchar>!, _ loglevel: GLogLevelFlags, _ msg: UnsafePointer<gchar>!, _ userdata: gpointer!) {
-    let logger : VIPSLoggingDelegate = Unmanaged<AnyObject>.fromOpaque(userdata).takeUnretainedValue() as! VIPSLoggingDelegate
+func logfunc(
+    _ domain: UnsafePointer<gchar>!,
+    _ loglevel: GLogLevelFlags,
+    _ msg: UnsafePointer<gchar>!,
+    _ userdata: gpointer!
+) {
+    let logger: VIPSLoggingDelegate =
+        Unmanaged<AnyObject>.fromOpaque(userdata).takeUnretainedValue() as! VIPSLoggingDelegate
+
     switch loglevel {
-    case G_LOG_LEVEL_ERROR:
+    case GLogLevelFlags(rawValue: 4):
         logger.error("\(String(cString: msg))")
-    case G_LOG_LEVEL_WARNING:
+    case GLogLevelFlags(rawValue: 16):
         logger.warning("\(String(cString: msg))")
-    case G_LOG_LEVEL_INFO:
+    case GLogLevelFlags(rawValue: 64):
         logger.info("\(String(cString: msg))")
     default:
         logger.debug("\(String(cString: msg))")

@@ -1,11 +1,11 @@
-// swift-tools-version:6.2
+// swift-tools-version:6.1
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
     name: "swift-vips",
-    platforms: [ .macOS(.v14)],
+    platforms: [.macOS(.v13)],
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(name: "VIPS", targets: ["VIPS"]),
@@ -13,20 +13,27 @@ let package = Package(
         .executable(name: "vips-generator", targets: ["vips-generator"]),
     ],
     traits: [
-        "FoundationSupport",
+        "FoundationSupport"
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-log.git", from: "1.6.0"),
         .package(url: "https://github.com/swiftlang/swift-subprocess.git", from: "0.2.1"),
     ],
     targets: [
-        .systemLibrary(name: "Cvips",
-                       pkgConfig: "vips"),
+        .systemLibrary(
+            name: "Cvips",
+            pkgConfig: "vips",
+            providers: [
+                .brew(["vips"]),
+                .apt(["libvips-dev"]),
+            ]
+        ),
         .target(
             name: "CvipsShim",
             dependencies: [
                 "Cvips"
-            ]),
+            ]
+        ),
         // Build tool plugin that generates Swift wrappers from libvips introspection
         .plugin(
             name: "VIPSGeneratorPlugin",
@@ -38,30 +45,34 @@ let package = Package(
             dependencies: [
                 "Cvips",
                 "CvipsShim",
-                .product(name: "Logging", package: "swift-log")
+                .product(name: "Logging", package: "swift-log"),
             ],
             swiftSettings: [
                 .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
                 .enableUpcomingFeature("InferIsolatedConformances"),
-                .enableExperimentalFeature("Lifetimes")
+                .enableExperimentalFeature("Lifetimes"),
             ],
             plugins: [
                 .plugin(name: "VIPSGeneratorPlugin")
-            ]),
+            ]
+        ),
         .target(
             name: "VIPSIntrospection",
             dependencies: [
                 "Cvips",
-                "CvipsShim"
-            ]),
-        .executableTarget(name: "vips-generator",
+                "CvipsShim",
+            ]
+        ),
+        .executableTarget(
+            name: "vips-generator",
             dependencies: [
                 "VIPSIntrospection",
-                .product(name: "Subprocess", package: "swift-subprocess")
+                .product(name: "Subprocess", package: "swift-subprocess"),
             ],
             path: "Sources/VIPSGenerator"
         ),
-        .executableTarget(name: "vips-tool",
+        .executableTarget(
+            name: "vips-tool",
             dependencies: ["VIPS", "Cvips"]
         ),
         .testTarget(
@@ -69,7 +80,8 @@ let package = Package(
             dependencies: ["VIPS"],
             resources: [
                 .copy("data")
-            ]),
+            ]
+        ),
     ],
-    swiftLanguageModes: [ .v6 ]
+    swiftLanguageModes: [.v6]
 )
