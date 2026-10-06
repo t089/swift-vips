@@ -11,7 +11,7 @@ final class Callback {
 
 public final class VIPSBlob: @unchecked Sendable, Equatable, CustomDebugStringConvertible {
     @usableFromInline
-    private(set) var blob: UnsafeMutablePointer<VipsBlob>!
+    var blob: UnsafeMutablePointer<VipsBlob>!
 
     init(_ blob: UnsafeMutablePointer<VipsBlob>!) {
         self.blob = blob
